@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+
+{%if user.is_authenticated %}
+<h1>Hello World!</h1>
+
+{% else %}
+
+<h1>Login</h1>
+{% comment %} <form method="POST" action="{% url 'dashboard:home' %}">
+    {% csrf_token %}
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Username</label>
+    <input type="text" name="username" class="form-control" id="exampleInputUser" aria-describedby="userHelp" required>
+  </div>
+  
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" id="exampleInputPassword1" required>
+  </div>
+  
+  <button type="submit" class="btn btn-secondary">Login</button>
+</form> {% endcomment %}
+
+<form method="POST" action="{% url 'home_view' %}">
+    {% csrf_token %}
+    <div>
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username">
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+    </div>
+    <button type="submit">Login</button>
+</form>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

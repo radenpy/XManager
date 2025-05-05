@@ -1,0 +1,613 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista partnerów | XManager{% endblock %}
+
+{% block page_title %}Lista partnerów{% endblock %}
+
+{% block page_actions %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPartnerModal">
+        <i class="fas fa-plus me-1"></i> Dodaj partnera
+    </button>
+{% endblock %}
+
+{% block content %}
+    <!-- Wyszukiwarka -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'partner:partner_list' %}" class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Wyszukaj..." value="{{ request.GET.search|default:'' }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="country" class="form-select select2">
+                        <option value="">Wszystkie kraje</option>
+                        {% for code, name in countries %}
+                            <option value="{{ code }}" {% if request.GET.country == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">Wszystkie statusy</option>
+                        <option value="verified" {% if request.GET.status == 'verified' %}selected{% endif %}>Zweryfikowani</option>
+                        <option value="unverified" {% if request.GET.status == 'unverified' %}selected{% endif %}>Niezweryfikowani</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista partnerów -->
+    <div class="card">
+        <div class="card-body">
+            {% if partners %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nazwa</th>
+                            <th scope="col">Kraj</th>
+                            <th scope="col">VAT</th>
+                            <th scope="col">Miasto</th>
+                            <th scope="col">Kontakty</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for partner in partners %}
+                        <tr>
+                            <td>{{ partner.id }}</td>
+                            <td>
+                                {% comment %} <a href="{% url 'partner:partner_detail' partner.pk %}">{{ partner.name }}</a> {% endcomment %}
+                            </td>
+                            <td>
+                                {% if partner.country %}
+                                    <span class="flag-icon flag-icon-{{ partner.country.code|lower }} me-1"></span>
+                                    {{ partner.country.name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ partner.get_full_vat_number }}</td>
+                            <td>{{ partner.city|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ partner.emails.count }}</span>
+                            </td>
+                            <td>
+                                {% if partner.is_verified %}
+                                    <span class="badge bg-success">Zweryfikowany</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Niezweryfikowany</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% comment %} <a href="{% url 'partner:partner_detail' partner.pk %}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Szczegóły">
+                                        <i class="fas fa-eye"></i>
+                                    </a> {% endcomment %}
+                                    <a href="{% url 'partner:partner_update' partner.pk %}" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-partner" data-partner-id="{{ partner.id }}" data-bs-toggle="tooltip" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginacja -->
+            {% if is_paginated %}
+            <nav aria-label="Nawigacja stronicowania">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Pierwsza">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Poprzednia">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Następna">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Ostatnia">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak partnerów do wyświetlenia.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal do dodawania partnera -->
+    <div class="modal fade" id="addPartnerModal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPartnerModalLabel">Dodaj partnera</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="partnerForm" method="post" action="{% url 'partner:partner_create' %}">
+                        {% csrf_token %}
+                        
+                       <!-- Krok 1: Wybór kraju i wprowadzenie VAT -->
+                        <div id="step1">
+                            <div class="mb-3">
+                                <label for="id_country" class="form-label">Kraj</label>
+                                <select name="country" id="id_country" class="form-control select2-countries" required>
+                                    <option value="">Wybierz kraj</option>
+                                    {% for code, name in countries %}
+                                        <option value="{{ code }}" data-flag="{{ code|lower }}">{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_vat_number" class="form-label">Numer VAT</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="vat_number" id="id_vat_number" required
+                                        placeholder="Wprowadź numer VAT (bez prefiksu kraju)">
+                                    <button class="btn btn-primary" type="button" id="verifyVATBtn">Weryfikuj</button>
+                                </div>
+                                <div class="form-text">Wprowadź numer VAT bez prefiksu kraju (np. 123456789 dla Polski)</div>
+                            </div>
+                        </div>
+
+                        <!-- Loader podczas weryfikacji -->
+                        <div id="verification-loader" class="text-center my-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Weryfikacja...</span>
+                            </div>
+                            <p class="mt-2">Trwa weryfikacja numeru VAT...</p>
+                        </div>
+
+                        <!-- Krok 2: Potwierdzenie danych i dodatkowe informacje -->
+                        <div id="step2" class="d-none">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i> Numer VAT zweryfikowany pomyślnie!
+                            </div>
+                            
+                            <h6 class="mb-3">Dane firmy z weryfikacji</h6>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_vat_number_display" class="form-label">Numer VAT</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text country-prefix"></span>
+                                            <input type="text" class="form-control" id="id_vat_number_display" readonly>
+                                        </div>
+                                        <!-- Zachowujemy oryginalny numer VAT w ukrytym polu -->
+                                        <input type="hidden" name="vat_number" id="id_vat_number_hidden">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_country_display" class="form-label">Kraj</label>
+                                        <input type="text" class="form-control" id="id_country_display" readonly>
+                                        <!-- Zachowujemy oryginalny kod kraju w ukrytym polu -->
+                                        <input type="hidden" name="country" id="id_country_hidden">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_name" class="form-label">Nazwa firmy</label>
+                                        <input type="text" class="form-control" name="name" id="id_name">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_city" class="form-label">Miasto</label>
+                                        <input type="text" class="form-control" name="city" id="id_city">
+                                    </div>
+                                </div>
+                            </div>
+
+                    
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_street_name" class="form-label">Ulica</label>
+                                        <input type="text" class="form-control" name="street_name" id="id_street_name">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="id_building_number" class="form-label">Nr budynku</label>
+                                        <input type="text" class="form-control" name="building_number" id="id_building_number">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="id_apartment_number" class="form-label">Nr lokalu</label>
+                                        <input type="text" class="form-control" name="apartment_number" id="id_apartment_number">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="id_postal_code" class="form-label">Kod pocztowy</label>
+                                        <input type="text" class="form-control" name="postal_code" id="id_postal_code">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_phone_number" class="form-label">Numer telefonu</label>
+                                        <input type="text" class="form-control" name="phone_number" id="id_phone_number" placeholder="Wprowadź numer telefonu">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_additional_info" class="form-label">Dodatkowe informacje</label>
+                                        <textarea class="form-control" name="additional_info" id="id_additional_info" rows="1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h6 class="mb-3">Powiązane adresy email (maksymalnie 10)</h6>
+                            <div class="mb-3">
+                                <select name="email_contacts" id="id_email_contacts" class="form-control select2-emails" multiple>
+                                </select>
+                                <div class="form-text">Możesz wybrać istniejące adresy lub dodać nowe</div>
+                            </div>
+                            
+                            <!-- Ukryte pole przechowujące identyfikator weryfikacji -->
+                            <input type="hidden" name="verification_id" id="id_verification_id">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="savePartnerBtn" disabled>Zapisz partnera</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal potwierdzenia usunięcia -->
+    <div class="modal fade" id="deletePartnerModal" tabindex="-1" aria-labelledby="deletePartnerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePartnerModalLabel">Potwierdzenie usunięcia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Czy na pewno chcesz usunąć tego partnera? Ta operacja jest nieodwracalna.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <form id="deletePartnerForm" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Usuń</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'partner/js/vat_verification.js' %}"></script>
+    <script src="{% static 'partner/js/subscriber_select.js' %}"></script>
+    <script>
+    // Obsługa formularza dodawania partnera w modalu
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicjalizacja Select2 dla krajów
+        $('.select2-countries').select2({
+            dropdownParent: $('#addPartnerModal'),
+            templateResult: formatCountryOption,
+            templateSelection: formatCountrySelection,
+            placeholder: "Wybierz kraj",
+            allowClear: true,
+            // Dodajemy wyszukiwarkę
+            language: {
+                inputTooShort: function () {
+                    return "Wpisz co najmniej 1 znak...";
+                },
+                noResults: function () {
+                    return "Brak wyników";
+                },
+                searching: function () {
+                    return "Wyszukiwanie...";
+                }
+            }
+        });
+        
+        // Inicjalizacja Select2 dla emaili
+        $('.select2-emails').select2({
+            dropdownParent: $('#addPartnerModal'),
+            tags: true,
+            placeholder: 'Wybierz lub dodaj adresy email',
+            ajax: {
+                url: "/partner/api/subscribers/lookup/",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.email,
+                                full_name: (item.first_name && item.last_name) ? `${item.first_name} ${item.last_name}` : null
+                            };
+                        }),
+                        pagination: {
+                            more: data.has_more
+                        }
+                    };
+                },
+                cache: true
+            },
+            maximumSelectionLength: 10
+        });
+        
+        // Obsługa przycisku weryfikacji VAT
+        $('#verifyVATBtn').on('click', function() {
+            const country = $('#id_country').val();
+            const vatNumber = $('#id_vat_number').val();
+            
+            if (!country || !vatNumber) {
+                showModalMessage('Wybierz kraj i wprowadź numer VAT', 'danger');
+                return;
+            }
+            
+            // Pokaż loader
+            $('#step1').addClass('d-none');
+            $('#verification-loader').removeClass('d-none');
+            
+            // Wywołaj API weryfikacji VAT
+            $.ajax({
+                url: "/partner/api/verify-vat/",
+                type: 'GET',
+                data: {
+                    country: country,
+                    vat_number: vatNumber
+                },
+                success: function(response) {
+                    // Ukryj loader
+                    $('#verification-loader').addClass('d-none');
+                    
+                    if (response.success) {
+                        // Wypełnij pola formularza danymi z weryfikacji
+                        fillFormWithVerificationData(response.data);
+                        
+                        // Przejdź do kroku 2
+                        $('#step2').removeClass('d-none');
+                        
+                        // Włącz przycisk zapisu
+                        $('#savePartnerBtn').prop('disabled', false);
+                    } else {
+                        // Pokaż błąd i wróć do kroku 1
+                        showModalMessage(response.message || 'Nie udało się zweryfikować numeru VAT', 'danger');
+                        $('#step1').removeClass('d-none');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Ukryj loader i pokaż błąd
+                    $('#verification-loader').addClass('d-none');
+                    $('#step1').removeClass('d-none');
+                    showModalMessage('Wystąpił błąd podczas weryfikacji: ' + error, 'danger');
+                }
+            });
+        });
+        
+        // Obsługa przycisku zapisu partnera
+        $('#savePartnerBtn').on('click', function() {
+            // Zbierz dane z formularza
+            const formData = new FormData(document.getElementById('partnerForm'));
+            
+            // Dodaj adresy email
+            const emails = $('#id_email_contacts').val();
+            if (emails && emails.length > 0) {
+                emails.forEach(function(email, index) {
+                    formData.append('email_contacts', email);
+                });
+            }
+            
+            // Wywołaj API tworzenia partnera
+            $.ajax({
+                url: "/partner/api/create/",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        // Zamknij modal
+                        $('#addPartnerModal').modal('hide');
+                        
+                        // Pokaż komunikat sukcesu
+                        showMessage(response.message || 'Partner został dodany pomyślnie', 'success');
+                        
+                        // Odśwież stronę po 1 sekundzie
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showModalMessage(response.message || 'Nie udało się dodać partnera', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showModalMessage('Wystąpił błąd podczas zapisywania: ' + error, 'danger');
+                }
+            });
+        });
+        
+        // Obsługa modalu dodawania partnera
+        $('#addPartnerModal').on('hidden.bs.modal', function(e) {
+            // Resetuj formularz
+            $('#partnerForm')[0].reset();
+            
+            // Ukryj krok 2, pokaż krok 1
+            $('#step1').removeClass('d-none');
+            $('#step2').addClass('d-none');
+            $('#verification-loader').addClass('d-none');
+            
+            // Zresetuj Select2
+            $('#id_country').val(null).trigger('change');
+            $('#id_email_contacts').val(null).trigger('change');
+            
+            // Wyłącz przycisk zapisu
+            $('#savePartnerBtn').prop('disabled', true);
+            
+            // Usuń komunikaty
+            $('.modal-message').remove();
+        });
+        
+        // Obsługa przycisków usuwania partnera
+        $('.delete-partner').on('click', function() {
+            const partnerId = $(this).data('partner-id');
+            
+            // Ustaw formularz usuwania
+            $('#deletePartnerForm').attr('action', `/partner/delete/${partnerId}/`);
+            
+            // Pokaż modal potwierdzenia
+            $('#deletePartnerModal').modal('show');
+        });
+        
+        // Funkcja do wypełniania formularza danymi z weryfikacji
+        function fillFormWithVerificationData(data) {
+            // Wypełnij pola formularza
+            $('#id_name').val(data.name || '');
+            $('#id_city').val(data.city || '');
+            $('#id_street_name').val(data.street_name || '');
+            $('#id_building_number').val(data.building_number || '');
+            $('#id_postal_code').val(data.postal_code || '');
+            
+            // Zapisz identyfikator weryfikacji
+            $('#id_verification_id').val(data.verification_id || '');
+            
+            // Uzupełnij pola z numerem VAT i krajem
+            const country = $('#id_country').val();
+            const vatNumber = $('#id_vat_number').val();
+            
+            // Pobierz nazwę kraju z wybranej opcji
+            const countryName = $('#id_country option:selected').text();
+            
+            $('#id_vat_number_display').val(vatNumber);
+            $('#id_vat_number_hidden').val(vatNumber);
+            $('#id_country_display').val(countryName);
+            $('#id_country_hidden').val(country);
+            
+            // Wyświetl prefiks kraju
+            $('.country-prefix').text(country);
+        }
+        
+        // Funkcja do formatowania opcji wyboru kraju w Select2
+        function formatCountryOption(country) {
+            if (!country.id) {
+                return country.text;
+            }
+            
+            const flag = country.element ? $(country.element).data('flag') : '';
+            
+            return $(`
+                <div>
+                    <span class="flag-icon flag-icon-${flag} me-2"></span>
+                    ${country.text}
+                </div>
+            `);
+        }
+        
+        // Funkcja do formatowania wybranego kraju w Select2
+        function formatCountrySelection(country) {
+            if (!country.id) {
+                return country.text;
+            }
+            
+            const flag = country.element ? $(country.element).data('flag') : '';
+            
+            return $(`
+                <div>
+                    <span class="flag-icon flag-icon-${flag} me-2"></span>
+                    ${country.text}
+                </div>
+            `);
+        }
+        
+        // Funkcja do wyświetlania komunikatów w modalu
+        function showModalMessage(message, type) {
+            // Usuń istniejące komunikaty
+            $('.modal-message').remove();
+            
+            // Stwórz element komunikatu
+            const messageElement = $(`
+                <div class="alert alert-${type} modal-message mb-3">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+            
+            // Dodaj komunikat do modalu
+            $('#partnerForm').prepend(messageElement);
+        }
+        
+        // Funkcja wyświetlająca komunikat
+        function showMessage(message, type) {
+            const alertBox = $(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                                ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`);
+            
+            $('.messages-container').append(alertBox);
+            
+            // Automatyczne ukrywanie po 5 sekundach
+            setTimeout(function() {
+                alertBox.alert('close');
+            }, 5000);
+        }
+    });
+    </script>
+{% endblock %}

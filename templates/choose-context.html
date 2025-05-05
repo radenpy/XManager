@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Choose your context</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="company_id">Select Context:</label>
+    <select name="company_id" id="company_id">
+        {% for company in companies %}
+            <option value="{{ company.id }}" {% if company.id == current %}selected{% endif %}>
+                {{ company.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <div class="form-check d-inline-block ms-3">
+      <input class="form-check-input" type="checkbox" name="set_default" id="setDefault" {% if default == current %}checked{% endif %}>
+      <label class="form-check-label" for="setDefault">Ustaw jako domyślny</label>
+    </div>
+
+    <button type="submit">Zatwierdź</button>
+  </form>
+    {% comment %} <button type="submit">Choose Company</button> {% endcomment %}
+</form>
+
+  {% comment %} <h2>Wybierz kontekst działania:</h2>
+  <form method="post">
+    {% csrf_token %}
+    <select name="company_id" class="form-select w-auto d-inline-block">
+      <option value="master" {% if not current %}selected{% endif %}>🔧 Widok Master (wszystkie spółki)</option>
+      {% for company in companies %}
+        <option value="{{ company.id }}" {% if company == current %}selected{% endif %}>{{ company.name }}</option>
+      {% endfor %}
+    </select>
+
+    <div class="form-check d-inline-block ms-3">
+      <input class="form-check-input" type="checkbox" name="set_default" id="setDefault" {% if default == current %}checked{% endif %}>
+      <label class="form-check-label" for="setDefault">Ustaw jako domyślny</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary ms-3">Zatwierdź</button>
+  </form> {% endcomment %}
+{% endblock %}
+
+{% comment %} class="btn btn-primary ms-3" {% endcomment %}

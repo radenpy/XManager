@@ -23,7 +23,7 @@ class PartnerListView(LoginRequiredMixin, ListView):
     template_name = 'partner/partner_list.html'
     context_object_name = 'partners'
     paginate_by = 10
-    ordering = ['-id']  # Dodaje domyślne sortowanie po ID (malejąco)
+    ordering = ['name']  # Dodaje domyślne sortowanie po ID (malejąco)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -74,20 +74,6 @@ class PartnerListView(LoginRequiredMixin, ListView):
 
         context['countries'] = sorted_countries
         return context
-
-
-# class PartnerDetailView(LoginRequiredMixin, DetailView):
-#     """Szczegóły partnera"""
-#     model = Partner
-#     template_name = 'partner/partner_detail.html'
-#     context_object_name = 'partner'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         # Pobierz powiązane emaile
-#         context['emails'] = self.object.emails.select_related(
-#             'subscriber').all()
-#         return context
 
 
 class PartnerCreateAPIView(LoginRequiredMixin, View):
@@ -180,6 +166,135 @@ class PartnerCreateAPIView(LoginRequiredMixin, View):
             })
 
 
+# Pobieranie danych partnera
+# Pobieranie danych partnera
+class PartnerGetAPIView(LoginRequiredMixin, View):
+    """
+    API do pobierania danych partnera (AJAX)
+    """
+
+    def get(self, request, partner_id, *args, **kwargs):
+        try:
+            partner = Partner.objects.get(pk=partner_id)
+
+            # Przygotuj dane do zwrócenia
+            data = {
+                'id': partner.id,
+                'name': partner.name,
+                # Zmiana z partner.country na partner.country.code
+                'country_code': partner.country.code,
+                # Prosta konwersja na string
+                'country_name': str(partner.country.name),
+                'vat_number': partner.vat_number,
+                'city': partner.city,
+                'street_name': partner.street_name,
+                'building_number': partner.building_number,
+                'apartment_number': partner.apartment_number,
+                'postal_code': partner.postal_code,
+                'phone_number': partner.phone_number,
+                'additional_info': partner.additional_info,
+                'emails': []
+            }
+
+            # Dodaj powiązane emaile
+            partner_emails = PartnerEmail.objects.filter(partner=partner)
+            for partner_email in partner_emails:
+                data['emails'].append({
+                    'id': partner_email.subscriber.id,
+                    'email': partner_email.subscriber.email
+                })
+
+            return JsonResponse({
+                'success': True,
+                'data': data
+            })
+        except Partner.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': "Partner nie istnieje"
+            })
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())  # Dodajemy pełny ślad błędu
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            })
+
+# Aktualizacja partnera
+
+
+class PartnerUpdateAPIView(LoginRequiredMixin, View):
+    """
+    API do aktualizacji partnera (AJAX)
+    """
+
+    def post(self, request, partner_id, *args, **kwargs):
+        try:
+            partner = Partner.objects.get(pk=partner_id)
+
+            # Aktualizuj dane partnera
+            if 'name' in request.POST:
+                partner.name = request.POST.get('name')
+            if 'city' in request.POST:
+                partner.city = request.POST.get('city')
+            if 'street_name' in request.POST:
+                partner.street_name = request.POST.get('street_name')
+            if 'building_number' in request.POST:
+                partner.building_number = request.POST.get('building_number')
+            if 'apartment_number' in request.POST:
+                partner.apartment_number = request.POST.get('apartment_number')
+            if 'postal_code' in request.POST:
+                partner.postal_code = request.POST.get('postal_code')
+            if 'phone_number' in request.POST:
+                partner.phone_number = request.POST.get('phone_number')
+            if 'additional_info' in request.POST:
+                partner.additional_info = request.POST.get('additional_info')
+
+            # Zapisz zmiany
+            partner.save()
+
+            # Aktualizuj powiązane adresy email
+            if 'email_contacts' in request.POST:
+                # Usuń istniejące powiązania
+                partner.emails.clear()
+
+                # Dodaj nowe powiązania
+                email_ids = request.POST.getlist('email_contacts')
+                for email_id in email_ids:
+                    # Jeśli to nowy email (string, a nie ID)
+                    if not email_id.isdigit():
+                        # Utwórz nowy adres email
+                        subscriber, created = Subscriber.objects.get_or_create(
+                            email=email_id,
+                            defaults={'email': email_id}
+                        )
+                        partner.emails.add(subscriber)
+                    else:
+                        # Dodaj istniejący adres email
+                        try:
+                            subscriber = Subscriber.objects.get(
+                                pk=int(email_id))
+                            partner.emails.add(subscriber)
+                        except Subscriber.DoesNotExist:
+                            pass
+
+            return JsonResponse({
+                'success': True,
+                'message': "Partner został zaktualizowany pomyślnie"
+            })
+        except Partner.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': "Partner nie istnieje"
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            })
+
+
 class PartnerUpdateView(LoginRequiredMixin, UpdateView):
     """Edycja partnera"""
     model = Partner
@@ -202,7 +317,7 @@ class PartnerDeleteView(LoginRequiredMixin, DeleteView):
     """Usunięcie partnera"""
     model = Partner
     template_name = 'partners/partner_confirm_delete.html'
-    success_url = reverse_lazy('partners:partner_list')
+    success_url = reverse_lazy('partner:partner_list')
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, _("Partner został usunięty."))

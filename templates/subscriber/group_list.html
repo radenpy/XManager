@@ -1,0 +1,515 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Grupy subskrybentów | XManager{% endblock %}
+
+{% block page_title %}Grupy subskrybentów{% endblock %}
+
+{% block page_actions %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+        <i class="fas fa-plus me-1"></i> Dodaj grupę
+    </button>
+{% endblock %}
+
+{% block content %}
+    <!-- Wyszukiwarka -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'subscribers:subscriber_group_list' %}" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Wyszukaj grupę..." value="{{ search_query|default:'' }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2 ms-auto">
+                    <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista grup -->
+    <div class="card">
+        <div class="card-body">
+            {% if groups %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllGroups">
+                                </div>
+                            </th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nazwa grupy</th>
+                            <th scope="col">Liczba subskrybentów</th>
+                            <th scope="col">Data utworzenia</th>
+                            <th scope="col">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input group-checkbox" type="checkbox" data-group-id="{{ group.id }}">
+                                </div>
+                            </td>
+                            <td>{{ group.id }}</td>
+                            <td>{{ group.group_name }}</td>
+                            <td>{{ group.subscriber.count }}</td>
+                            <td>{{ group.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-subscribers" data-group-id="{{ group.id }}" data-group-name="{{ group.group_name }}" data-bs-toggle="tooltip" title="Zobacz subskrybentów">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary edit-group" data-group-id="{{ group.id }}" data-group-name="{{ group.group_name }}" data-bs-toggle="tooltip" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-group" data-group-id="{{ group.id }}" data-group-name="{{ group.group_name }}" data-bs-toggle="tooltip" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Przyciski akcji dla zaznaczonych grup -->
+            <div class="bulk-actions mt-3 d-none">
+                <button type="button" class="btn btn-primary" id="bulkAssignSubscribers">
+                    <i class="fas fa-user-plus me-1"></i> Przypisz subskrybentów
+                </button>
+                <button type="button" class="btn btn-danger" id="bulkDeleteGroups">
+                    <i class="fas fa-trash me-1"></i> Usuń zaznaczone grupy
+                </button>
+            </div>
+            
+            <!-- Paginacja -->
+            {% if is_paginated %}
+            <nav aria-label="Nawigacja stronicowania">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Pierwsza">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Poprzednia">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Następna">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Ostatnia">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak grup do wyświetlenia.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal do dodawania grupy -->
+    <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addGroupModalLabel">Dodaj grupę</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="groupForm">
+                        <div class="mb-3">
+                            <label for="id_group_name" class="form-label">Nazwa grupy</label>
+                            <input type="text" class="form-control" id="id_group_name" name="group_name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="saveGroupBtn">Zapisz grupę</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal do edycji grupy -->
+    <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editGroupModalLabel">Edytuj grupę</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editGroupForm">
+                        <input type="hidden" id="edit_group_id" name="group_id">
+                        <div class="mb-3">
+                            <label for="edit_group_name" class="form-label">Nazwa grupy</label>
+                            <input type="text" class="form-control" id="edit_group_name" name="group_name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="updateGroupBtn">Zapisz zmiany</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal potwierdzenia usunięcia -->
+    <div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-labelledby="deleteGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteGroupModalLabel">Potwierdzenie usunięcia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Czy na pewno chcesz usunąć grupę <strong id="delete_group_name"></strong>? Ta operacja jest nieodwracalna.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteGroupBtn">Usuń</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal do przypisywania subskrybentów do grupy -->
+    <div class="modal fade" id="assignSubscribersModal" tabindex="-1" aria-labelledby="assignSubscribersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignSubscribersModalLabel">Przypisz subskrybentów do grupy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="assignSubscribersForm">
+                        <input type="hidden" id="assign_group_ids" name="group_ids">
+                        <div class="mb-3">
+                            <label for="id_subscribers" class="form-label">Wybierz subskrybentów</label>
+                            <select class="form-control select2-multiple" id="id_subscribers" name="subscriber_ids" multiple required>
+                                <!-- Opcje będą dodane dynamicznie przez AJAX -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="confirmAssignSubscribersBtn">Przypisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal do wyświetlania subskrybentów w grupie -->
+    <div class="modal fade" id="viewSubscribersModal" tabindex="-1" aria-labelledby="viewSubscribersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewSubscribersModalLabel">Subskrybenci w grupie: <span id="view_group_name"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Imię</th>
+                                    <th scope="col">Nazwisko</th>
+                                    <th scope="col">Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscribers_list">
+                                <!-- Dane będą dodane dynamicznie przez AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no_subscribers_message" class="alert alert-info d-none">
+                        <i class="fas fa-info-circle me-2"></i> Brak subskrybentów w tej grupie.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicjalizacja tooltipów
+        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => {
+            new bootstrap.Tooltip(tooltip);
+        });
+        
+        // Obsługa zaznaczania wszystkich grup
+        const selectAllCheckbox = document.getElementById('selectAllGroups');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const groupCheckboxes = document.querySelectorAll('.group-checkbox');
+                groupCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                
+                toggleBulkActions();
+            });
+        }
+        
+        // Obsługa zaznaczania pojedynczych grup
+        const groupCheckboxes = document.querySelectorAll('.group-checkbox');
+        groupCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                toggleBulkActions();
+                
+                // Sprawdź, czy wszystkie są zaznaczone
+                const allChecked = Array.from(groupCheckboxes).every(cb => cb.checked);
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                }
+            });
+        });
+        
+        // Funkcja pokazująca/ukrywająca przyciski akcji dla zaznaczonych grup
+        function toggleBulkActions() {
+            const bulkActions = document.querySelector('.bulk-actions');
+            const anyChecked = Array.from(document.querySelectorAll('.group-checkbox')).some(cb => cb.checked);
+            
+            if (anyChecked) {
+                bulkActions.classList.remove('d-none');
+            } else {
+                bulkActions.classList.add('d-none');
+            }
+        }
+        
+        // Obsługa przycisku dodawania grupy
+        const saveGroupBtn = document.getElementById('saveGroupBtn');
+        if (saveGroupBtn) {
+            saveGroupBtn.addEventListener('click', function() {
+                const groupName = document.getElementById('id_group_name').value;
+                
+                if (!groupName) {
+                    showToast('danger', 'Nazwa grupy jest wymagana.');
+                    return;
+                }
+                
+                // Wyślij żądanie AJAX
+                fetch("{% url 'subscribers:subscriber_group_create' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: new URLSearchParams({
+                        'group_name': groupName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Zamknij modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addGroupModal'));
+                        modal.hide();
+                        
+                        // Pokaż komunikat sukcesu
+                        showToast('success', data.message);
+                        
+                        // Odśwież stronę
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showToast('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    showToast('danger', 'Wystąpił błąd: ' + error);
+                });
+            });
+        }
+        
+        // Obsługa przycisku edycji grupy
+        const editButtons = document.querySelectorAll('.edit-group');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const groupId = this.dataset.groupId;
+                const groupName = this.dataset.groupName;
+                
+                // Wypełnij formularz
+                document.getElementById('edit_group_id').value = groupId;
+                document.getElementById('edit_group_name').value = groupName;
+                
+                // Pokaż modal
+                const modal = new bootstrap.Modal(document.getElementById('editGroupModal'));
+                modal.show();
+            });
+        });
+        
+        // Obsługa przycisku zapisywania zmian w grupie
+        const updateGroupBtn = document.getElementById('updateGroupBtn');
+        if (updateGroupBtn) {
+            updateGroupBtn.addEventListener('click', function() {
+                const groupId = document.getElementById('edit_group_id').value;
+                const groupName = document.getElementById('edit_group_name').value;
+                
+                if (!groupName) {
+                    showToast('danger', 'Nazwa grupy jest wymagana.');
+                    return;
+                }
+                
+                // Wyślij żądanie AJAX
+                fetch("{% url 'subscribers:subscriber_group_update' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: new URLSearchParams({
+                        'group_id': groupId,
+                        'group_name': groupName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Zamknij modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('editGroupModal'));
+                        modal.hide();
+                        
+                        // Pokaż komunikat sukcesu
+                        showToast('success', data.message);
+                        
+                        // Odśwież stronę
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showToast('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    showToast('danger', 'Wystąpił błąd: ' + error);
+                });
+            });
+        }
+        
+        // Obsługa przycisku usuwania grupy
+        const deleteButtons = document.querySelectorAll('.delete-group');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const groupId = this.dataset.groupId;
+                const groupName = this.dataset.groupName;
+                
+                // Wypełnij modal
+                document.getElementById('delete_group_name').textContent = groupName;
+                
+                // Ustaw obsługę przycisku potwierdzenia
+                document.getElementById('confirmDeleteGroupBtn').setAttribute('data-group-id', groupId);
+                
+                // Pokaż modal
+                const modal = new bootstrap.Modal(document.getElementById('deleteGroupModal'));
+                modal.show();
+            });
+        });
+        
+        // Obsługa przycisku potwierdzenia usunięcia
+        const confirmDeleteGroupBtn = document.getElementById('confirmDeleteGroupBtn');
+        if (confirmDeleteGroupBtn) {
+            confirmDeleteGroupBtn.addEventListener('click', function() {
+                const groupId = this.getAttribute('data-group-id');
+                
+                // Wyślij żądanie AJAX
+                fetch(`{% url 'subscribers:subscriber_group_delete' pk=0 %}`.replace('0', groupId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Zamknij modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteGroupModal'));
+                    modal.hide();
+                    
+                    if (data.success) {
+                        // Pokaż komunikat sukcesu
+                        showToast('success', data.message);
+                        
+                        // Odśwież stronę
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showToast('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    showToast('danger', 'Wystąpił błąd: ' + error);
+                });
+            });
+        }
+        
+        // Funkcja do pobierania tokenu CSRF z ciasteczka
+        function getCsrfToken() {
+            const csrfCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
+            return csrfCookie ? csrfCookie.split('=')[1] : '';
+        }
+        
+        // Funkcja do wyświetlania komunikatów
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show position-fixed bottom-0 end-0 m-3`;
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(toast);
+            
+            // Automatyczne ukrywanie po 5 sekundach
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 5000);
+        }
+    });
+    </script>
+{% endblock %}

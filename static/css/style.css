@@ -196,3 +196,31 @@ main {
     background-color: #d4edda !important;
     transition: background-color 1s;
 }
+
+/* Dodaj te reguły do pliku static/css/style.css */
+body {
+    font-size: 12px;
+    /* Zmniejszony domyślny rozmiar czcionki */
+}
+
+/* Możesz również dostosować konkretne elementy */
+.table {
+    font-size: 12px;
+    /* Mniejsza czcionka w tabelach */
+}
+
+/* Zmniejsz czcionkę w nagłówkach kart */
+.card-header {
+    font-size: 12px;
+}
+
+/* Zmniejsz czcionkę w formularzach */
+.form-control,
+.form-select {
+    font-size: 12px;
+}
+
+/* Zmniejsz czcionkę w nawigacji */
+.nav-link {
+    font-size: 12px;
+}

@@ -68,9 +68,7 @@
                         {% for partner in partners %}
                         <tr>
                             <td>{{ partner.id }}</td>
-                            <td>
-                                {% comment %} <a href="{% url 'partner:partner_detail' partner.pk %}">{{ partner.name }}</a> {% endcomment %}
-                            </td>
+                            <td>{{ partner.name }}</td>
                             <td>
                                 {% if partner.country %}
                                     <span class="flag-icon flag-icon-{{ partner.country.code|lower }} me-1"></span>
@@ -96,7 +94,7 @@
                                     {% comment %} <a href="{% url 'partner:partner_detail' partner.pk %}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Szczegóły">
                                         <i class="fas fa-eye"></i>
                                     </a> {% endcomment %}
-                                    <a href="{% url 'partner:partner_update' partner.pk %}" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Edytuj">
+                                    <a href="#" class="btn btn-sm btn-outline-secondary edit-partner" data-partner-id="{{ partner.pk }}" data-bs-toggle="tooltip" title="Edytuj">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-outline-danger delete-partner" data-partner-id="{{ partner.id }}" data-bs-toggle="tooltip" title="Usuń">
@@ -392,6 +390,90 @@
             },
             maximumSelectionLength: 10
         });
+
+        // Obsługa przycisków edycji partnera
+        $('.edit-partner').on('click', function(e) {
+            e.preventDefault();
+            const partnerId = $(this).data('partner-id');
+            
+            // Zmień tytuł modalu
+            $('#addPartnerModalLabel').text('Edytuj partnera');
+            
+            // Ukryj komunikat o weryfikacji VAT
+            $('#step2 .alert-success').addClass('d-none');
+            
+            // Ukryj krok 1 i loader, pokaż krok 2
+            $('#step1').addClass('d-none');
+            $('#verification-loader').addClass('d-none');
+            $('#step2').removeClass('d-none');
+            
+            // Zmień tekst przycisku zapisz
+            $('#savePartnerBtn').text('Zapisz zmiany');
+            $('#savePartnerBtn').prop('disabled', false);
+            
+            // Pobierz dane partnera
+            $.ajax({
+                url: `/partner/api/get/${partnerId}/`,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        // Wypełnij formularz danymi partnera
+                        fillFormWithPartnerData(response.data);
+                        
+                        // Dodaj ukryte pole z ID partnera
+                        if ($('#partner_id').length === 0) {
+                            $('<input>').attr({
+                                type: 'hidden',
+                                name: 'partner_id',
+                                id: 'partner_id',
+                                value: partnerId
+                            }).appendTo('#partnerForm');
+                        } else {
+                            $('#partner_id').val(partnerId);
+                        }
+                        
+                        // Pokaż modal
+                        $('#addPartnerModal').modal('show');
+                    } else {
+                        showMessage(response.message || 'Nie udało się pobrać danych partnera', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showMessage('Wystąpił błąd podczas pobierania danych: ' + error, 'danger');
+                }
+            });
+        });
+
+        // Funkcja do wypełniania formularza danymi partnera
+        function fillFormWithPartnerData(data) {
+            // Wypełnij pola formularza
+            $('#id_name').val(data.name || '');
+            $('#id_city').val(data.city || '');
+            $('#id_street_name').val(data.street_name || '');
+            $('#id_building_number').val(data.building_number || '');
+            $('#id_apartment_number').val(data.apartment_number || '');
+            $('#id_postal_code').val(data.postal_code || '');
+            $('#id_phone_number').val(data.phone_number || '');
+            $('#id_additional_info').val(data.additional_info || '');
+            
+            // Uzupełnij pola z numerem VAT i krajem
+            $('#id_vat_number_display').val(data.vat_number || '');
+            $('#id_vat_number_hidden').val(data.vat_number || '');
+            $('#id_country_display').val(data.country_name || '');
+            $('#id_country_hidden').val(data.country_code || '');
+            
+            // Wyświetl prefiks kraju
+            $('.country-prefix').text(data.country_code || '');
+            
+            // Ustaw powiązane adresy email
+            if (data.emails && data.emails.length > 0) {
+                const emailOptions = data.emails.map(email => {
+                    return new Option(email.email, email.id, true, true);
+                });
+                
+                $('#id_email_contacts').empty().append(emailOptions).trigger('change');
+            }
+        }
         
         // Obsługa przycisku weryfikacji VAT
         $('#verifyVATBtn').on('click', function() {
@@ -445,6 +527,10 @@
         
         // Obsługa przycisku zapisu partnera
         $('#savePartnerBtn').on('click', function() {
+            // Sprawdź czy jesteśmy w trybie edycji
+            const isEditMode = $('#partner_id').length > 0;
+            const partnerId = isEditMode ? $('#partner_id').val() : null;
+            
             // Zbierz dane z formularza
             const formData = new FormData(document.getElementById('partnerForm'));
             
@@ -456,9 +542,14 @@
                 });
             }
             
-            // Wywołaj API tworzenia partnera
+            // Określ URL i komunikaty na podstawie trybu
+            const url = isEditMode ? `/partner/api/update/${partnerId}/` : "/partner/api/create/";
+            const successMessage = isEditMode ? 'Partner został zaktualizowany pomyślnie' : 'Partner został dodany pomyślnie';
+            const errorMessage = isEditMode ? 'Nie udało się zaktualizować partnera' : 'Nie udało się dodać partnera';
+            
+            // Wywołaj API
             $.ajax({
-                url: "/partner/api/create/",
+                url: url,
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -469,14 +560,14 @@
                         $('#addPartnerModal').modal('hide');
                         
                         // Pokaż komunikat sukcesu
-                        showMessage(response.message || 'Partner został dodany pomyślnie', 'success');
+                        showMessage(response.message || successMessage, 'success');
                         
                         // Odśwież stronę po 1 sekundzie
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
                     } else {
-                        showModalMessage(response.message || 'Nie udało się dodać partnera', 'danger');
+                        showModalMessage(response.message || errorMessage, 'danger');
                     }
                 },
                 error: function(xhr, status, error) {
@@ -489,6 +580,18 @@
         $('#addPartnerModal').on('hidden.bs.modal', function(e) {
             // Resetuj formularz
             $('#partnerForm')[0].reset();
+            
+            // Przywróć oryginalny tytuł modalu
+            $('#addPartnerModalLabel').text('Dodaj partnera');
+            
+            // Przywróć oryginalny tekst przycisku zapisz
+            $('#savePartnerBtn').text('Zapisz partnera');
+            
+            // Usuń ukryte pole ID partnera
+            $('#partner_id').remove();
+            
+            // Pokaż komunikat o weryfikacji VAT (domyślnie)
+            $('#step2 .alert-success').removeClass('d-none');
             
             // Ukryj krok 2, pokaż krok 1
             $('#step1').removeClass('d-none');

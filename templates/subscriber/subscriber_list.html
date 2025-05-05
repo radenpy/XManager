@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista subskrybentów | XManager{% endblock %}
+
+{% block page_title %}Lista subskrybentów{% endblock %}
+
+{% block page_actions %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSubscriberModal">
+        <i class="fas fa-plus me-1"></i> Dodaj subskrybenta
+    </button>
+{% endblock %}
+
+{% block content %}
+    <!-- Wyszukiwarka -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'subscribers:subscriber_list' %}" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Wyszukaj po email, imieniu lub nazwisku..." value="{{ search_query|default:'' }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="group" class="form-select select2">
+                        <option value="">Wszystkie grupy</option>
+                        {% for group in subscriber_groups %}
+                            <option value="{{ group.id }}" {% if request.GET.group == group.id|stringformat:"i" %}selected{% endif %}>{{ group.group_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista subskrybentów -->
+    <div class="card">
+        <div class="card-body">
+            {% if subscribers %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Imię</th>
+                            <th scope="col">Nazwisko</th>
+                            <th scope="col">Zgoda na newsletter</th>
+                            <th scope="col">Grupy</th>
+                            <th scope="col">Partnerzy</th>
+                            <th scope="col">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subscriber in subscribers %}
+                        <tr>
+                            <td>{{ subscriber.id }}</td>
+                            <td>    {{ subscriber.email }}  </td>
+                            <td>{{ subscriber.first_name|default:"-" }}</td>
+                            <td>{{ subscriber.last_name|default:"-" }}</td>
+                            <td>
+                                {% if subscriber.newsletter_consent %}
+                                    <span class="badge bg-success">Tak</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Nie</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subscriber.group_affiliation.all %}
+                                    {% for group in subscriber.group_affiliation.all %}
+                                        <span class="badge bg-info">{{ group.group_name }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ subscriber.partnered_with.count }}</span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Szczegóły">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary edit-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginacja -->
+            {% if is_paginated %}
+            <nav aria-label="Nawigacja stronicowania">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Pierwsza">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Poprzednia">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Następna">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Ostatnia">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak subskrybentów do wyświetlenia.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal do dodawania subskrybenta -->
+    <div class="modal fade" id="addSubscriberModal" tabindex="-1" aria-labelledby="addSubscriberModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSubscriberModalLabel">Dodaj subskrybenta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subscriberForm" method="post" action="{% url 'subscribers:subscriber_create' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" id="id_email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_newsletter_consent" class="form-label">Zgoda na newsletter</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="newsletter_consent" id="id_newsletter_consent" checked>
+                                        <label class="form-check-label" for="id_newsletter_consent">
+                                            Wyrażam zgodę na otrzymywanie newslettera
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_first_name" class="form-label">Imię</label>
+                                    <input type="text" class="form-control" name="first_name" id="id_first_name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_last_name" class="form-label">Nazwisko</label>
+                                    <input type="text" class="form-control" name="last_name" id="id_last_name">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_group_affiliation" class="form-label">Grupy</label>
+                            <select name="group_affiliation" id="id_group_affiliation" class="form-control select2-multiple" multiple>
+                                {% for group in subscriber_groups %}
+                                    <option value="{{ group.id }}">{{ group.group_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="saveSubscriberBtn">Zapisz subskrybenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal potwierdzenia usunięcia -->
+    <div class="modal fade" id="deleteSubscriberModal" tabindex="-1" aria-labelledby="deleteSubscriberModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSubscriberModalLabel">Potwierdzenie usunięcia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Czy na pewno chcesz usunąć tego subskrybenta? Ta operacja jest nieodwracalna.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <form id="deleteSubscriberForm" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Usuń</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicjalizacja Select2
+        $('.select2').select2({
+            dropdownParent: $('#addSubscriberModal'),
+            placeholder: "Wybierz...",
+            allowClear: true
+        });
+        
+        $('.select2-multiple').select2({
+            dropdownParent: $('#addSubscriberModal'),
+            placeholder: "Wybierz grupy...",
+            allowClear: true
+        });
+        
+                // Obsługa przycisku zapisu subskrybenta
+        $('#saveSubscriberBtn').on('click', function() {
+            const formData = new FormData(document.getElementById('subscriberForm'));
+            
+            // Wyślij żądanie AJAX
+            fetch("{% url 'subscribers:subscriber_create' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Zamknij modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
+                    modal.hide();
+                    
+                    // Pokaż komunikat sukcesu
+                    showToast('success', data.message);
+                    
+                    // Odśwież stronę
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast('danger', data.message);
+                }
+            })
+            .catch(error => {
+                showToast('danger', 'Wystąpił błąd: ' + error);
+            });
+        });
+
+        // Obsługa przycisku usuwania subskrybenta
+        $('.delete-subscriber').on('click', function() {
+            const subscriberId = $(this).data('subscriber-id');
+            
+            if (confirm('Czy na pewno chcesz usunąć tego subskrybenta? Ta operacja jest nieodwracalna.')) {
+                // Wyślij żądanie AJAX
+                fetch(`{% url 'subscribers:subscriber_delete' pk=0 %}`.replace('0', subscriberId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Pokaż komunikat sukcesu
+                        showToast('success', data.message);
+                        
+                        // Odśwież stronę
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showToast('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    showToast('danger', 'Wystąpił błąd: ' + error);
+                });
+            }
+        });
+
+    });
+
+    // Funkcja do pobierania tokenu CSRF z ciasteczka
+function getCsrfToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+    // Funkcja do wyświetlania komunikatów
+    function showToast(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed bottom-0 end-0 m-3`;
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(toast);
+        
+        // Automatyczne ukrywanie po 5 sekundach
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 5000);
+    }
+    </script>
+{% endblock %}

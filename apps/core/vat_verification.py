@@ -137,6 +137,13 @@ class VATVerificationService:
                     'postal_code': postal_code,
                 }
 
+                # Formatowanie danych - bez warunku 'if success and data', bo success nie jest zdefiniowane
+                for field in ['name', 'city', 'street_name']:
+                    if field in partner_data and partner_data[field]:
+                        # Konwersja na title case (pierwszy znak każdego słowa wielki)
+                        partner_data[field] = partner_data[field].lower(
+                        ).capitalize()
+
                 return True, partner_data, "Numer VAT został zweryfikowany pomyślnie.", verification_id
             else:
                 return False, None, f"Nie udało się zweryfikować numeru NIP. Kod odpowiedzi: {response.status_code}", None

@@ -34,9 +34,9 @@
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
-                        <option value="">Wszystkie statusy</option>
-                        <option value="verified" {% if request.GET.status == 'verified' %}selected{% endif %}>Zweryfikowani</option>
-                        <option value="unverified" {% if request.GET.status == 'unverified' %}selected{% endif %}>Niezweryfikowani</option>
+                        <option value="">Status VAT</option>
+                        <option value="verified" {% if request.GET.status == 'verified' %}selected{% endif %}>Aktywny</option>
+                        <option value="unverified" {% if request.GET.status == 'unverified' %}selected{% endif %}>Nieaktywny</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -60,7 +60,7 @@
                             <th scope="col">VAT</th>
                             <th scope="col">Miasto</th>
                             <th scope="col">Kontakty</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">VAT</th>
                             <th scope="col">Akcje</th>
                         </tr>
                     </thead>
@@ -84,9 +84,9 @@
                             </td>
                             <td>
                                 {% if partner.is_verified %}
-                                    <span class="badge bg-success">Zweryfikowany</span>
+                                    <span class="badge bg-success">Aktywny</span>
                                 {% else %}
-                                    <span class="badge bg-warning">Niezweryfikowany</span>
+                                    <span class="badge bg-warning">Nieaktywny</span>
                                 {% endif %}
                             </td>
                             <td>
@@ -334,8 +334,10 @@
     <script src="{% static 'partner/js/utils.js' %}"></script>
     <script src="{% static 'partner/js/partner_api.js' %}"></script>
     <script src="{% static 'partner/js/partner_form.js' %}"></script>
-    <script src="{% static 'partner/js/partner_edit.js' %}"></script>
     <script src="{% static 'partner/js/vat_verification.js' %}"></script>
+    <script src="{% static 'partner/js/vat_verification_status.js' %}"></script>
+    <script src="{% static 'partner/js/partner_edit.js' %}"></script>
+
     <script src="{% static 'partner/js/subscriber_select.js' %}"></script>
     <script>
         // Initialize partner modules

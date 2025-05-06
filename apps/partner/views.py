@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 import json
 
-from .models import Partner, PartnerEmail
+from .models import Partner, PartnerEmail, VATVerificationHistory
 from .forms import PartnerForm, PartnerEmailForm
 from apps.subscriber.models import Subscriber
 from apps.core.vat_verification import VATVerificationService, EU_COUNTRY_CODES
@@ -463,4 +463,87 @@ class SubscriberLookupAPIView(LoginRequiredMixin, View):
         return JsonResponse({
             'results': results,
             'has_more': total > end
+        })
+
+
+class UpdateVerificationAPIView(LoginRequiredMixin, View):
+    """API to update partner verification status"""
+
+    def post(self, request, pk):
+        partner = get_object_or_404(Partner, pk=pk)
+
+        # Pobranie danych
+        is_verified = request.POST.get('is_verified') == 'true'
+        verification_id = request.POST.get('verification_id', '')
+
+        # Update verification status
+        partner.is_verified = is_verified
+        partner.verification_date = timezone.now()
+        partner.verification_id = verification_id
+        partner.save()
+
+        # Add to verification history
+        VATVerificationHistory.objects.create(
+            partner=partner,
+            is_verified=is_verified,
+            verification_id=verification_id
+        )
+
+        # Get all verification history for this partner
+        history = VATVerificationHistory.objects.filter(
+            partner=partner).order_by('-verification_date')[:10]
+
+        # Prepare history data for response
+        history_data = []
+        for entry in history:
+            history_data.append({
+                'verification_date': entry.verification_date.isoformat(),
+                'is_verified': entry.is_verified,
+                'verification_id': entry.verification_id or '',
+                'message': entry.message or ''
+            })
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Status weryfikacji został zaktualizowany.',
+            'history': history_data
+        })
+
+
+class PartnerDetailsAPIView(LoginRequiredMixin, View):
+    """API to get partner details"""
+
+    def get(self, request, pk):
+        partner = get_object_or_404(Partner, pk=pk)
+
+        # Get verification history
+        history = VATVerificationHistory.objects.filter(
+            partner=partner).order_by('-verification_date')[:10]
+
+        # Prepare history data
+        history_data = []
+        for entry in history:
+            history_data.append({
+                'verification_date': entry.verification_date.isoformat(),
+                'is_verified': entry.is_verified,
+                'verification_id': entry.verification_id or '',
+                'message': entry.message or ''
+            })
+
+        return JsonResponse({
+            'id': partner.id,
+            'name': partner.name,
+            'country': partner.country.code,
+            'vat_number': partner.vat_number,
+            'city': partner.city,
+            'street_name': partner.street_name,
+            'building_number': partner.building_number,
+            'apartment_number': partner.apartment_number or '',
+            'postal_code': partner.postal_code,
+            'phone_number': partner.phone_number,
+            'additional_info': partner.additional_info or '',
+            'is_verified': partner.is_verified,
+            'verification_date': partner.verification_date.isoformat() if partner.verification_date else None,
+            'verification_id': partner.verification_id or '',
+            'verification_history': history_data
         })

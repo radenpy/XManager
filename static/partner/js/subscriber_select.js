@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (emailContactsSelect) {
         // Inicjalizacja Select2 dla pola emaili
         $(emailContactsSelect).select2({
-            placeholder: 'Wybierz lub wpisz adres email',
+            placeholder: 'Wyszukaj po e-mailu, imieniu lub nazwisku...',
             allowClear: true,
             tags: true,
             maximumSelectionLength: 10, // Maksymalnie 10 emaili
             ajax: {
-                url: document.body.dataset.subscriberLookupUrl || '/api/subscribers/lookup/',
+                url: document.body.dataset.subscriberLookupUrl || 'partner/api/subscribers/lookup/',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 cache: true
             },
             templateResult: formatSubscriberResult,
+            templateSelection: formatSubscriberSelection,
             createTag: function (params) {
                 const term = $.trim(params.term);
 
@@ -78,6 +79,32 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Formatowanie wyników w dropdownie Select2
      */
+    // function formatSubscriberResult(subscriber) {
+    //     if (subscriber.loading) {
+    //         return subscriber.text;
+    //     }
+
+    //     if (subscriber.newTag) {
+    //         return $(`
+    //             <div class="new-email-option">
+    //                 <i class="fas fa-plus-circle me-2"></i> 
+    //                 Dodaj nowy email: <strong>${subscriber.text}</strong>
+    //             </div>
+    //         `);
+    //     }
+
+    //     let markup = `
+    //         <div class="subscriber-result">
+    //             <div class="subscriber-email">${subscriber.text}</div>`;
+
+    //     if (subscriber.full_name && subscriber.full_name.trim() !== '') {
+    //         markup += `<div class="subscriber-name text-muted small">${subscriber.full_name}</div>`;
+    //     }
+
+    //     markup += '</div>';
+
+    //     return $(markup);
+    // }
     function formatSubscriberResult(subscriber) {
         if (subscriber.loading) {
             return subscriber.text;
@@ -94,15 +121,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let markup = `
             <div class="subscriber-result">
-                <div class="subscriber-email">${subscriber.text}</div>`;
+                <div class="subscriber-email"><strong>${subscriber.text}</strong></div>`;
 
-        if (subscriber.full_name && subscriber.full_name.trim() !== '') {
+        if (subscriber.full_name && subscriber.full_name.trim() !== ' ') {
             markup += `<div class="subscriber-name text-muted small">${subscriber.full_name}</div>`;
         }
 
         markup += '</div>';
 
         return $(markup);
+    }
+
+    function formatSubscriberSelection(subscriber) {
+        if (subscriber.full_name && subscriber.full_name.trim() !== ' ') {
+            return `${subscriber.text} (${subscriber.full_name})`;
+        }
+        return subscriber.text;
     }
 
     /**

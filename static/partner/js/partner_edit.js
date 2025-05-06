@@ -94,6 +94,19 @@ const PartnerEdit = {
             // Ensure the first tab is active
             $('#details-tab').tab('show');
         });
+
+        // Handle tab switching
+        $(document).on('click', '.nav-link[data-bs-toggle="tab"]', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+
+            // If switching to emails tab, make sure Select2 is properly initialized
+            if ($(this).attr('id') === 'emails-tab') {
+                setTimeout(function () {
+                    PartnerForm.initializeEmailSelect();
+                }, 100);
+            }
+        });
     },
 
     /**
@@ -115,6 +128,13 @@ const PartnerEdit = {
                         Dane partnera
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="emails-tab" data-bs-toggle="tab" 
+                           data-bs-target="#emails" type="button" role="tab" 
+                           aria-controls="emails" aria-selected="false">
+                        Powiązane emaile
+                    </button>
+                </li>
             </ul>
             
             <div class="tab-content" id="partnerTabsContent">
@@ -122,12 +142,43 @@ const PartnerEdit = {
                      aria-labelledby="details-tab">
                     <!-- Will be filled with current form content -->
                 </div>
+                <div class="tab-pane fade" id="emails" role="tabpanel" 
+                     aria-labelledby="emails-tab">
+                    <!-- Email contacts tab content -->
+                    <h3 class="mb-4">Powiązane emaile partnera</h3>
+                    <div class="mb-3">
+                        <select id="id_email_contacts" name="email_contacts" class="form-control select2-emails" multiple>
+                            <!-- Wybrane emaile pojawią się tutaj -->
+                        </select>
+                        <div class="mt-2 small text-muted">
+                            Wybierz istniejące adresy email lub dodaj nowe. Możesz usunąć adres klikając na X obok niego.
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
 
-        // Insert tabs at the beginning of the form
+        // Get the current content of step2
         const formContent = $('#step2').html();
+
+        // Create a temporary container to manipulate the content
+        const $tempContainer = $('<div>').html(formContent);
+
+        // Remove the email section from the original content
+        $tempContainer.find('h6:contains("Powiązane adresy email"), div:has(select#id_email_contacts), select#id_email_contacts, .select2-container').remove();
+
+        // Get the cleaned content
+        const cleanedContent = $tempContainer.html();
+
+        // Replace step2 content with tabs
         $('#step2').html(tabsHtml);
-        $('#details').html(formContent);
+
+        // Put the cleaned content into the details tab
+        $('#details').html(cleanedContent);
+
+        // Inicjalizuj Select2 po dodaniu zakładek
+        setTimeout(function () {
+            PartnerForm.initializeEmailSelect();
+        }, 100);
     }
 };

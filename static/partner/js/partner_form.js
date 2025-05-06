@@ -23,25 +23,31 @@ const PartnerForm = {
             templateResult: PartnerUtils.formatCountryOption,
             templateSelection: PartnerUtils.formatCountrySelection,
             placeholder: "Wybierz kraj",
-            allowClear: true,
-            language: {
-                inputTooShort: function () {
-                    return "Wpisz co najmniej 1 znak...";
-                },
-                noResults: function () {
-                    return "Brak wyników";
-                },
-                searching: function () {
-                    return "Wyszukiwanie...";
-                }
-            }
+            allowClear: true
         });
 
+        // Initialize tab events
+        $('#emails-tab').on('shown.bs.tab', function (e) {
+            // Reinitialize Select2 when switching to the emails tab
+            PartnerForm.initializeEmailSelect();
+        });
+    },
+
+    /**
+     * Initialize Select2 for email contacts
+     */
+    initializeEmailSelect: function () {
+        // Destroy any existing Select2 instance
+        if ($('#id_email_contacts').hasClass('select2-hidden-accessible')) {
+            $('#id_email_contacts').select2('destroy');
+        }
+
         // Initialize Select2 for emails
-        $('.select2-emails').select2({
+        $('#id_email_contacts').select2({
             dropdownParent: $('#addPartnerModal'),
             tags: true,
-            placeholder: 'Wybierz lub dodaj adresy email',
+            placeholder: 'Wybierz lub dodaj adres email',
+            width: '100%',
             ajax: {
                 url: "/partner/api/subscribers/lookup/",
                 dataType: 'json',
@@ -68,7 +74,17 @@ const PartnerForm = {
                 },
                 cache: true
             },
-            maximumSelectionLength: 10
+            maximumSelectionLength: 10,
+            templateResult: formatSubscriberResult,
+            templateSelection: formatSubscriberSelection
+        });
+
+        // Log when the Select2 is initialized
+        console.log('Select2 for emails initialized');
+
+        // Dodaj obsługę usuwania emaili
+        $(document).on('select2:unselect', '.select2-emails', function (e) {
+            console.log('Usunięty email:', e.params.data.text);
         });
     },
 
@@ -297,11 +313,59 @@ const PartnerForm = {
 
         // Set associated email addresses
         if (data.emails && data.emails.length > 0) {
-            const emailOptions = data.emails.map(email => {
-                return new Option(email.email, email.id, true, true);
+            console.log("Ładowanie adresów email:", data.emails);
+
+            // Clear existing options
+            $('#id_email_contacts').empty();
+
+            // Add each email as an option
+            data.emails.forEach(function (email) {
+                const option = new Option(email.email || email.text, email.id, true, true);
+                $('#id_email_contacts').append(option);
             });
 
-            $('#id_email_contacts').empty().append(emailOptions).trigger('change');
+            // Trigger change to refresh Select2
+            $('#id_email_contacts').trigger('change');
+        } else {
+            console.log("Brak adresów email lub pusta tablica");
         }
     }
 };
+
+// Funkcje pomocnicze, które powinny być zdefiniowane globalnie lub w innym miejscu
+function formatSubscriberResult(subscriber) {
+    if (subscriber.loading) {
+        return subscriber.text;
+    }
+
+    if (subscriber.newTag) {
+        return $(`
+            <div class="new-email-option">
+                <i class="fas fa-plus-circle me-2"></i> 
+                Dodaj nowy email: <strong>${subscriber.text}</strong>
+            </div>
+        `);
+    }
+
+    let markup = `
+        <div class="subscriber-result">
+            <div class="subscriber-email">${subscriber.text}</div>`;
+
+    if (subscriber.full_name && subscriber.full_name.trim() !== '') {
+        markup += `<div class="subscriber-name text-muted small">${subscriber.full_name}</div>`;
+    }
+
+    markup += '</div>';
+
+    return $(markup);
+}
+
+// Funkcja do formatowania wybranych emaili
+function formatSubscriberSelection(subscriber) {
+    return subscriber.text; // Wyświetl tylko adres email dla wybranych opcji
+}
+
+function isValidEmail(email) {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+}

@@ -14,13 +14,13 @@ urlpatterns = [
 
     # Grupy subskrybentów
     path('groups/', views.SubscriberGroupListView.as_view(),
-         name='subscriber_group_list'),
+         name='group_list'),  # Zmieniona nazwa
     path('groups/create/', views.SubscriberGroupCreateView.as_view(),
-         name='subscriber_group_create'),
+         name='group_create'),  # Zmieniona nazwa
     path('groups/update/', views.SubscriberGroupUpdateView.as_view(),
-         name='subscriber_group_update'),
+         name='group_update'),  # Zmieniona nazwa
     path('groups/delete/<int:pk>/', views.SubscriberGroupDeleteView.as_view(),
-         name='subscriber_group_delete'),
+         name='group_delete'),  # Zmieniona nazwa
 
     # Hurtowe operacje
     path('bulk-group-assign/', views.SubscriberBulkGroupAssignView.as_view(),
@@ -29,4 +29,7 @@ urlpatterns = [
     # API
     path('api/lookup/', views.SubscriberLookupAPIView.as_view(),
          name='subscriber_lookup_api'),
+    path('api/<int:pk>/', views.SubscriberDetailAPIView.as_view(),
+         name='subscriber_api_detail'),
+
 ]

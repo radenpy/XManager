@@ -1,55 +1,32 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-  <a class="navbar-brand" href="{% url 'home_view' %}">X-MANAGER</a>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-    <ul class="navbar-nav">
-        <li class="nav-item">
-        <a class="nav-link" href="/dashboard">Dashboard</a>
-      </li>
-        <li class="nav-item">
-        <a class="nav-link" href="/products-list">Products</a>
-      </li>
-        <li class="nav-item">
-        <a class="nav-link" href="/newsletters-list">Newsletters</a>
-      </li>
-        <li class="nav-item">
-        <a class="nav-link" href="/sales-offers-list">Sales Offers</a>
-      </li>
-        <li class="nav-item">
-        <a class="nav-link" href="/choose-context">Choose Context</a>
-      </li>
-
-      {% comment %} <li class="nav-item">
-        <a class="nav-link" href="{% url 'product-list' %}">Produkty</a>
-      </li> {% endcomment %}
-      <!-- Dodawaj więcej menu -->
-    </ul>
-
-    {% comment %} {% if user.is_authenticated %}
-    <div class="d-flex align-items-center">
-      <!-- Dropdown kontekstu -->
-      <form method="post" action="{% url 'choose-company' %}" class="d-flex align-items-center me-3">
-        {% csrf_token %}
-        <label class="text-white me-2 mb-0"><strong>Kontekst:</strong></label>
-        <select name="company_id" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="0" {% if not request.company %}selected{% endif %}>🔧 Master (wszystkie spółki)</option>
-          {% for company in user.userprofile.companies.all %}
-            <option value="{{ company.id }}" {% if request.company and request.company.id == company.id %}selected{% endif %}>
-              {{ company.name }}
-            </option>
-          {% endfor %}
-        </select>
-      </form>
-
-      <!-- Logout -->
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline-light btn-sm">Wyloguj się</button>
-      </form>
-    </div>
-    {% endif %} {% endcomment %}
-  </div>
-</nav>
+<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-cube me-2"></i>XManager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Podstawowe elementy menu -->
+                    {% block nav_items %}{% endblock %}
+                </ul>
+                
+                <!-- Prawy panel nawigacji -->
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> {{ request.user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-id-card me-2"></i> Profil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fas fa-cog me-2"></i> Ustawienia</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Wyloguj</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>

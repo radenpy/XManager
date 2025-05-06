@@ -25,106 +25,12 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-cube me-2"></i>XManager
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <!-- Podstawowe elementy menu -->
-                    {% block nav_items %}{% endblock %}
-                </ul>
-                
-                <!-- Prawy panel nawigacji -->
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-1"></i> {{ request.user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-id-card me-2"></i> Profil</a></li>
-                            <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fas fa-cog me-2"></i> Ustawienia</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Wyloguj</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    
+    {% include 'navbar.html' %}
     <div class="container-fluid">
         <div class="row">
-                <!-- Sidebar -->
-    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
-            <!-- Zawartość sidebara -->
-            {% block sidebar %}
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
-                        <i class="fas fa-chart-line me-2"></i> Dashboard
-                    </a>
-                </li>
-                
-                <!-- Partners -->
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.app_name == 'partner' %}active{% endif %}" 
-                      data-bs-toggle="collapse" href="#partnersSubMenu" role="button" 
-                      aria-expanded="{% if request.resolver_match.app_name == 'partner' %}true{% else %}false{% endif %}" 
-                      aria-controls="partnersSubMenu">
-                        <i class="fas fa-building me-2"></i> Partners
-                        <i class="fas fa-chevron-down float-end mt-1"></i>
-                    </a>
-                    <div class="collapse {% if request.resolver_match.app_name == 'partner' %}show{% endif %}" id="partnersSubMenu">
-                        <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'partner_list' %}active{% endif %}" 
-                                  href="{% url 'partner:partner_list' %}">
-                                    <i class="fas fa-list me-2"></i> List of partners
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                
-                <!-- Subscribers -->
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
-                      data-bs-toggle="collapse" href="#subscribersSubMenu" role="button" 
-                      aria-expanded="{% if request.resolver_match.app_name == 'subscribers' %}true{% else %}false{% endif %}" 
-                      aria-controls="subscribersSubMenu">
-                        <i class="fas fa-envelope me-2"></i> Subscribers
-                        <i class="fas fa-chevron-down float-end mt-1"></i>
-                    </a>
-                    <div class="collapse {% if request.resolver_match.app_name == 'subscribers' %}show{% endif %}" id="subscribersSubMenu">
-                        <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
-                                  href="{% url 'subscribers:subscriber_list' %}">
-                                    <i class="fas fa-list me-2"></i> List of subscribers
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
-                                  href="{% url 'subscribers:subscriber_list' %}">
-                                    <i class="fas fa-list me-2"></i> Subscriber's groups
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                
-                <!-- Miejsce na dodatkowe elementy sidebar -->
-                {% endblock %}
-            </ul>
-        </div>
-    </nav>
+            {% block sidebar_content %}
+              {% include 'sidebar.html' %}
+            {% endblock %}
             
             <!-- Główna zawartość -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">

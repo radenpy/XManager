@@ -31,9 +31,6 @@ urlpatterns = [
 
     # Aplikacja Partners - używamy tylko jednego przyfisu URL
     path('partner/', include('apps.partner.urls')),
-    # path('partner_list/', include('apps.partner.urls')),
-    path('partner_detail/', include('apps.partner.urls')),
-
     # Aplikacja Subscribers
     path('subscribers/', include('apps.subscriber.urls')),
 

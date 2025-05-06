@@ -1,0 +1,64 @@
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+            <!-- Zawartość sidebara -->
+            {% block sidebar %}
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                
+                <!-- Partners -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.app_name == 'partner' %}active{% endif %}" 
+                      data-bs-toggle="collapse" href="#partnersSubMenu" role="button" 
+                      aria-expanded="{% if request.resolver_match.app_name == 'partner' %}true{% else %}false{% endif %}" 
+                      aria-controls="partnersSubMenu">
+                        <i class="fas fa-building me-2"></i> Partners
+                        <i class="fas fa-chevron-down float-end mt-1"></i>
+                    </a>
+                    <div class="collapse {% if request.resolver_match.app_name == 'partner' %}show{% endif %}" id="partnersSubMenu">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'partner_list' %}active{% endif %}" 
+                                  href="{% url 'partner:partner_list' %}">
+                                    <i class="fas fa-list me-2"></i> List of partners
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <!-- Subscribers -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
+                      data-bs-toggle="collapse" href="#subscribersSubMenu" role="button" 
+                      aria-expanded="{% if request.resolver_match.app_name == 'subscribers' %}true{% else %}false{% endif %}" 
+                      aria-controls="subscribersSubMenu">
+                        <i class="fas fa-envelope me-2"></i> Subscribers
+                        <i class="fas fa-chevron-down float-end mt-1"></i>
+                    </a>
+                    <div class="collapse {% if request.resolver_match.app_name == 'subscribers' %}show{% endif %}" id="subscribersSubMenu">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
+                                  href="{% url 'subscribers:subscriber_list' %}">
+                                    <i class="fas fa-list me-2"></i> List of subscribers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
+                                  href="{% url 'subscribers:group_list' %}">
+                                    <i class="fas fa-list me-2"></i> Subscriber's groups
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <!-- Miejsce na dodatkowe elementy sidebar -->
+                {% endblock %}
+            </ul>
+        </div>
+    </nav>

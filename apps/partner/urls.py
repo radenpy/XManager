@@ -19,4 +19,8 @@ urlpatterns = [
          views.PartnerUpdateAPIView.as_view(), name='partner_update_api'),
     path('api/subscribers/lookup/', views.SubscriberLookupAPIView.as_view(),
          name='subscriber_lookup_api'),
+    path('api/update-verification/<int:pk>/',
+         views.UpdateVerificationAPIView.as_view(), name='update_verification_api'),
+
+
 ]

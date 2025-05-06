@@ -199,3 +199,21 @@ class Partner(CoreModel):
         verbose_name_plural = ('Partners')
         # Unikalny numer VAT dla danego kraju
         unique_together = [('country', 'vat_number')]
+
+
+class VATVerificationHistory(CoreModel):
+    """Model to store VAT verification history"""
+    partner = models.ForeignKey(
+        'Partner', on_delete=models.CASCADE, related_name='vat_verification_history')
+    verification_date = models.DateTimeField(
+        auto_now_add=True, verbose_name='Data weryfikacji')
+    is_verified = models.BooleanField(
+        default=False, verbose_name='Zweryfikowany')
+    verification_id = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='ID weryfikacji')
+    message = models.TextField(blank=True, null=True, verbose_name='Wiadomość')
+
+    class Meta:
+        verbose_name = 'Historia weryfikacji VAT'
+        verbose_name_plural = 'Historie weryfikacji VAT'
+        ordering = ['-verification_date']

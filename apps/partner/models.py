@@ -170,8 +170,8 @@ class Partner(CoreModel):
                     setattr(self, field, value)
 
             self.is_verified = True
-            self.verfication_date = timezone.now()
-            self.verfication_id = verification_id
+            self.verification_date = timezone.now()
+            self.verification_id = verification_id
             self.save()
 
         return success, message

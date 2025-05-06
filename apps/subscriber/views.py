@@ -38,6 +38,9 @@ class SubscriberListView(LoginRequiredMixin, ListView):
         """Dodatkowe dane kontekstowe"""
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
+        context['subscriber_groups'] = SubscriberGroup.objects.all().order_by(
+            'group_name')
+
         return context
 
 
@@ -105,61 +108,38 @@ class SubscriberCreateView(LoginRequiredMixin, View):
             })
 
 
-class SubscriberUpdateView(LoginRequiredMixin, View):
-    """API do aktualizacji subskrybenta (AJAX)"""
+class SubscriberUpdateView(LoginRequiredMixin, UpdateView):
+    """Edycja subskrybenta"""
+    model = Subscriber
+    form_class = SubscriberForm
+    template_name = 'subscribers/subscriber_form.html'
 
-    def post(self, request, pk, *args, **kwargs):
-        email = request.POST.get('email')
-        first_name = request.POST.get('first_name', '')
-        last_name = request.POST.get('last_name', '')
-        newsletter_consent = request.POST.get('newsletter_consent') == 'on'
-        group_ids = request.POST.getlist('group_affiliation', [])
+    def get_success_url(self):
+        return reverse('subscribers:subscriber_detail', kwargs={'pk': self.object.pk})
 
-        if not email:
-            return JsonResponse({
-                'success': False,
-                'message': "Email jest wymagany."
-            })
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.success(self.request, _("Subskrybent został zaktualizowany."))
 
-        # Sprawdź czy subskrybent istnieje
-        try:
-            subscriber = Subscriber.objects.get(id=pk)
-        except Subscriber.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'message': "Subskrybent nie istnieje."
-            })
-
-        # Sprawdź czy email nie jest już zajęty przez innego subskrybenta
-        if Subscriber.objects.filter(email=email).exclude(id=pk).exists():
-            return JsonResponse({
-                'success': False,
-                'message': "Subskrybent o takim adresie email już istnieje."
-            })
-
-        # Aktualizuj subskrybenta
-        try:
-            subscriber.email = email
-            subscriber.first_name = first_name
-            subscriber.last_name = last_name
-            subscriber.newsletter_consent = newsletter_consent
-            subscriber.save()
-
-            # Zaktualizuj grupy
-            subscriber.group_affiliation.clear()
-            if group_ids:
-                groups = SubscriberGroup.objects.filter(id__in=group_ids)
-                subscriber.group_affiliation.add(*groups)
-
+        # Jeśli to żądanie AJAX, zwróć odpowiedź JSON
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': True,
-                'message': "Subskrybent został zaktualizowany pomyślnie."
+                'message': _("Subskrybent został zaktualizowany."),
+                'subscriber_id': self.object.id
             })
-        except Exception as e:
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Jeśli to żądanie AJAX, zwróć błędy formularza jako JSON
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': False,
-                'message': f"Wystąpił błąd: {str(e)}"
-            })
+                'errors': form.errors
+            }, status=400)
+
+        return super().form_invalid(form)
 
 
 class SubscriberDeleteView(LoginRequiredMixin, View):
@@ -223,6 +203,32 @@ class SubscriberLookupAPIView(LoginRequiredMixin, View):
             'results': results,
             'has_more': total > end
         })
+
+# Dodaj ten widok do klasy
+
+
+class SubscriberDetailAPIView(LoginRequiredMixin, View):
+    """
+    API do pobierania danych subskrybenta (AJAX)
+    """
+
+    def get(self, request, pk):
+        try:
+            subscriber = get_object_or_404(Subscriber, pk=pk)
+
+            all_groups = SubscriberGroup.objects.all().values('id', 'group_name')
+
+            data = {
+                'id': subscriber.id,
+                'email': subscriber.email,
+                'first_name': subscriber.first_name,
+                'last_name': subscriber.last_name,
+                'newsletter_consent': subscriber.newsletter_consent,
+                'group_affiliation': list(subscriber.group_affiliation.values_list('id', flat=True))
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
 
 class SubscriberGroupListView(LoginRequiredMixin, ListView):

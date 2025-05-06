@@ -167,7 +167,6 @@ class PartnerCreateAPIView(LoginRequiredMixin, View):
 
 
 # Pobieranie danych partnera
-# Pobieranie danych partnera
 class PartnerGetAPIView(LoginRequiredMixin, View):
     """
     API do pobierania danych partnera (AJAX)
@@ -225,13 +224,63 @@ class PartnerGetAPIView(LoginRequiredMixin, View):
 
 
 class PartnerUpdateAPIView(LoginRequiredMixin, View):
+
+    """
+    API to get partner data (AJAX)
+    """
+
+    def get(self, request, pk):
+        try:
+            partner = get_object_or_404(Partner, pk=pk)
+
+            # Get all associated email subscribers
+            email_subscribers = []
+            for partner_email in PartnerEmail.objects.filter(partner=partner).select_related('subscriber'):
+                email_subscribers.append({
+                    'id': partner_email.subscriber.id,
+                    'email': partner_email.subscriber.email,
+                    'first_name': partner_email.subscriber.first_name,
+                    'last_name': partner_email.subscriber.last_name
+                })
+
+            # Build response data
+            data = {
+                'id': partner.id,
+                'country': partner.country.code,
+                'vat_number': partner.vat_number,
+                'name': partner.name,
+                'city': partner.city,
+                'street_name': partner.street_name,
+                'building_number': partner.building_number,
+                'apartment_number': partner.apartment_number or '',
+                'postal_code': partner.postal_code,
+                'phone_number': partner.phone_number or '',
+                'additional_info': partner.additional_info or '',
+                'email_subscribers': email_subscribers
+            }
+
+            return JsonResponse({
+                'success': True,
+                'data': data
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            })
+
     """
     API do aktualizacji partnera (AJAX)
     """
 
     def post(self, request, partner_id, *args, **kwargs):
         try:
-            partner = Partner.objects.get(pk=partner_id)
+            partner = get_object_or_404(Partner, pk=partner_id)
+
+            # Debug: Log what we're receiving
+            print(f"Received data for partner {partner_id}:")
+            print(
+                f"Email contacts in POST: {request.POST.getlist('email_contacts')}")
 
             # Aktualizuj dane partnera
             if 'name' in request.POST:
@@ -254,41 +303,64 @@ class PartnerUpdateAPIView(LoginRequiredMixin, View):
             # Zapisz zmiany
             partner.save()
 
-            # Aktualizuj powiązane adresy email
-            if 'email_contacts' in request.POST:
-                # Usuń istniejące powiązania
-                partner.emails.clear()
+            # ALWAYS delete all existing email relationships, even if not sending new ones
+            email_count_before = PartnerEmail.objects.filter(
+                partner=partner).count()
+            print(
+                f"Before deletion, partner had {email_count_before} email relationships")
 
-                # Dodaj nowe powiązania
+            PartnerEmail.objects.filter(partner=partner).delete()
+            print(f"All email relationships deleted")
+
+            # Add new email relationships if any are provided
+            if 'email_contacts' in request.POST:
                 email_ids = request.POST.getlist('email_contacts')
+                print(
+                    f"Adding {len(email_ids)} new email relationships: {email_ids}")
+
                 for email_id in email_ids:
                     # Jeśli to nowy email (string, a nie ID)
                     if not email_id.isdigit():
                         # Utwórz nowy adres email
                         subscriber, created = Subscriber.objects.get_or_create(
                             email=email_id,
-                            defaults={'email': email_id}
+                            defaults={'first_name': '', 'last_name': '',
+                                      'newsletter_consent': True}
                         )
-                        partner.emails.add(subscriber)
+                        print(
+                            f"Created new subscriber: {subscriber.email}, ID: {subscriber.id}")
                     else:
-                        # Dodaj istniejący adres email
+                        # Pobierz istniejący adres email
                         try:
                             subscriber = Subscriber.objects.get(
                                 pk=int(email_id))
-                            partner.emails.add(subscriber)
+                            print(
+                                f"Found existing subscriber: {subscriber.email}, ID: {subscriber.id}")
                         except Subscriber.DoesNotExist:
-                            pass
+                            print(
+                                f"Subscriber with ID {email_id} not found, skipping")
+                            continue
+
+                    # Zawsze twórz nowe powiązanie
+                    partner_email = PartnerEmail.objects.get_or_create(
+                        partner=partner, subscriber=subscriber)
+                    print(
+                        f"Created relationship: {partner.id} - {subscriber.id}")
+
+            # Final count check
+            email_count_after = PartnerEmail.objects.filter(
+                partner=partner).count()
+            print(
+                f"After update, partner has {email_count_after} email relationships")
 
             return JsonResponse({
                 'success': True,
                 'message': "Partner został zaktualizowany pomyślnie"
             })
-        except Partner.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'message': "Partner nie istnieje"
-            })
         except Exception as e:
+            import traceback
+            print(f"Error updating partner: {str(e)}")
+            print(traceback.format_exc())
             return JsonResponse({
                 'success': False,
                 'message': str(e)

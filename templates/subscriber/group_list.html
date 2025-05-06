@@ -15,7 +15,7 @@
     <!-- Wyszukiwarka -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="get" action="{% url 'subscribers:subscriber_group_list' %}" class="row g-3">
+            <form method="get" action="{% url 'subscribers:group_list' %}" class="row g-3">
                 <div class="col-md-6">
                     <div class="input-group">
                         <input type="text" class="form-control" name="search" placeholder="Wyszukaj grupę..." value="{{ search_query|default:'' }}">
@@ -332,7 +332,7 @@
                 }
                 
                 // Wyślij żądanie AJAX
-                fetch("{% url 'subscribers:subscriber_group_create' %}", {
+                fetch("{% url 'subscribers:group_create' %}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -396,7 +396,7 @@
                 }
                 
                 // Wyślij żądanie AJAX
-                fetch("{% url 'subscribers:subscriber_group_update' %}", {
+                fetch("{% url 'subscribers:group_update' %}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -457,7 +457,7 @@
                 const groupId = this.getAttribute('data-group-id');
                 
                 // Wyślij żądanie AJAX
-                fetch(`{% url 'subscribers:subscriber_group_delete' pk=0 %}`.replace('0', groupId), {
+                fetch(`{% url 'subscribers:group_delete' pk=0 %}`.replace('0', groupId), {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': getCsrfToken()

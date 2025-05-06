@@ -85,9 +85,9 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-primary view-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Szczegóły">
+                                    {% comment %} <button type="button" class="btn btn-sm btn-outline-primary view-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Szczegóły">
                                         <i class="fas fa-eye"></i>
-                                    </button>
+                                    </button> {% endcomment %}
                                     <button type="button" class="btn btn-sm btn-outline-secondary edit-subscriber" data-subscriber-id="{{ subscriber.id }}" data-bs-toggle="tooltip" title="Edytuj">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -209,7 +209,58 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                    <button type="button" class="btn btn-primary" id="saveSubscriberBtn">Zapisz subskrybenta</button>
+                    <button type="button" class="btn btn-primary" id="saveEditedSubscriberBtn">Zapisz zmiany</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal do edycji subskrybenta -->
+    <div class="modal fade" id="editSubscriberModal" tabindex="-1" aria-labelledby="editSubscriberModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSubscriberModalLabel">Edytuj subskrybenta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editSubscriberForm" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="edit_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_first_name" class="form-label">Imię</label>
+                                <input type="text" class="form-control" id="edit_first_name" name="first_name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_last_name" class="form-label">Nazwisko</label>
+                                <input type="text" class="form-control" id="edit_last_name" name="last_name">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_newsletter_consent" name="newsletter_consent">
+                                <label class="form-check-label" for="edit_newsletter_consent">
+                                    Zgoda na newsletter
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_group_affiliation" class="form-label">Grupy</label>
+                            <select class="form-select select2-multiple" id="edit_group_affiliation" name="group_affiliation" multiple>
+                                {% for group in subscriber_groups %}
+                                    <option value="{{ group.id }}">{{ group.group_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="saveEditedSubscriberBtn">Zapisz zmiany</button>
                 </div>
             </div>
         </div>
@@ -224,14 +275,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" id="deleteSubscriberId">
                     <p>Czy na pewno chcesz usunąć tego subskrybenta? Ta operacja jest nieodwracalna.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                    <form id="deleteSubscriberForm" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Usuń</button>
-                    </form>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteSubscriberBtn">Usuń</button>
                 </div>
             </div>
         </div>
@@ -239,123 +288,236 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicjalizacja Select2
-        $('.select2').select2({
-            dropdownParent: $('#addSubscriberModal'),
-            placeholder: "Wybierz...",
-            allowClear: true
-        });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicjalizacja Select2 dla formularza dodawania
+    $('#addSubscriberModal .select2').select2({
+        dropdownParent: $('#addSubscriberModal'),
+        placeholder: "Wybierz...",
+        allowClear: true
+    });
+    
+    $('#addSubscriberModal .select2-multiple').select2({
+        dropdownParent: $('#addSubscriberModal'),
+        placeholder: "Wybierz grupy...",
+        allowClear: true,
+        closeOnSelect: false
+    });
+    
+    // Inicjalizacja Select2 dla formularza edycji
+    $('#editSubscriberModal .select2-multiple').select2({
+        dropdownParent: $('#editSubscriberModal'),
+        placeholder: 'Wybierz grupy',
+        allowClear: true,
+        closeOnSelect: false
+    });
+    
+    // Obsługa przycisku zapisu nowego subskrybenta
+    $('#saveSubscriberBtn').on('click', function() {
+        const formData = new FormData(document.getElementById('subscriberForm'));
         
-        $('.select2-multiple').select2({
-            dropdownParent: $('#addSubscriberModal'),
-            placeholder: "Wybierz grupy...",
-            allowClear: true
+        // Wyślij żądanie AJAX
+        fetch("/subscribers/create/", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Zamknij modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
+                modal.hide();
+                
+                // Pokaż komunikat sukcesu
+                showMessage(data.message, 'success');
+                
+                // Odśwież stronę
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showMessage(data.message || 'Wystąpił błąd podczas zapisywania danych', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Błąd podczas zapisywania danych:', error);
+            showMessage('Wystąpił błąd: ' + error, 'danger');
         });
+    });
+
+    // Obsługa przycisku usuwania subskrybenta
+    $('.delete-subscriber').on('click', function(e) {
+        e.preventDefault(); // Zapobiegaj domyślnej akcji
         
-                // Obsługa przycisku zapisu subskrybenta
-        $('#saveSubscriberBtn').on('click', function() {
-            const formData = new FormData(document.getElementById('subscriberForm'));
-            
-            // Wyślij żądanie AJAX
-            fetch("{% url 'subscribers:subscriber_create' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCsrfToken()
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Zamknij modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
-                    modal.hide();
+        // Pobierz ID subskrybenta
+        const subscriberId = $(this).data('subscriber-id');
+        
+        // Zapisz ID w ukrytym polu
+        $('#deleteSubscriberId').val(subscriberId);
+        
+        // Pokaż modal zamiast confirm()
+        $('#deleteSubscriberModal').modal('show');
+    });
+    
+    // Obsługa przycisku potwierdzenia usunięcia
+    $('#confirmDeleteSubscriberBtn').on('click', function() {
+        const subscriberId = $('#deleteSubscriberId').val();
+        
+        // Wywołanie API usuwania
+        $.ajax({
+            url: `/subscribers/delete/${subscriberId}/`,
+            method: 'POST',
+            data: {
+                csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            success: function(response) {
+                // Zamknij modal
+                $('#deleteSubscriberModal').modal('hide');
+                
+                if (response.success) {
+                    // Pokaż komunikat
+                    showMessage(response.message, 'success');
                     
-                    // Pokaż komunikat sukcesu
-                    showToast('success', data.message);
-                    
-                    // Odśwież stronę
-                    setTimeout(() => {
+                    // Odśwież stronę po krótkim czasie
+                    setTimeout(function() {
                         window.location.reload();
                     }, 1000);
                 } else {
-                    showToast('danger', data.message);
+                    showMessage(response.message, 'danger');
                 }
-            })
-            .catch(error => {
-                showToast('danger', 'Wystąpił błąd: ' + error);
-            });
-        });
-
-        // Obsługa przycisku usuwania subskrybenta
-        $('.delete-subscriber').on('click', function() {
-            const subscriberId = $(this).data('subscriber-id');
-            
-            if (confirm('Czy na pewno chcesz usunąć tego subskrybenta? Ta operacja jest nieodwracalna.')) {
-                // Wyślij żądanie AJAX
-                fetch(`{% url 'subscribers:subscriber_delete' pk=0 %}`.replace('0', subscriberId), {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken()
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Pokaż komunikat sukcesu
-                        showToast('success', data.message);
-                        
-                        // Odśwież stronę
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    } else {
-                        showToast('danger', data.message);
-                    }
-                })
-                .catch(error => {
-                    showToast('danger', 'Wystąpił błąd: ' + error);
-                });
+            },
+            error: function(xhr, status, error) {
+                // Zamknij modal
+                $('#deleteSubscriberModal').modal('hide');
+                
+                showMessage(`Wystąpił błąd: ${error}`, 'danger');
             }
         });
-
     });
-
-    // Funkcja do pobierania tokenu CSRF z ciasteczka
-function getCsrfToken() {
-    const name = 'csrftoken';
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    
+    // Obsługa przycisku edycji - standardowa
+    $(document).on('click', '.edit-subscriber', function(e) {
+        e.preventDefault();
+        console.log('Przycisk edycji kliknięty');
+        const subscriberId = $(this).data('subscriber-id');
+        console.log('ID subskrybenta:', subscriberId);
+        
+        // Bezpośrednie zapytanie AJAX z jQuery
+        $.ajax({
+            url: `/subscribers/api/${subscriberId}/`,
+            type: 'GET',
+            success: function(data) {
+                console.log('Pobrane dane:', data);
+                
+                // Wypełnij formularz
+                $('#edit_email').val(data.email);
+                $('#edit_first_name').val(data.first_name || '');
+                $('#edit_last_name').val(data.last_name || '');
+                $('#edit_newsletter_consent').prop('checked', data.newsletter_consent);
+                
+                // Ustaw wybrane grupy
+                const groupSelect = $('#edit_group_affiliation');
+                groupSelect.val(data.group_affiliation || []).trigger('change');
+                
+                // Ustaw akcję formularza
+                $('#editSubscriberForm').attr('action', `/subscribers/update/${subscriberId}/`);
+                
+                // Pokaż modal
+                $('#editSubscriberModal').modal('show');
+                
+                // Dodaj bezpośredni handler dla przycisku
+                $(document).off('click', '#saveEditedSubscriberBtn').on('click', '#saveEditedSubscriberBtn', function() {
+                    console.log('Przycisk zapisu kliknięty');
+                    submitEditForm(subscriberId);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Błąd AJAX:', error);
+                alert('Wystąpił błąd podczas pobierania danych: ' + error);
+            }
+        });
+    });
+    
+    // Funkcja obsługująca wysyłanie formularza edycji
+    function submitEditForm(subscriberId) {
+        console.log('Wysyłanie formularza dla ID:', subscriberId);
+        
+        const form = $('#editSubscriberForm');
+        const formData = new FormData(form[0]);
+        
+        // Dodaj CSRF token
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Dodaj grupy
+        const selectedGroups = $('#edit_group_affiliation').val();
+        if (selectedGroups) {
+            // Usuń istniejące wartości
+            formData.delete('group_affiliation');
+            
+            // Dodaj każdą wybraną grupę
+            for (let i = 0; i < selectedGroups.length; i++) {
+                formData.append('group_affiliation', selectedGroups[i]);
             }
         }
-    }
-    return cookieValue;
-}
-
-    // Funkcja do wyświetlania komunikatów
-    function showToast(type, message) {
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed bottom-0 end-0 m-3`;
-        toast.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        document.body.appendChild(toast);
         
-        // Automatyczne ukrywanie po 5 sekundach
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
+        // Wyślij formularz AJAX
+        $.ajax({
+            url: `/subscribers/update/${subscriberId}/`,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                console.log('Odpowiedź serwera:', response);
+                
+                // Zamknij modal
+                $('#editSubscriberModal').modal('hide');
+                
+                // Pokaż komunikat
+                showMessage(response.message || 'Zmiany zapisane pomyślnie', 'success');
+                
+                // Odśwież stronę
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1000);
+            },
+            error: function(xhr, status, error) {
+                console.error('Błąd zapisu:', error);
+                showMessage('Wystąpił błąd podczas zapisywania: ' + error, 'danger');
             }
+        });
+    }
+    
+    // Funkcja wyświetlająca komunikaty
+    function showMessage(message, type) {
+        let messagesContainer = $('.messages-container');
+        
+        if (messagesContainer.length === 0) {
+            messagesContainer = $('<div class="messages-container mt-3"></div>');
+            $('main').prepend(messagesContainer);
+        }
+        
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        messagesContainer.append(alertHtml);
+        
+        // Automatyczne ukrywanie
+        setTimeout(function() {
+            messagesContainer.find('.alert').last().alert('close');
         }, 5000);
     }
-    </script>
+});
+</script>
 {% endblock %}

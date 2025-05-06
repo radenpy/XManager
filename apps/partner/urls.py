@@ -14,7 +14,7 @@ urlpatterns = [
     path('api/verify-vat/', views.VerifyVATAPIView.as_view(), name='verify_vat_api'),
     path('api/create/', views.PartnerCreateAPIView.as_view(), name='partner_create'),
     path('api/get/<int:partner_id>/',
-         views.PartnerGetAPIView.as_view(), name='partner_get'),
+         views.PartnerGetAPIView.as_view(), name='partner_get_api'),
     path('api/update/<int:partner_id>/',
          views.PartnerUpdateAPIView.as_view(), name='partner_update_api'),
     path('api/subscribers/lookup/', views.SubscriberLookupAPIView.as_view(),

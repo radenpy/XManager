@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 import logging
-from apps.partner.models import Partner, PartnerEmail
-from apps.subscriber.models import Subscriber
+from apps.partners.models import Partner, PartnerEmail
+from apps.subscribers.models import Subscriber
 from apps.core.vat_verification import VATVerificationService
 
 # Wykorzystujemy widget z django-countries

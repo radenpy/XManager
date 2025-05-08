@@ -318,43 +318,6 @@ class VerifyVATAPIView(LoginRequiredMixin, View):
         })
 
 
-# class SubscriberLookupAPIView(LoginRequiredMixin, View):
-#     """
-#     API do wyszukiwania subskrybentów po adresie email (AJAX)
-#     """
-
-#     def get(self, request, *args, **kwargs):
-#         search = request.GET.get('search', '')
-#         page = int(request.GET.get('page', 1))
-#         limit = 10
-
-#         # Wyszukaj subskrybentów
-#         if search:
-#             subscribers = Subscriber.objects.filter(email__icontains=search)
-#         else:
-#             subscribers = Subscriber.objects.all()
-
-#         # Paginacja
-#         start = (page - 1) * limit
-#         end = page * limit
-
-#         # Przygotuj dane
-#         total = subscribers.count()
-#         results = []
-
-#         for subscriber in subscribers[start:end]:
-#             results.append({
-#                 'id': subscriber.id,
-#                 'email': subscriber.email,
-#                 'first_name': subscriber.first_name,
-#                 'last_name': subscriber.last_name
-#             })
-
-#         return JsonResponse({
-#             'results': results,
-#             'has_more': total > end
-#         })
-
 class SubscriberLookupAPIView(LoginRequiredMixin, View):
     """
     API do wyszukiwania subskrybentów po adresie email, imieniu lub nazwisku (AJAX)

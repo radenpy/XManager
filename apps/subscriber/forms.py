@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy as _
 
 from .models import Subscriber, SubscriberGroup
@@ -10,7 +11,7 @@ class SubscriberForm(forms.ModelForm):
 
     class Meta:
         model = Subscriber
-        fields = ['email', 'first_name', 'last_name',
+        fields = ['email', 'common_name', 'first_name', 'last_name',
                   'newsletter_consent', 'group_affiliation']
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -23,6 +24,11 @@ class SubscriberForm(forms.ModelForm):
     def clean_email(self):
         """Walidacja adresu email"""
         email = self.cleaned_data.get('email')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ValidationError("Wprowadź poprawny adres e-mail")
 
         # Sprawdź, czy email jest unikalny
         if Subscriber.objects.filter(email=email).exclude(pk=self.instance.pk if self.instance.pk else None).exists():
@@ -56,7 +62,6 @@ class SubscriberForm(forms.ModelForm):
 
 class SubscriberGroupForm(forms.ModelForm):
     """Formularz dla modelu SubscriberGroup"""
-
     class Meta:
         model = SubscriberGroup
         fields = ['group_name']

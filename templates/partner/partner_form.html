@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if is_new %}Dodaj partnera{% else %}Edytuj partnera{% endif %} | XManager
+{% endblock %}
+
+{% block page_title %}
+    {% if is_new %}Dodaj partnera{% else %}Edytuj partnera: {{ partner.name }}{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{% if is_new %}{% url 'partner:partner_create' %}{% else %}{% url 'partner:partner_update' partner.pk %}{% endif %}">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading">Błędy formularza:</h5>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+                
+                <!-- Dane podstawowe -->
+                <div class="mb-4">
+                    <h5 class="card-title">Dane podstawowe</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.country.id_for_label }}" class="form-label">Kraj</label>
+                            {{ form.country }}
+                            {% if form.country.help_text %}
+                            <div class="form-text">{{ form.country.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.vat_number.id_for_label }}" class="form-label">Numer VAT</label>
+                            <div class="input-group">
+                                {{ form.vat_number }}
+                                {% if not is_new %}
+                                <a href="{% url 'partner:verify_vat' partner.pk %}" class="btn btn-primary">Weryfikuj</a>
+                                {% endif %}
+                            </div>
+                            {% if form.vat_number.help_text %}
+                            <div class="form-text">{{ form.vat_number.help_text }}</div>
+                            {% endif %}
+                            {% if is_new %}
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="verify_vat" id="id_verify_vat" checked>
+                                <label class="form-check-label" for="id_verify_vat">
+                                    Weryfikuj numer VAT po zapisaniu
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Nazwa firmy</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.city.id_for_label }}" class="form-label">Miasto</label>
+                            {{ form.city }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Adres -->
+                <div class="mb-4">
+                    <h5 class="card-title">Adres</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.street_name.id_for_label }}" class="form-label">Ulica</label>
+                            {{ form.street_name }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="{{ form.building_number.id_for_label }}" class="form-label">Nr budynku</label>
+                            {{ form.building_number }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="{{ form.apartment_number.id_for_label }}" class="form-label">Nr lokalu</label>
+                            {{ form.apartment_number }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.postal_code.id_for_label }}" class="form-label">Kod pocztowy</label>
+                            {{ form.postal_code }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Numer telefonu</label>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.additional_info.id_for_label }}" class="form-label">Dodatkowe informacje</label>
+                            {{ form.additional_info }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email contacts -->
+                <div class="mb-4">
+                    <h5 class="card-title">Powiązane adresy email (maksymalnie 10)</h5>
+                    
+                    <div class="mb-3">
+                        {{ form.email_contacts }}
+                        {% if form.email_contacts.help_text %}
+                        <div class="form-text">{{ form.email_contacts.help_text }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Status VAT (tylko dla edycji) -->
+                {% if not is_new %}
+                <div class="mb-4">
+                    <h5 class="card-title">Status VAT</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> 
+                                {% if partner.is_verified %}
+                                <span class="badge bg-success">Aktywny</span>
+                                {% else %}
+                                <span class="badge bg-warning">Nieaktywny</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Data ostatniej weryfikacji:</strong> 
+                                {% if partner.verification_date %}
+                                {{ partner.verification_date }}
+                                {% else %}
+                                <span class="text-muted">Brak danych</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Historia weryfikacji -->
+                    {% if verification_history %}
+                    <h6 class="card-subtitle mb-2">Historia weryfikacji</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>ID weryfikacji</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in verification_history %}
+                                <tr>
+                                    <td>{{ entry.verification_date }}</td>
+                                    <td>{{ entry.verification_id|default:"-" }}</td>
+                                    <td>
+                                        {% if entry.is_verified %}
+                                        <span class="badge bg-success">Aktywny</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Nieaktywny</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% if is_new %}Dodaj partnera{% else %}Zapisz zmiany{% endif %}
+                    </button>
+                    <a href="{% url 'partner:partner_list' %}" class="btn btn-secondary ms-2">Anuluj</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

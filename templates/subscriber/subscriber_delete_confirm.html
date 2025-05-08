@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Usuń subskrybenta | XManager{% endblock %}
+
+{% block page_title %}Usuń subskrybenta{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Potwierdzenie usunięcia</h4>
+            <p>Czy na pewno chcesz usunąć subskrybenta <strong>{{ subscriber.email }}</strong>?</p>
+            <p class="mb-0">Ta operacja jest nieodwracalna.</p>
+        </div>
+        
+        <form method="post" action="{% url 'subscribers:subscriber_delete' subscriber.id %}">
+            {% csrf_token %}
+            <div class="mt-4">
+                <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-secondary">Anuluj</a>
+                <button type="submit" class="btn btn-danger">Usuń</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -83,7 +83,7 @@ class VATVerificationService:
             if response.status_code == 200:
                 data = response.json()
 
-                # Sprawdź czy subject istnieje
+                # Sprawdź czy podmiot istnieje
                 if not data.get('result', {}).get('subject'):
                     return False, None, "Nie znaleziono podmiotu o podanym numerze NIP.", None
 

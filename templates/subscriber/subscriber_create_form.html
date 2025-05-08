@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Dodaj subskrybenta | XManager{% endblock %}
+
+{% block page_title %}Dodaj subskrybenta{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <!-- Email, first name, last name form (unchanged) -->
+        <form method="post" action="{% url 'subscribers:subscriber_create' %}">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="id_email" required value="{{ form.email.value|default:'' }}">
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_newsletter_consent" class="form-label">Zgoda na newsletter</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="newsletter_consent" id="id_newsletter_consent" {% if form.newsletter_consent.value %}checked{% endif %}>
+                            <label class="form-check-label" for="id_newsletter_consent">
+                                Wyrażam zgodę na otrzymywanie newslettera
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label">Imię</label>
+                        <input type="text" class="form-control" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:'' }}">
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label">Nazwisko</label>
+                        <input type="text" class="form-control" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:'' }}">
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Group search and selection section (enhanced) -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Przypisz grupy subskrybentowi</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Group selection -->
+                    <div class="list-group">
+                        {% if request.GET.group_search %}
+                            {% for group in filtered_groups %}
+                                <div class="list-group-item">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="group_ids" value="{{ group.id }}" 
+                                            class="form-check-input" id="group_{{ group.id }}"
+                                            {% if group.id in selected_groups %}checked{% endif %}>
+                                        <label class="form-check-label" for="group_{{ group.id }}">
+                                            {{ group.group_name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="list-group-item text-muted">Brak wyników dla "{{ request.GET.group_search }}"</div>
+                            {% endfor %}
+                        {% else %}
+                            {% for group in subscriber_groups %}
+                                <div class="list-group-item">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="group_ids" value="{{ group.id }}" 
+                                            class="form-check-input" id="group_{{ group.id }}"
+                                            {% if group.id in selected_groups %}checked{% endif %}>
+                                        <label class="form-check-label" for="group_{{ group.id }}">
+                                            {{ group.group_name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% if form.group_affiliation.errors %}
+                        <div class="text-danger mt-2">{{ form.group_affiliation.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Partner association section -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Powiąz z partnerem</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% if request.GET.partner_search %}
+                            {% for partner in filtered_partners %}
+                                <div class="list-group-item">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="partner_ids" value="{{ partner.id }}" 
+                                            class="form-check-input" id="partner_{{ partner.id }}"
+                                            {% if partner.id in selected_partners %}checked{% endif %}>
+                                        <label class="form-check-label" for="partner_{{ partner.id }}">
+                                            {{ partner.name }} 
+                                            ({{ partner.get_full_vat_number }}, {{ partner.country.name }})
+                                        </label>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="list-group-item text-muted">Brak wyników dla "{{ request.GET.partner_search }}"</div>
+                            {% endfor %}
+                        {% else %}
+                            {% for partner in all_partners %}
+                                <div class="list-group-item">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="partner_ids" value="{{ partner.id }}" 
+                                            class="form-check-input" id="partner_{{ partner.id }}"
+                                            {% if partner.id in selected_partners %}checked{% endif %}>
+                                        <label class="form-check-label" for="partner_{{ partner.id }}">
+                                            {{ partner.name }} 
+                                            ({{ partner.get_full_vat_number }}, {{ partner.country.name }})
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-secondary">Anuluj</a>
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

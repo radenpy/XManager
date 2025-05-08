@@ -180,16 +180,6 @@ class Partner(CoreModel):
         """Walidacja modelu"""
         super().clean()
 
-        # # Formatowanie tekstu - pierwsza litera wielka, reszta małe
-        # if self.name:
-        #     self.name = self.name.title()
-        # if self.city:
-        #     self.city = self.city.title()
-        # if self.street_name:
-        #     self.street_name = self.street_name.title()
-
-        # Sprawdzanie czy liczba powiązanych emaili nie przekracza 10
-
         if hasattr(self, 'id') and self.id and self.emails.count() > 10:
             raise ValidationError(
                 {'subscriber': ('Partner moze mieć maksymalnie 10 powiązanych adresów email')})

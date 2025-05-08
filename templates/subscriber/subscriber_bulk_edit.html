@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Masowa edycja subskrybentów | XManager{% endblock %}
+
+{% block page_title %}Masowa edycja subskrybentów{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Powrót do listy
+    </a>
+    <button type="submit" form="bulkEditForm" class="btn btn-primary">
+        <i class="fas fa-save me-1"></i> Zapisz zmiany
+    </button>
+{% endblock %}
+
+{% block content %}
+    <div class="card mb-4">
+        <div class="card-body">
+            {% comment %} <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> 
+                Edytujesz {{ subscribers|length }} zaznaczonych subskrybentów. Zmień wartości, które chcesz zaktualizować i kliknij "Zapisz zmiany".
+            </div> {% endcomment %}
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="toggleAllFields" onchange="toggleAllFieldsEnabled(this.checked)">
+                <label class="form-check-label" for="toggleAllFields">
+                    Zaznacz wszystkie pola do edycji
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <form id="bulkEditForm" method="post" action="{% url 'subscribers:subscriber_bulk_update' %}">
+        {% csrf_token %}
+        <input type="hidden" name="selected_ids" value="{{ selected_ids }}">
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="40px"></th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Email</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_email" data-field="email" onchange="toggleFieldEnabled('email', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Nazwa</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_common_name" data-field="common_name" onchange="toggleFieldEnabled('common_name', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Imię</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_first_name" data-field="first_name" onchange="toggleFieldEnabled('first_name', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Nazwisko</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_last_name" data-field="last_name" onchange="toggleFieldEnabled('last_name', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Firmy</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_partners" data-field="partner_ids" onchange="toggleFieldEnabled('partner_ids', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Grupy</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_groups" data-field="group_ids" onchange="toggleFieldEnabled('group_ids', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        <span>Zgoda</span>
+                                        <div class="form-check ms-2">
+                                            <input class="form-check-input field-toggle" type="checkbox" id="toggle_consent" data-field="newsletter_consent" onchange="toggleFieldEnabled('newsletter_consent', this.checked)">
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subscriber in subscribers %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm field-email" name="email_{{ subscriber.id }}" value="{{ subscriber.email }}" disabled>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm field-common_name" name="common_name_{{ subscriber.id }}" value="{{ subscriber.common_name|default:'' }}" disabled>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm field-first_name" name="first_name_{{ subscriber.id }}" value="{{ subscriber.first_name|default:'' }}" disabled>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm field-last_name" name="last_name_{{ subscriber.id }}" value="{{ subscriber.last_name|default:'' }}" disabled>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm field-partner_ids" name="partner_ids_{{ subscriber.id }}" multiple disabled>
+                                        {% for partner in all_partners %}
+                                            <option value="{{ partner.id }}" {% if partner in subscriber.partnered_with.all %}selected{% endif %}>{{ partner.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm field-group_ids" name="group_ids_{{ subscriber.id }}" multiple disabled>
+                                        {% for group in subscriber_groups %}
+                                            <option value="{{ group.id }}" {% if group in subscriber.group_affiliation.all %}selected{% endif %}>{{ group.group_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm field-newsletter_consent" name="newsletter_consent_{{ subscriber.id }}" disabled>
+                                        <option value="true" {% if subscriber.newsletter_consent %}selected{% endif %}>Tak</option>
+                                        <option value="false" {% if not subscriber.newsletter_consent %}selected{% endif %}>Nie</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="batchActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-tools me-1"></i> Operacje masowe
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="batchActionsDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="setAllInColumn('group_ids', []); return false;">Wyczyść wszystkie grupy</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="setAllInColumn('partner_ids', []); return false;">Wyczyść wszystkie firmy</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="setAllInColumn('newsletter_consent', 'true'); return false;">Ustaw zgodę dla wszystkich</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="setAllInColumn('newsletter_consent', 'false'); return false;">Usuń zgodę dla wszystkich</a></li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Anuluj
+                        </a>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Zapisz zmiany
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFieldEnabled(fieldName, isEnabled) {
+        // Włącza lub wyłącza wszystkie pola danego typu
+        const fields = document.querySelectorAll(`.field-${fieldName}`);
+        fields.forEach(field => {
+            field.disabled = !isEnabled;
+        });
+        
+        // Dodaj lub usuń pole informujące o tym, że dane pole ma być aktualizowane
+        if (isEnabled) {
+            if (!document.querySelector(`input[name="update_${fieldName}"]`)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = `update_${fieldName}`;
+                hiddenField.value = 'true';
+                document.getElementById('bulkEditForm').appendChild(hiddenField);
+            }
+        } else {
+            const existingField = document.querySelector(`input[name="update_${fieldName}"]`);
+            if (existingField) {
+                existingField.remove();
+            }
+        }
+        
+        // Jeśli używasz Select2, zainicjuj ponownie
+        refreshSelect2Fields();
+    }
+    
+    function toggleAllFieldsEnabled(isEnabled) {
+        // Włącz lub wyłącz wszystkie checkboxy kontrolujące pola
+        const fieldToggles = document.querySelectorAll('.field-toggle');
+        fieldToggles.forEach(toggle => {
+            toggle.checked = isEnabled;
+            toggleFieldEnabled(toggle.dataset.field, isEnabled);
+        });
+    }
+    
+    function setAllInColumn(fieldName, value) {
+        // Ustaw tę samą wartość dla wszystkich pól danego typu
+        const fields = document.querySelectorAll(`.field-${fieldName}`);
+        fields.forEach(field => {
+            if (Array.isArray(value)) {
+                // Dla select multiple
+                if ($(field).hasClass('select2-hidden-accessible')) {
+                    $(field).val(value).trigger('change');
+                } else {
+                    // Dla zwykłych select multiple
+                    Array.from(field.options).forEach(option => {
+                        option.selected = value.includes(option.value);
+                    });
+                }
+            } else {
+                // Dla zwykłych pól
+                field.value = value;
+            }
+        });
+        
+        // Upewnij się, że pole będzie aktualizowane
+        if (!document.querySelector(`input[name="update_${fieldName}"]`)) {
+            document.getElementById(`toggle_${fieldName}`).checked = true;
+            toggleFieldEnabled(fieldName, true);
+        }
+    }
+    
+    function refreshSelect2Fields() {
+        // Odśwież pola Select2 jeśli są używane
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('.field-partner_ids:not(.select2-hidden-accessible)').each(function() {
+                if (!$(this).prop('disabled')) {
+                    initSelect2(this);
+                }
+            });
+            
+            $('.field-group_ids:not(.select2-hidden-accessible)').each(function() {
+                if (!$(this).prop('disabled')) {
+                    initSelect2(this);
+                }
+            });
+        }
+    }
+    
+    function initSelect2(element) {
+        $(element).select2({
+            placeholder: 'Wybierz...',
+            allowClear: true,
+            dropdownParent: $('#bulkEditForm'),
+            width: '100%'
+        });
+    }
+    
+    // Inicjalizacja po załadowaniu strony
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aktywuj Select2 (jeśli dostępny)
+        refreshSelect2Fields();
+    });
+</script>
+{% endblock %}

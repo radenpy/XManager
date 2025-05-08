@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Przypisz subskrybentów do grup | XManager{% endblock %}
+
+{% block page_title %}Przypisz subskrybentów do grup{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{% url 'subscribers:subscriber_bulk_group_assign' %}">
+            {% csrf_token %}
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5 class="mb-3">Wybierz subskrybentów</h5>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        {% for subscriber in subscribers %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="subscriber_ids" id="subscriber_{{ subscriber.id }}" value="{{ subscriber.id }}" {% if subscriber.id in selected_subscriber_ids %}checked{% endif %}>
+                                <label class="form-check-label" for="subscriber_{{ subscriber.id }}">
+                                    {{ subscriber.email }} {% if subscriber.first_name or subscriber.last_name %}({{ subscriber.first_name }} {{ subscriber.last_name }}){% endif %}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="mb-3">Wybierz grupy</h5>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        {% for group in subscriber_groups %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="group_ids" id="group_{{ group.id }}" value="{{ group.id }}">
+                                <label class="form-check-label" for="group_{{ group.id }}">
+                                    {{ group.group_name }} ({{ group.subscriber.count }} subskrybentów)
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="mb-3">Wybierz operację</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="action" id="action_add" value="add" checked>
+                    <label class="form-check-label" for="action_add">
+                        Dodaj subskrybentów do wybranych grup
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="action" id="action_remove" value="remove">
+                    <label class="form-check-label" for="action_remove">
+                        Usuń subskrybentów z wybranych grup
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-secondary">Anuluj</a>
+                <button type="submit" class="btn btn-primary">Wykonaj operację</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

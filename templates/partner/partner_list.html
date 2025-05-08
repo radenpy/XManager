@@ -6,9 +6,9 @@
 {% block page_title %}Lista partnerów{% endblock %}
 
 {% block page_actions %}
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPartnerModal">
+    <a href="{% url 'partner:partner_create' %}" class="btn btn-primary">
         <i class="fas fa-plus me-1"></i> Dodaj partnera
-    </button>
+    </a>
 {% endblock %}
 
 {% block content %}
@@ -18,26 +18,17 @@
             <form method="get" action="{% url 'partner:partner_list' %}" class="row g-3">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="search" placeholder="Wyszukaj..." value="{{ request.GET.search|default:'' }}">
+                        {{ filter_form.search }}
                         <button class="btn btn-outline-primary" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select name="country" class="form-select select2">
-                        <option value="">Wszystkie kraje</option>
-                        {% for code, name in countries %}
-                            <option value="{{ code }}" {% if request.GET.country == code %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ filter_form.country }}
                 </div>
                 <div class="col-md-3">
-                    <select name="status" class="form-select">
-                        <option value="">Status VAT</option>
-                        <option value="verified" {% if request.GET.status == 'verified' %}selected{% endif %}>Aktywny</option>
-                        <option value="unverified" {% if request.GET.status == 'unverified' %}selected{% endif %}>Nieaktywny</option>
-                    </select>
+                    {{ filter_form.status }}
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">Filtruj</button>
@@ -91,15 +82,17 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    {% comment %} <a href="{% url 'partner:partner_detail' partner.pk %}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Szczegóły">
-                                        <i class="fas fa-eye"></i>
-                                    </a> {% endcomment %}
-                                    <a href="#" class="btn btn-sm btn-outline-secondary edit-partner" data-partner-id="{{ partner.pk }}" data-bs-toggle="tooltip" title="Edytuj">
+                                    <a href="{% url 'partner:partner_update' partner.pk %}" class="btn btn-sm btn-outline-secondary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-partner" data-partner-id="{{ partner.id }}" data-bs-toggle="tooltip" title="Usuń">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <form method="post" action="{% url 'partner:partner_delete' partner.pk %}" 
+                                          onsubmit="return confirm('Czy na pewno chcesz usunąć tego partnera?');" 
+                                          style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -155,195 +148,4 @@
             {% endif %}
         </div>
     </div>
-
-    <!-- Modal do dodawania partnera -->
-    <div class="modal fade" id="addPartnerModal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPartnerModalLabel">Dodaj partnera</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="partnerForm" method="post" action="{% url 'partner:partner_create' %}">
-                        {% csrf_token %}
-                        
-                       <!-- Krok 1: Wybór kraju i wprowadzenie VAT -->
-                        <div id="step1">
-                            <div class="mb-3">
-                                <label for="id_country" class="form-label">Kraj</label>
-                                <select name="country" id="id_country" class="form-control select2-countries" required>
-                                    <option value="">Wybierz kraj</option>
-                                    {% for code, name in countries %}
-                                        <option value="{{ code }}" data-flag="{{ code|lower }}">{{ name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_vat_number" class="form-label">Numer VAT</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="vat_number" id="id_vat_number" required
-                                        placeholder="Wprowadź numer VAT (bez prefiksu kraju)">
-                                    <button class="btn btn-primary" type="button" id="verifyVATBtn">Weryfikuj</button>
-                                </div>
-                                <div class="form-text">Wprowadź numer VAT bez prefiksu kraju (np. 123456789 dla Polski)</div>
-                            </div>
-                        </div>
-
-                        <!-- Loader podczas weryfikacji -->
-                        <div id="verification-loader" class="text-center my-4 d-none">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Weryfikacja...</span>
-                            </div>
-                            <p class="mt-2">Trwa weryfikacja numeru VAT...</p>
-                        </div>
-
-                        <!-- Krok 2: Potwierdzenie danych i dodatkowe informacje -->
-                        <div id="step2" class="d-none">
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle me-2"></i> Numer VAT zweryfikowany pomyślnie!
-                            </div>
-                            
-                            <h6 class="mb-3">Dane firmy z weryfikacji</h6>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_vat_number_display" class="form-label">Numer VAT</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text country-prefix"></span>
-                                            <input type="text" class="form-control" id="id_vat_number_display" readonly>
-                                        </div>
-                                        <!-- Zachowujemy oryginalny numer VAT w ukrytym polu -->
-                                        <input type="hidden" name="vat_number" id="id_vat_number_hidden">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_country_display" class="form-label">Kraj</label>
-                                        <input type="text" class="form-control" id="id_country_display" readonly>
-                                        <!-- Zachowujemy oryginalny kod kraju w ukrytym polu -->
-                                        <input type="hidden" name="country" id="id_country_hidden">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_name" class="form-label">Nazwa firmy</label>
-                                        <input type="text" class="form-control" name="name" id="id_name">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_city" class="form-label">Miasto</label>
-                                        <input type="text" class="form-control" name="city" id="id_city">
-                                    </div>
-                                </div>
-                            </div>
-
-                    
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_street_name" class="form-label">Ulica</label>
-                                        <input type="text" class="form-control" name="street_name" id="id_street_name">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="id_building_number" class="form-label">Nr budynku</label>
-                                        <input type="text" class="form-control" name="building_number" id="id_building_number">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="id_apartment_number" class="form-label">Nr lokalu</label>
-                                        <input type="text" class="form-control" name="apartment_number" id="id_apartment_number">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="id_postal_code" class="form-label">Kod pocztowy</label>
-                                        <input type="text" class="form-control" name="postal_code" id="id_postal_code">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_phone_number" class="form-label">Numer telefonu</label>
-                                        <input type="text" class="form-control" name="phone_number" id="id_phone_number" placeholder="Wprowadź numer telefonu">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_additional_info" class="form-label">Dodatkowe informacje</label>
-                                        <textarea class="form-control" name="additional_info" id="id_additional_info" rows="1"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <h6 class="mb-3">Powiązane adresy email (maksymalnie 10)</h6>
-                            <div class="mb-3">
-                                <select name="email_contacts" id="id_email_contacts" class="form-control select2-emails" multiple>
-                                </select>
-                                <div class="form-text">Możesz wybrać istniejące adresy lub dodać nowe</div>
-                            </div>
-                            
-                            <!-- Ukryte pole przechowujące identyfikator weryfikacji -->
-                            <input type="hidden" name="verification_id" id="id_verification_id">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                    <button type="button" class="btn btn-primary" id="savePartnerBtn" disabled>Zapisz partnera</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal potwierdzenia usunięcia -->
-    <div class="modal fade" id="deletePartnerModal" tabindex="-1" aria-labelledby="deletePartnerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deletePartnerModalLabel">Potwierdzenie usunięcia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Czy na pewno chcesz usunąć tego partnera? Ta operacja jest nieodwracalna.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                    <form id="deletePartnerForm" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Usuń</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
-{% block extra_js %}
-    <script src="{% static 'partner/js/utils.js' %}"></script>
-    <script src="{% static 'partner/js/partner_api.js' %}"></script>
-    <script src="{% static 'partner/js/partner_form.js' %}"></script>
-    <script src="{% static 'partner/js/vat_verification.js' %}"></script>
-    <script src="{% static 'partner/js/vat_verification_status.js' %}"></script>
-    <script src="{% static 'partner/js/partner_edit.js' %}"></script>
-
-    <script src="{% static 'partner/js/subscriber_select.js' %}"></script>
-    <script>
-        // Initialize partner modules
-        document.addEventListener('DOMContentLoaded', function() {
-            PartnerForm.init();
-            PartnerEdit.init();
-        });
-    </script>
 {% endblock %}

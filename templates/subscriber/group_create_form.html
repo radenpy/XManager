@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Dodaj grupę | XManager{% endblock %}
+
+{% block page_title %}Dodaj grupę{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{% url 'subscribers:group_create' %}">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_group_name" class="form-label">Nazwa grupy</label>
+                <input type="text" class="form-control" id="id_group_name" name="group_name" required value="{{ form.group_name.value|default:'' }}">
+                {% if form.group_name.errors %}
+                    <div class="text-danger">{{ form.group_name.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'subscribers:group_list' %}" class="btn btn-secondary">Anuluj</a>
+                <button type="submit" class="btn btn-primary">Zapisz grupę</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

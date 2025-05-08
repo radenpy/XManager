@@ -78,3 +78,105 @@ class SubscriberGroupForm(forms.ModelForm):
             raise ValidationError(_("Grupa o tej nazwie już istnieje."))
 
         return group_name
+
+# Add this to apps/subscriber/forms.py
+
+
+class SubscriberImportForm(forms.Form):
+    """Form for importing subscribers via text input"""
+    import_type = forms.ChoiceField(
+        choices=[('text', 'Wklej adresy email'), ('file', 'Importuj z pliku')],
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input me-2'}),
+        initial='text',
+        label='Metoda importu'
+    )
+
+    email_list = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 10,
+            'placeholder': 'Wklej adresy email (jeden w linii lub oddzielone przecinkami)'
+        }),
+        required=False,
+        label='Lista adresów email'
+    )
+
+    file = forms.FileField(
+        widget=forms.FileInput(attrs={'class': 'form-control'}),
+        required=False,
+        label='Plik Excel (.xlsx, .xls, .ods)',
+        help_text='Kolumny pliku powinny mieć nazwy: email, nazwa, imię, nazwisko, zgoda'
+    )
+
+    newsletter_consent = forms.BooleanField(
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Zgoda na newsletter'
+    )
+
+    group_ids = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={'class': 'form-check-input'}),
+        label='Przypisz do grup'
+    )
+
+    partner_ids = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={'class': 'form-check-input'}),
+        label='Przypisz do firm'
+    )
+
+    # Create a new group during import
+    new_group = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nazwa nowej grupy'
+        }),
+        label='Utwórz nową grupę'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add groups as choices
+        groups = SubscriberGroup.objects.all().order_by('group_name')
+        self.fields['group_ids'].choices = [
+            (group.id, group.group_name) for group in groups]
+
+        # Add partners as choices
+        from apps.partner.models import Partner
+        partners = Partner.objects.all().order_by('name')
+        self.fields['partner_ids'].choices = [
+            (partner.id, partner.name) for partner in partners]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        import_type = cleaned_data.get('import_type')
+        email_list = cleaned_data.get('email_list')
+        import_file = cleaned_data.get('file')
+
+        if import_type == 'text' and not email_list:
+            self.add_error(
+                'email_list', 'Podaj listę adresów email do importu')
+
+        if import_type == 'file' and not import_file:
+            self.add_error('file', 'Wybierz plik do importu')
+
+        if import_file and import_type == 'file':
+            ext = import_file.name.split('.')[-1].lower()
+            if ext not in ['xlsx', 'xls', 'ods']:
+                self.add_error(
+                    'file', 'Dozwolone formaty plików: .xlsx, .xls, .ods')
+
+        # Check if creating a new group
+        new_group = cleaned_data.get('new_group')
+        if new_group:
+            # Check if group name is unique
+            if SubscriberGroup.objects.filter(group_name=new_group).exists():
+                self.add_error('new_group', 'Grupa o tej nazwie już istnieje')
+
+        return cleaned_data

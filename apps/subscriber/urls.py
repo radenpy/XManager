@@ -44,6 +44,8 @@ urlpatterns = [
          name='subscriber_bulk_update'),
     path('bulk-action/', views.SubscriberBulkActionView.as_view(),
          name='subscriber_bulk_action'),
+    path('import/', views.SubscriberImportView.as_view(), name='subscriber_import'),
+
 
 
 ]

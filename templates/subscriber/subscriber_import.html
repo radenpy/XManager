@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Import subskrybentów | XManager{% endblock %}
+
+{% block page_title %}Import subskrybentów{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Import Method Selection -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">{{ form.import_type.label }}</label>
+                <div class="d-flex gap-4">
+                    {% for radio in form.import_type %}
+                        <div class="form-check">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                {{ radio.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if form.import_type.errors %}
+                    <div class="text-danger small">{{ form.import_type.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Text Import Section -->
+            <div id="textImportSection" class="mb-4">
+                <div class="mb-3">
+                    <label for="{{ form.email_list.id_for_label }}" class="form-label fw-bold">{{ form.email_list.label }}</label>
+                    {{ form.email_list }}
+                    <div class="form-text">Wprowadź adresy email - każdy w nowej linii lub oddzielone przecinkami</div>
+                    {% if form.email_list.errors %}
+                        <div class="text-danger small">{{ form.email_list.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- File Import Section -->
+            <div id="fileImportSection" class="mb-4 d-none">
+                <div class="mb-3">
+                    <label for="{{ form.file.id_for_label }}" class="form-label fw-bold">{{ form.file.label }}</label>
+                    {{ form.file }}
+                    <div class="form-text">{{ form.file.help_text }}</div>
+                    {% if form.file.errors %}
+                        <div class="text-danger small">{{ form.file.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Newsletter Consent -->
+            <div class="mb-4">
+                <div class="form-check">
+                    {{ form.newsletter_consent }}
+                    <label class="form-check-label fw-bold" for="{{ form.newsletter_consent.id_for_label }}">
+                        {{ form.newsletter_consent.label }}
+                    </label>
+                </div>
+                {% if form.newsletter_consent.errors %}
+                    <div class="text-danger small">{{ form.newsletter_consent.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Groups and Partners -->
+            <div class="row mb-4">
+                <!-- Group Assignment -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">{{ form.group_ids.label }}</label>
+                    <div class="mb-2">
+                        <input type="text" id="groupSearch" class="form-control form-control-sm" placeholder="Szukaj grup...">
+                    </div>
+                    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 0.5rem;">
+                        {% for group_id, group_name in form.group_ids.field.choices %}
+                            <div class="form-check group-option">
+                                <input class="form-check-input" type="checkbox" name="group_ids" id="group_{{ group_id }}" value="{{ group_id }}">
+                                <label class="form-check-label" for="group_{{ group_id }}">
+                                    {{ group_name }}
+                                </label>
+                            </div>
+                        {% empty %}
+                            <div class="text-muted small">Brak dostępnych grup</div>
+                        {% endfor %}
+                    </div>
+                    {% if form.group_ids.errors %}
+                        <div class="text-danger small">{{ form.group_ids.errors }}</div>
+                    {% endif %}
+                    
+                    <!-- Create New Group -->
+                    <div class="mt-2">
+                        <label for="{{ form.new_group.id_for_label }}" class="form-label fw-bold">{{ form.new_group.label }}</label>
+                        {{ form.new_group }}
+                        {% if form.new_group.errors %}
+                            <div class="text-danger small">{{ form.new_group.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Partner Assignment -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">{{ form.partner_ids.label }}</label>
+                    <div class="mb-2">
+                        <input type="text" id="partnerSearch" class="form-control form-control-sm" placeholder="Szukaj firm...">
+                    </div>
+                    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 0.5rem;">
+                        {% for partner_id, partner_name in form.partner_ids.field.choices %}
+                            <div class="form-check partner-option">
+                                <input class="form-check-input" type="checkbox" name="partner_ids" id="partner_{{ partner_id }}" value="{{ partner_id }}">
+                                <label class="form-check-label" for="partner_{{ partner_id }}">
+                                    {{ partner_name }}
+                                </label>
+                            </div>
+                        {% empty %}
+                            <div class="text-muted small">Brak dostępnych firm</div>
+                        {% endfor %}
+                    </div>
+                    {% if form.partner_ids.errors %}
+                        <div class="text-danger small">{{ form.partner_ids.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-end">
+                <a href="{% url 'subscribers:subscriber_list' %}" class="btn btn-secondary">Anuluj</a>
+                <button type="submit" class="btn btn-primary">Importuj subskrybentów</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle import sections based on selected method
+    const importTypeRadios = document.querySelectorAll('input[name="import_type"]');
+    const textImportSection = document.getElementById('textImportSection');
+    const fileImportSection = document.getElementById('fileImportSection');
+    
+    function toggleImportSections() {
+        const selectedType = document.querySelector('input[name="import_type"]:checked').value;
+        
+        if (selectedType === 'text') {
+            textImportSection.classList.remove('d-none');
+            fileImportSection.classList.add('d-none');
+            document.getElementById('id_email_list').focus();
+        } else {
+            textImportSection.classList.add('d-none');
+            fileImportSection.classList.remove('d-none');
+        }
+    }
+    
+    // Initialize
+    toggleImportSections();
+    
+    // Add event listeners
+    importTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleImportSections);
+    });
+    
+    // Group search filter
+    const groupSearch = document.getElementById('groupSearch');
+    groupSearch.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        const groupOptions = document.querySelectorAll('.group-option');
+        
+        groupOptions.forEach(option => {
+            const label = option.querySelector('label').textContent.toLowerCase();
+            if (label.includes(searchText)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+    
+    // Partner search filter
+    const partnerSearch = document.getElementById('partnerSearch');
+    partnerSearch.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        const partnerOptions = document.querySelectorAll('.partner-option');
+        
+        partnerOptions.forEach(option => {
+            const label = option.querySelector('label').textContent.toLowerCase();
+            if (label.includes(searchText)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

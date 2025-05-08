@@ -1,4 +1,3 @@
-<!-- templates/dashboard.html -->
 {% extends 'base.html' %}
 
 {% block title %}Dashboard | XManager{% endblock %}
@@ -6,50 +5,6 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<style>
-/* Custom styles for dashboard - smaller fonts */
-.dashboard-card {
-    font-size: 0.85rem;
-}
-.dashboard-card .card-title {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-.dashboard-card .stat-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-.timeline-item {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    padding-left: 2rem;
-    position: relative;
-}
-.timeline-marker {
-    background-color: #4e73df;
-    border-radius: 50%;
-    height: 10px;
-    left: 0;
-    position: absolute;
-    top: 6px;
-    width: 10px;
-}
-.timeline-title {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-}
-.timeline-date {
-    color: #858796;
-    font-size: 0.8rem;
-    font-style: italic;
-    margin-top: 0.25rem;
-}
-.quick-link-btn {
-    font-size: 0.85rem;
-}
-</style>
-
 <div class="row">
     <!-- Statistics Cards -->
     <div class="col-lg-3 col-md-6 mb-4">
@@ -120,7 +75,7 @@
 <!-- Welcome Card -->
 <div class="card shadow mb-4 dashboard-card">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary card-title">Welcome to XManager</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Welcome to XManager</h6>
     </div>
     <div class="card-body">
         <p>Hello, {{ request.user.username }}! Welcome to your dashboard.</p>
@@ -149,7 +104,7 @@
 <!-- Recent Activity -->
 <div class="card shadow mb-4 dashboard-card">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary card-title">Recent Activity</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
     </div>
     <div class="card-body">
         <div class="timeline">

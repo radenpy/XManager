@@ -5,9 +5,15 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import SubscriberForm, SubscriberGroupForm, SubscriberImportForm
 from apps.subscriber import views
 from django.db import models
 from apps.partner.models import Partner, PartnerEmail
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+import pandas as pd
+import io
+import re
 
 
 from .models import Subscriber, SubscriberGroup
@@ -509,7 +515,16 @@ class SubscriberGroupListView(LoginRequiredMixin, ListView):
     model = SubscriberGroup
     template_name = 'subscriber/group_list.html'
     context_object_name = 'groups'
-    paginate_by = 20
+    paginate_by = 100
+
+    def get_paginate_by(self, queryset):
+        """Dynamiczna wartość paginacji z parametru GET"""
+        # Zmień tę metodę, aby zawsze zwracała stringa dla kontekstu szablonu
+        page_size = self.request.GET.get('page_size', str(self.paginate_by))
+        # Najpierw zapisz wartość do kontekstu, aby była dostępna jako string
+        self.selected_page_size = page_size
+        # Potem zamień na int dla Django
+        return int(page_size) if page_size.isdigit() else self.paginate_by
 
     def get_queryset(self):
         """Filtrowanie wyników"""
@@ -525,6 +540,12 @@ class SubscriberGroupListView(LoginRequiredMixin, ListView):
         """Dodatkowe dane kontekstowe"""
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
+        # Użyj wartości zapisanej przez get_paginate_by
+        context['selected_page_size'] = getattr(
+            self, 'selected_page_size', str(self.paginate_by))
+        # Debugowanie
+        print(
+            f"selected_page_size: {context['selected_page_size']}, type: {type(context['selected_page_size'])}")
         return context
 
 
@@ -1121,6 +1142,105 @@ class SubscriberBulkUpdateView(LoginRequiredMixin, View):
         return redirect('subscribers:subscriber_list')
 
 
+# class SubscriberBulkActionView(LoginRequiredMixin, View):
+#     """View for processing bulk actions on subscribers"""
+
+#     def post(self, request, *args, **kwargs):
+#         # Get selected subscriber IDs
+#         subscriber_ids = request.POST.getlist('subscriber_ids', [])
+
+#         if not subscriber_ids:
+#             messages.error(request, "Nie wybrano żadnych subskrybentów.")
+#             return redirect('subscribers:subscriber_list')
+
+#         # Get the selected action
+#         bulk_action = request.POST.get('bulk_action', '')
+
+#         # Count of affected subscribers
+#         affected_count = 0
+
+#         # Process according to the selected action
+#         if bulk_action == 'consent_yes' or bulk_action == 'consent_no':
+#             # Set newsletter consent
+#             new_consent = (bulk_action == 'consent_yes')
+#             for subscriber_id in subscriber_ids:
+#                 try:
+#                     subscriber = Subscriber.objects.get(id=subscriber_id)
+#                     subscriber.newsletter_consent = new_consent
+#                     subscriber.save()
+#                     affected_count += 1
+#                 except Subscriber.DoesNotExist:
+#                     continue
+
+#             consent_text = "TAK" if new_consent else "NIE"
+#             messages.success(
+#                 request, f"Zmieniono zgodę na {consent_text} dla {affected_count} subskrybentów.")
+
+#         elif bulk_action in ['add_to_groups', 'remove_from_groups']:
+#             # Process group assignment
+#             group_ids = request.POST.getlist('group_ids', [])
+
+#             if not group_ids:
+#                 messages.error(request, "Nie wybrano żadnych grup.")
+#                 return redirect('subscribers:subscriber_list')
+
+#             groups = SubscriberGroup.objects.filter(id__in=group_ids)
+
+#             for subscriber_id in subscriber_ids:
+#                 try:
+#                     subscriber = Subscriber.objects.get(id=subscriber_id)
+
+#                     if bulk_action == 'add_to_groups':
+#                         subscriber.group_affiliation.add(*groups)
+#                     else:
+#                         subscriber.group_affiliation.remove(*groups)
+
+#                     affected_count += 1
+#                 except Subscriber.DoesNotExist:
+#                     continue
+
+#             action_text = "dodano do" if bulk_action == 'add_to_groups' else "usunięto z"
+#             messages.success(
+#                 request, f"{affected_count} subskrybentów {action_text} wybranych grup.")
+
+#         elif bulk_action in ['add_to_partners', 'remove_from_partners']:
+#             # Process partner assignment
+#             partner_ids = request.POST.getlist('partner_ids', [])
+
+#             if not partner_ids:
+#                 messages.error(request, "Nie wybrano żadnych firm.")
+#                 return redirect('subscribers:subscriber_list')
+
+#             partners = Partner.objects.filter(id__in=partner_ids)
+
+#             for subscriber_id in subscriber_ids:
+#                 try:
+#                     subscriber = Subscriber.objects.get(id=subscriber_id)
+
+#                     if bulk_action == 'add_to_partners':
+#                         # Add partners
+#                         for partner in partners:
+#                             PartnerEmail.objects.get_or_create(
+#                                 partner=partner,
+#                                 subscriber=subscriber
+#                             )
+#                     else:
+#                         # Remove partners
+#                         PartnerEmail.objects.filter(
+#                             subscriber=subscriber,
+#                             partner__in=partners
+#                         ).delete()
+
+#                     affected_count += 1
+#                 except Subscriber.DoesNotExist:
+#                     continue
+
+#             action_text = "dodano do" if bulk_action == 'add_to_partners' else "usunięto z"
+#             messages.success(
+#                 request, f"{affected_count} subskrybentów {action_text} wybranych firm.")
+
+#         return redirect('subscribers:subscriber_list')
+
 class SubscriberBulkActionView(LoginRequiredMixin, View):
     """View for processing bulk actions on subscribers"""
 
@@ -1218,4 +1338,247 @@ class SubscriberBulkActionView(LoginRequiredMixin, View):
             messages.success(
                 request, f"{affected_count} subskrybentów {action_text} wybranych firm.")
 
+        # Nowa sekcja do obsługi masowego usuwania
+        elif bulk_action == 'delete':
+            # Dodaj potwierdzenie usunięcia dla bezpieczeństwa
+            confirm_delete = request.POST.get('confirm_delete', 'no')
+
+            if confirm_delete != 'yes':
+                messages.error(
+                    request, "Wymagane jest potwierdzenie usunięcia subskrybentów.")
+                return redirect('subscribers:subscriber_list')
+
+            # Lista emaili usuniętych subskrybentów do logowania
+            deleted_emails = []
+
+            for subscriber_id in subscriber_ids:
+                try:
+                    subscriber = Subscriber.objects.get(id=subscriber_id)
+                    email = subscriber.email  # Zapisz email przed usunięciem
+                    deleted_emails.append(email)
+                    subscriber.delete()
+                    affected_count += 1
+                except Subscriber.DoesNotExist:
+                    continue
+                except Exception as e:
+                    messages.error(
+                        request, f"Błąd podczas usuwania subskrybenta: {str(e)}")
+
+            messages.success(
+                request, f"Pomyślnie usunięto {affected_count} subskrybentów.")
+
+            # Opcjonalnie zapisz usunięte emaile do logów systemowych
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Deleted subscribers: {', '.join(deleted_emails)}")
+
         return redirect('subscribers:subscriber_list')
+
+
+class SubscriberImportView(LoginRequiredMixin, FormView):
+    """View for importing subscribers"""
+    template_name = 'subscriber/subscriber_import.html'
+    form_class = SubscriberImportForm
+    success_url = reverse_lazy('subscribers:subscriber_list')
+
+    def form_valid(self, form):
+        import_type = form.cleaned_data.get('import_type')
+        newsletter_consent = form.cleaned_data.get('newsletter_consent', False)
+
+        # Process groups
+        groups = []
+        group_ids = form.cleaned_data.get('group_ids', [])
+        if group_ids:
+            groups = SubscriberGroup.objects.filter(id__in=group_ids)
+
+        # Check if creating a new group
+        new_group_name = form.cleaned_data.get('new_group')
+        if new_group_name:
+            # Create new group
+            new_group = SubscriberGroup.objects.create(
+                group_name=new_group_name,
+                created_by=self.request.user if hasattr(
+                    self.request, 'user') else None
+            )
+            groups = list(groups) + [new_group]
+
+        # Process partners
+        partners = []
+        partner_ids = form.cleaned_data.get('partner_ids', [])
+        if partner_ids:
+            from apps.partner.models import Partner
+            partners = Partner.objects.filter(id__in=partner_ids)
+
+        # Import based on type
+        if import_type == 'text':
+            result = self._import_from_text(
+                form.cleaned_data.get('email_list', ''),
+                newsletter_consent,
+                groups,
+                partners
+            )
+        else:  # file import
+            result = self._import_from_file(
+                form.cleaned_data.get('file'),
+                newsletter_consent,
+                groups,
+                partners
+            )
+
+        # Display results
+        messages.success(
+            self.request,
+            f"Import zakończony. Zaimportowano {result['imported']} nowych subskrybentów, "
+            f"zaktualizowano {result['updated']}, pominięto {result['skipped']} "
+            f"(w tym {result['invalid']} z nieprawidłowym adresem email)."
+        )
+
+        return super().form_valid(form)
+
+    def _import_from_text(self, email_text, newsletter_consent, groups, partners):
+        """Import subscribers from text input"""
+        # Split by newlines and/or commas
+        emails = []
+        lines = email_text.strip().split('\n')
+
+        for line in lines:
+            line_emails = [e.strip() for e in line.split(',') if e.strip()]
+            emails.extend(line_emails)
+
+        return self._process_emails(emails, newsletter_consent, groups, partners)
+
+    def _import_from_file(self, file_obj, newsletter_consent, groups, partners):
+        """Import subscribers from Excel file"""
+        try:
+            # Read file based on extension
+            file_ext = file_obj.name.split('.')[-1].lower()
+
+            if file_ext == 'csv':
+                df = pd.read_csv(file_obj, encoding='utf-8')
+            else:  # xlsx, xls, ods
+                df = pd.read_excel(file_obj)
+
+            # Check for required email column
+            if 'email' not in df.columns:
+                messages.error(
+                    self.request, "Plik musi zawierać kolumnę 'email'")
+                return {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
+
+            # Process each row
+            result = {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
+
+            for _, row in df.iterrows():
+                email = str(row.get('email', '')).strip()
+
+                if not email:
+                    result['skipped'] += 1
+                    continue
+
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    result['invalid'] += 1
+                    continue
+
+                # Check if subscriber exists
+                subscriber, created = Subscriber.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'common_name': str(row.get('nazwa', '')).strip(),
+                        'first_name': str(row.get('imię', row.get('imie', ''))).strip(),
+                        'last_name': str(row.get('nazwisko', '')).strip(),
+                        'newsletter_consent': bool(row.get('zgoda', newsletter_consent)),
+                        'created_by': self.request.user if hasattr(self.request, 'user') else None
+                    }
+                )
+
+                if created:
+                    result['imported'] += 1
+                else:
+                    # Update existing subscriber
+                    if any(col in df.columns for col in ['nazwa', 'common_name']) and pd.notna(row.get('nazwa', row.get('common_name', None))):
+                        subscriber.common_name = str(
+                            row.get('nazwa', row.get('common_name', ''))).strip()
+
+                    if any(col in df.columns for col in ['imię', 'imie']) and pd.notna(row.get('imię', row.get('imie', None))):
+                        subscriber.first_name = str(
+                            row.get('imię', row.get('imie', ''))).strip()
+
+                    if 'nazwisko' in df.columns and pd.notna(row.get('nazwisko')):
+                        subscriber.last_name = str(row.get('nazwisko')).strip()
+
+                    if any(col in df.columns for col in ['zgoda', 'newsletter_consent']) and pd.notna(row.get('zgoda', row.get('newsletter_consent', None))):
+                        subscriber.newsletter_consent = bool(
+                            row.get('zgoda', row.get('newsletter_consent', newsletter_consent)))
+                    else:
+                        subscriber.newsletter_consent = newsletter_consent
+
+                    subscriber.save()
+                    result['updated'] += 1
+
+                # Add to groups
+                if groups:
+                    subscriber.group_affiliation.add(*groups)
+
+                # Add to partners
+                if partners:
+                    from apps.partner.models import PartnerEmail
+                    for partner in partners:
+                        PartnerEmail.objects.get_or_create(
+                            partner=partner,
+                            subscriber=subscriber
+                        )
+
+            return result
+
+        except Exception as e:
+            messages.error(
+                self.request, f"Błąd podczas importu pliku: {str(e)}")
+            return {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
+
+    def _process_emails(self, emails, newsletter_consent, groups, partners):
+        """Process a list of email addresses"""
+        result = {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
+
+        for email in emails:
+            email = email.strip()
+            if not email:
+                result['skipped'] += 1
+                continue
+
+            try:
+                validate_email(email)
+            except ValidationError:
+                result['invalid'] += 1
+                continue
+
+            # Check if subscriber exists
+            subscriber, created = Subscriber.objects.get_or_create(
+                email=email,
+                defaults={
+                    'newsletter_consent': newsletter_consent,
+                    'created_by': self.request.user if hasattr(self.request, 'user') else None
+                }
+            )
+
+            if created:
+                result['imported'] += 1
+            else:
+                subscriber.newsletter_consent = newsletter_consent
+                subscriber.save()
+                result['updated'] += 1
+
+            # Add to groups
+            if groups:
+                subscriber.group_affiliation.add(*groups)
+
+            # Add to partners
+            if partners:
+                from apps.partner.models import PartnerEmail
+                for partner in partners:
+                    PartnerEmail.objects.get_or_create(
+                        partner=partner,
+                        subscriber=subscriber
+                    )
+
+        return result

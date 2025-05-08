@@ -11,6 +11,8 @@ django-countries = "*"
 django-crispy-forms = "*"
 django-select2 = "*"
 requests = "*"
+pandas = "*"
+openpyxl = "*"
 
 [dev-packages]
 

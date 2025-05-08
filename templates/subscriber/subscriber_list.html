@@ -6,11 +6,13 @@
 {% block page_title %}Lista subskrybentów{% endblock %}
 
 {% block page_actions %}
-    <a href="{% url 'subscribers:subscriber_create_form' %}" class="btn btn-primary">
+    <a href="{% url 'subscribers:subscriber_import' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-file-import me-1"></i> Importuj
+    </a>
+    <a href="{% url 'subscribers:subscriber_create_form' %}" class="btn btn-primary ms-2">
         <i class="fas fa-plus me-1"></i> Dodaj subskrybenta
     </a>
 {% endblock %}
-
 
 {% block content %}
     {% csrf_token %}
@@ -245,97 +247,104 @@
                 {% csrf_token %}
                 <div id="subscriber-checkboxes"></div>
                 
-                <!-- Left section - Bulk action buttons -->
-                <div class="col-md-9">
-                    <div class="d-flex flex-wrap gap-2">
-                        <!-- Edit Selected Button -->
-                        <button type="button" class="btn btn-sm btn-primary" onclick="submitBulkEditForm()">
-                            <i class="fas fa-edit me-1"></i> Arkusz Edycji
-                        </button>
-                        
-                        <!-- Newsletter Consent Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="newsletterConsentDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-envelope me-1"></i> Zgoda
-                            </button>
-                            <ul class="dropdown-menu" style="font-size: 0.8rem;" aria-labelledby="newsletterConsentDropdown">
-                                <li>
-                                    <button type="submit" class="dropdown-item" name="bulk_action" value="consent_yes">
-                                        <i class="fas fa-check text-success me-1"></i> Ustaw "Tak"
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="submit" class="dropdown-item" name="bulk_action" value="consent_no">
-                                        <i class="fas fa-times text-danger me-1"></i> Ustaw "Nie"
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Groups Assignment Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="groupsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-users me-1"></i> Grupy
-                            </button>
-                            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="groupsDropdown">
-                                <div style="max-height: 180px; overflow-y: auto;">
-                                    {% for group in subscriber_groups %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="group_ids" value="{{ group.id }}" id="group_{{ group.id }}">
-                                        <label class="form-check-label" for="group_{{ group.id }}">
-                                            {{ group.group_name }}
-                                        </label>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <div class="d-flex justify-content-between mt-2">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary" name="bulk_action" value="add_to_groups">
-                                        <i class="fas fa-plus-circle me-1"></i> Dodaj
-                                    </button>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" name="bulk_action" value="remove_from_groups">
-                                        <i class="fas fa-minus-circle me-1"></i> Usuń
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Companies Assignment Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="companiesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-building me-1"></i> Firmy
-                            </button>
-                            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="companiesDropdown">
-                                <div style="max-height: 180px; overflow-y: auto;">
-                                    {% for partner in all_partners|dictsort:"name" %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="partner_ids" value="{{ partner.id }}" id="partner_{{ partner.id }}">
-                                        <label class="form-check-label" for="partner_{{ partner.id }}">
-                                            {{ partner.name }}
-                                        </label>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <div class="d-flex justify-content-between mt-2">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary" name="bulk_action" value="add_to_partners">
-                                        <i class="fas fa-plus-circle me-1"></i> Dodaj
-                                    </button>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" name="bulk_action" value="remove_from_partners">
-                                        <i class="fas fa-minus-circle me-1"></i> Usuń
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+<!-- Left section - Bulk action buttons -->
+<div class="col-md-9">
+    <div class="d-flex flex-wrap gap-2">
+        <!-- Edit Selected Button -->
+        <button type="button" class="btn btn-sm btn-primary" onclick="confirmBulkAction('edit')">
+            <i class="fas fa-edit me-1"></i> Arkusz Edycji
+        </button>
+        
+        <!-- Newsletter Consent Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="newsletterConsentDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-envelope me-1"></i> Zgoda
+            </button>
+            <ul class="dropdown-menu" style="font-size: 0.8rem;" aria-labelledby="newsletterConsentDropdown">
+                <li>
+                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('consent_yes')">
+                        <i class="fas fa-check text-success me-1"></i> Ustaw "Tak"
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('consent_no')">
+                        <i class="fas fa-times text-danger me-1"></i> Ustaw "Nie"
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Groups Assignment Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="groupsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-users me-1"></i> Grupy
+            </button>
+            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="groupsDropdown">
+                <div style="max-height: 180px; overflow-y: auto;">
+                    {% for group in subscriber_groups %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="group_ids" value="{{ group.id }}" id="group_{{ group.id }}">
+                        <label class="form-check-label" for="group_{{ group.id }}">
+                            {{ group.group_name }}
+                        </label>
                     </div>
+                    {% endfor %}
                 </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="confirmBulkAction('add_to_groups')">
+                        <i class="fas fa-plus-circle me-1"></i> Dodaj
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmBulkAction('remove_from_groups')">
+                        <i class="fas fa-minus-circle me-1"></i> Usuń
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Companies Assignment Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="companiesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-building me-1"></i> Firmy
+            </button>
+            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="companiesDropdown">
+                <div style="max-height: 180px; overflow-y: auto;">
+                    {% for partner in all_partners|dictsort:"name" %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="partner_ids" value="{{ partner.id }}" id="partner_{{ partner.id }}">
+                        <label class="form-check-label" for="partner_{{ partner.id }}">
+                            {{ partner.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="confirmBulkAction('add_to_partners')">
+                        <i class="fas fa-plus-circle me-1"></i> Dodaj
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmBulkAction('remove_from_partners')">
+                        <i class="fas fa-minus-circle me-1"></i> Usuń
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Button - przeniesiony na koniec, zmieniony styl, tylko ikona -->
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="confirmBulkAction('delete')">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+</div>
                 
                 <!-- Right section - Selection count -->
-                <div class="col-md-3 text-end">
-                    <div class="d-inline-block">
-                        <span class="text-muted small">Zaznaczono </span>
-                        <span class="fw-bold text-primary" id="selectedCount">0</span>
-                        <span class="text-muted small"> subskrybentów</span>
-                    </div>
+            <div class="col-md-3 text-end">
+                <div class="d-inline-block">
+                    <span class="text-muted small">Zaznaczono </span>
+                    <span class="fw-bold text-secondary" id="selectedCount">0</span>
+                    <span class="text-muted small"> z </span>
+                    <span class="fw-bold text-secondary" id="totalCount">{{ subscribers|length }}</span>
+                    <span class="text-muted small"> subskrybentów</span>
                 </div>
+            </div>
             </form>
         </div>
     </div>
@@ -478,6 +487,26 @@
             {% endif %}
         </div>
     </div>
+    
+    <!-- Modal potwierdzenia akcji masowej -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Potwierdź operację</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage"></p>
+                    <p id="confirmDetails" class="text-muted small"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="confirmActionBtn">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
@@ -504,11 +533,6 @@ function submitBulkEditForm() {
     const checkboxes = document.querySelectorAll('input.subscriber-checkbox:checked');
     const ids = Array.from(checkboxes).map(cb => cb.value);
     
-    if (ids.length === 0) {
-        alert('Proszę zaznaczyć co najmniej jednego subskrybenta.');
-        return;
-    }
-    
     // Zaktualizuj ukryte pole
     document.getElementById('selected_ids_input').value = ids.join(',');
     
@@ -517,7 +541,7 @@ function submitBulkEditForm() {
 }
 
 // Funkcja do przygotowania formularza akcji masowych
-function prepareBulkActionForm() {
+function prepareBulkActionForm(action) {
     // Pobierz wszystkie zaznaczone checkboxy
     const checkboxes = document.querySelectorAll('input.subscriber-checkbox:checked');
     
@@ -541,7 +565,149 @@ function prepareBulkActionForm() {
         checkboxContainer.appendChild(input);
     });
     
+    // Dodaj akcję
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'bulk_action';
+    actionInput.value = action;
+    checkboxContainer.appendChild(actionInput);
+    
+    // Specjalne pole dla usuwania
+    if (action === 'delete') {
+        const confirmInput = document.createElement('input');
+        confirmInput.type = 'hidden';
+        confirmInput.name = 'confirm_delete';
+        confirmInput.value = 'yes';
+        checkboxContainer.appendChild(confirmInput);
+    }
+    
     return true;
+}
+
+// Funkcja do potwierdzania akcji masowych
+function confirmBulkAction(action) {
+    // Pobierz wszystkie zaznaczone checkboxy
+    const checkboxes = document.querySelectorAll('input.subscriber-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        alert('Proszę zaznaczyć co najmniej jednego subskrybenta.');
+        return;
+    }
+    
+    const count = checkboxes.length;
+    let message = '';
+    let details = '';
+    
+    // Przygotuj komunikat potwierdzenia
+    if (action === 'edit') {
+        message = `Czy na pewno chcesz otworzyć arkusz edycji dla ${count} subskrybentów?`;
+    } 
+    else if (action === 'delete') {
+        message = `Czy na pewno chcesz TRWALE USUNĄĆ ${count} zaznaczonych subskrybentów?`;
+        details = `UWAGA: Ta operacja jest nieodwracalna i spowoduje usunięcie wszystkich danych tych subskrybentów.`;
+    }
+    else if (action === 'consent_yes') {
+        message = `Czy na pewno chcesz ustawić zgodę na "TAK" dla ${count} subskrybentów?`;
+    } 
+    else if (action === 'consent_no') {
+        message = `Czy na pewno chcesz ustawić zgodę na "NIE" dla ${count} subskrybentów?`;
+    } 
+    else if (action === 'add_to_groups') {
+        // Sprawdź, czy wybrano jakieś grupy
+        const selectedGroups = [];
+        document.querySelectorAll('input[name="group_ids"]:checked').forEach(checkbox => {
+            selectedGroups.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedGroups.length === 0) {
+            alert('Proszę wybrać co najmniej jedną grupę.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz dodać ${count} subskrybentów do wybranych grup?`;
+        details = `Wybrane grupy: ${selectedGroups.join(', ')}`;
+    } 
+    else if (action === 'remove_from_groups') {
+        // Sprawdź, czy wybrano jakieś grupy
+        const selectedGroups = [];
+        document.querySelectorAll('input[name="group_ids"]:checked').forEach(checkbox => {
+            selectedGroups.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedGroups.length === 0) {
+            alert('Proszę wybrać co najmniej jedną grupę.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz usunąć ${count} subskrybentów z wybranych grup?`;
+        details = `Wybrane grupy: ${selectedGroups.join(', ')}`;
+    } 
+    else if (action === 'add_to_partners') {
+        // Sprawdź, czy wybrano jakieś firmy
+        const selectedPartners = [];
+        document.querySelectorAll('input[name="partner_ids"]:checked').forEach(checkbox => {
+            selectedPartners.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedPartners.length === 0) {
+            alert('Proszę wybrać co najmniej jedną firmę.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz dodać ${count} subskrybentów do wybranych firm?`;
+        details = `Wybrane firmy: ${selectedPartners.join(', ')}`;
+    } 
+    else if (action === 'remove_from_partners') {
+        // Sprawdź, czy wybrano jakieś firmy
+        const selectedPartners = [];
+        document.querySelectorAll('input[name="partner_ids"]:checked').forEach(checkbox => {
+            selectedPartners.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedPartners.length === 0) {
+            alert('Proszę wybrać co najmniej jedną firmę.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz usunąć ${count} subskrybentów z wybranych firm?`;
+        details = `Wybrane firmy: ${selectedPartners.join(', ')}`;
+    }
+    
+    // Ustaw treść modalu
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmDetails').textContent = details;
+    
+    // Ustaw przycisk potwierdzenia
+    const confirmButton = document.getElementById('confirmActionBtn');
+    
+    // Usuń istniejące event listenery
+    const newConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+    
+    // Dodaj nowy event listener
+    newConfirmButton.addEventListener('click', function() {
+        // Zamknij modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+        modal.hide();
+        
+        // Wykonaj akcję
+        if (action === 'edit') {
+            submitBulkEditForm();
+        } else {
+            if (prepareBulkActionForm(action)) {
+                // Debug: sprawdź, co jest wysyłane
+                console.log("Wysyłanie formularza z akcją:", action);
+                console.log("Zaznaczone ID:", Array.from(checkboxes).map(cb => cb.value));
+                
+                // Wyślij formularz
+                document.getElementById('bulkActionForm').submit();
+            }
+        }
+    });
+    
+    // Pokaż modal
+    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
 }
 
 // Funkcja aktualizująca liczniki filtrów
@@ -582,15 +748,6 @@ function updateFilterCounters() {
 document.addEventListener('DOMContentLoaded', function() {
     // Inicjalizacja licznika zaznaczonych subskrybentów
     updateBulkActions();
-    
-    // Dodaj obsługę kliknięć dla przycisków akcji masowych
-    document.querySelectorAll('[name="bulk_action"]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!prepareBulkActionForm()) {
-                e.preventDefault(); // Zatrzymaj przesłanie formularza jeśli nie wybrano subskrybentów
-            }
-        });
-    });
     
     // Obsługa dropdownów filtrów
     
@@ -650,5 +807,4 @@ document.addEventListener('DOMContentLoaded', function() {
     updateFilterCounters();
 });
 </script>
-
 {% endblock %}

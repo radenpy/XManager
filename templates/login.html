@@ -1,7 +1,5 @@
 {% extends 'base_login.html' %}
-
 {% block title %}Login | XManager{% endblock %}
-
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4">
@@ -9,7 +7,7 @@
             {% comment %} <div class="card-header bg-primary text-white">
                 <h4 class="mb-0 text-center">Login to XManager</h4>
             </div> {% endcomment %}
-            <div class="card-body">
+            <div class="card-body login-form">
                 <form method="POST" action="{% url 'login' %}">
                     {% csrf_token %}
                     <div class="mb-3">

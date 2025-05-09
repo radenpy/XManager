@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}
-    {% if is_new %}Dodaj partnera{% else %}Edytuj partnera: {{ partner.name }}{% endif %} | XManager
-{% endblock %}
+{% block title %}Edytuj partnera: {{ partner.name }} | XManager{% endblock %}
 
-{% block page_title %}
-    {% if is_new %}Dodaj partnera{% else %}Edytuj partnera: {{ partner.name }}{% endif %}
-{% endblock %}
+{% block page_title %}Edytuj partnera: {{ partner.name }}{% endblock %}
 
 {% block page_actions %}
     <a href="{% url 'partner:partner_list' %}" class="btn btn-outline-secondary">
@@ -18,7 +14,7 @@
 {% block content %}
     <div class="card">
         <div class="card-body">
-            <form method="post" action="{% if is_new %}{% url 'partner:partner_create' %}{% else %}{% url 'partner:partner_update' partner.pk %}{% endif %}" id="partnerForm">
+            <form method="post" action="{% url 'partner:partner_update' partner.pk %}" id="partnerForm">
                 {% csrf_token %}
                 
                 {% if form.errors %}
@@ -51,13 +47,11 @@
                             <i class="fas fa-envelope me-1"></i> Kontakty e-mail
                         </button>
                     </li>
-                    {% if not is_new %}
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="vat-status-tab" data-bs-toggle="tab" data-bs-target="#vat-status" type="button" role="tab" aria-controls="vat-status" aria-selected="false">
                             <i class="fas fa-check-circle me-1"></i> Status VAT
                         </button>
                     </li>
-                    {% endif %}
                 </ul>
                 
                 <!-- Tab content -->
@@ -89,7 +83,7 @@
                                         </div>
                                     </ul>
                                 </div>
-                                {% if form.country.help_text and not form.country.value or is_new %}
+                                {% if form.country.help_text and not form.country.value %}
                                 <div class="form-text">{{ form.country.help_text }}</div>
                                 {% endif %}
                             </div>
@@ -99,22 +93,12 @@
                                     <span class="input-group-text country-prefix">{% if form.country.value %}{{ form.country.value }}{% else %}--{% endif %}</span>
                                     <input type="text" name="vat_number" id="{{ form.vat_number.id_for_label }}" class="form-control" value="{{ form.vat_number.value|default:'' }}" placeholder="Wprowadź numer VAT (bez prefiksu kraju)" required>
                                     
-                                    {% if not is_new %}
                                     <a href="{% url 'partner:verify_vat' partner.pk %}" class="btn btn-primary" id="verifyVATBtn">
                                         <i class="fas fa-sync-alt me-1"></i> Weryfikuj
                                     </a>
-                                    {% endif %}
                                 </div>
-                                {% if form.vat_number.help_text and not form.vat_number.value or is_new %}
+                                {% if form.vat_number.help_text and not form.vat_number.value %}
                                 <div class="form-text">{{ form.vat_number.help_text }}</div>
-                                {% endif %}
-                                {% if is_new %}
-                                <div class="form-check mt-2">
-                                    <input class="form-check-input" type="checkbox" name="verify_vat" id="id_verify_vat" checked>
-                                    <label class="form-check-label" for="id_verify_vat">
-                                        Weryfikuj numer VAT po zapisaniu
-                                    </label>
-                                </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -196,7 +180,6 @@
                     </div>
                     
                     <!-- VAT Status tab (only for edit) -->
-                    {% if not is_new %}
                     <div class="tab-pane fade" id="vat-status" role="tabpanel" aria-labelledby="vat-status-tab">
                         <div class="row mb-3">
                             <div class="col-md-4">
@@ -283,7 +266,6 @@
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
                 
                 <!-- Form buttons -->
@@ -293,14 +275,12 @@
                     </a>
                     
                     <div>
-                        {% if not is_new %}
                         <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
                             <i class="fas fa-trash me-1"></i> Usuń
                         </button>
-                        {% endif %}
                         
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> {% if is_new %}Dodaj partnera{% else %}Zapisz zmiany{% endif %}
+                            <i class="fas fa-save me-1"></i> Zapisz zmiany
                         </button>
                     </div>
                 </div>
@@ -308,7 +288,6 @@
         </div>
     </div>
     
-    {% if not is_new %}
     <!-- Delete confirmation modal -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -331,7 +310,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -526,65 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return regex.test(email);
     }
     
-    // VAT verification button
-    $('#verifyVATBtn').on('click', function(e) {
-        // Only prevent default if we're in create mode
-        {% if is_new %}
-        e.preventDefault();
-        
-        const country = $('#id_country').val();
-        const vatNumber = $('#id_vat_number').val();
-        
-        if (!country || !vatNumber) {
-            alert('Wybierz kraj i wprowadź numer VAT.');
-            return;
-        }
-        
-        // Show spinner
-        const button = $(this);
-        const originalText = button.html();
-        button.html('<span class="spinner-border spinner-border-sm me-1"></span> Weryfikacja...');
-        button.prop('disabled', true);
-        
-        // Call VAT verification API
-        $.ajax({
-            url: "/partner/api/verify-vat/",
-            type: 'GET',
-            data: {
-                country: country,
-                vat_number: vatNumber
-            },
-            success: function(response) {
-                // Reset button
-                button.html(originalText);
-                button.prop('disabled', false);
-                
-                if (response.vat_verified) {
-                    // Auto-fill verified fields
-                    if (response.data) {
-                        if (response.data.name) $('#id_name').val(response.data.name);
-                        if (response.data.city) $('#id_city').val(response.data.city);
-                        if (response.data.street_name) $('#id_street_name').val(response.data.street_name);
-                        if (response.data.building_number) $('#id_building_number').val(response.data.building_number);
-                        if (response.data.postal_code) $('#id_postal_code').val(response.data.postal_code);
-                    }
-                    
-                    alert('Weryfikacja VAT zakończona pomyślnie. Dane firmy zostały uzupełnione.');
-                } else {
-                    alert('Weryfikacja nie powiodła się. ' + (response.message || 'Sprawdź poprawność numeru VAT.'));
-                }
-            },
-            error: function() {
-                // Reset button
-                button.html(originalText);
-                button.prop('disabled', false);
-                
-                alert('Wystąpił błąd podczas weryfikacji VAT.');
-            }
-        });
-        {% endif %}
-    });
-    
     // Form validation before submit
     $('#partnerForm').on('submit', function(e) {
         const selectedEmails = emailContactsSelect.val();
@@ -639,6 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .country-dropdown-menu {
     border: 1px solid #ced4da;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    z-index: 1050;
 }
 
 .dropdown-toggle {

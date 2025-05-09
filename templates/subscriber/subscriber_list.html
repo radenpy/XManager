@@ -44,19 +44,23 @@
                                 <span class="filter-badge badge bg-primary ms-1 d-none" id="partnerFilterBadge">0</span>
                             </button>
                             <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="partnerFilterDropdown">
-                                <div style="max-height: 200px; overflow-y: auto;">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj firmy..." id="partnerSearchInput">
+                                </div>
+                                <div style="max-height: 200px; overflow-y: auto;" id="partnerFilterList">
                                     {% for partner in all_partners|dictsort:"name" %}
-                                    <div class="form-check small">
+                                    <div class="form-check small partner-filter-item">
                                         <input class="form-check-input filter-checkbox" type="checkbox" name="partner" value="{{ partner.id }}" id="filter_partner_{{ partner.id }}" 
                                             {% if partner.id|stringformat:"i" in selected_partners %}checked{% endif %}
                                         >
-                                        <label class="form-check-label" for="filter_partner_{{ partner.id }}">
+                                        <label class="form-check-label" for="filter_partner_{{ partner.id }}" data-search-text="{{ partner.name|lower }}">
                                             {{ partner.name }}
                                         </label>
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <div class="d-flex justify-content-end mt-2">
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="partner">Zaznacz wszystkie</button>
                                     <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
                                         <i class="fas fa-filter me-1"></i> Filtruj
                                     </button>
@@ -72,19 +76,23 @@
                                 <span class="filter-badge badge bg-primary ms-1 d-none" id="groupFilterBadge">0</span>
                             </button>
                             <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="groupFilterDropdown">
-                                <div style="max-height: 200px; overflow-y: auto;">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj grupy..." id="groupSearchInput">
+                                </div>
+                                <div style="max-height: 200px; overflow-y: auto;" id="groupFilterList">
                                     {% for group in subscriber_groups %}
-                                    <div class="form-check small">
+                                    <div class="form-check small group-filter-item">
                                         <input class="form-check-input filter-checkbox" type="checkbox" name="group" value="{{ group.id }}" id="filter_group_{{ group.id }}"
                                             {% if group.id|stringformat:"i" in selected_groups %}checked{% endif %}
                                         >
-                                        <label class="form-check-label" for="filter_group_{{ group.id }}">
+                                        <label class="form-check-label" for="filter_group_{{ group.id }}" data-search-text="{{ group.group_name|lower }}">
                                             {{ group.group_name }}
                                         </label>
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <div class="d-flex justify-content-end mt-2">
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="group">Zaznacz wszystkie</button>
                                     <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
                                         <i class="fas fa-filter me-1"></i> Filtruj
                                     </button>
@@ -368,6 +376,7 @@
                                     <input class="form-check-input" type="checkbox" id="selectAllSubscribers" onclick="toggleCheckAll(this)">
                                 </div>
                             </th>
+                            <th scope="col" class="text-center" style="width: 20px;">#</th>  <!-- Nowa kolumna numeracji -->
                             <th scope="col">Email</th>
                             <th scope="col">Nazwa</th>
                             <th scope="col">Imię</th>
@@ -386,6 +395,7 @@
                                     <input class="form-check-input subscriber-checkbox" type="checkbox" name="subscriber_ids" value="{{ subscriber.id }}" onclick="updateBulkActions()">
                                 </div>
                             </td>
+                            <td class="text-center">{{ page_obj.start_index|add:forloop.counter0 }}</td>  <!-- Nowa kolumna z numeracją -->
                             <td>{{ subscriber.email }}</td>
                             <td>{{ subscriber.common_name|default:"-" }}</td>
                             <td>{{ subscriber.first_name|default:"-" }}</td>
@@ -743,6 +753,59 @@ function updateFilterCounters() {
     const currentPageSize = $('#pageSizeText').text().split(' ')[0];
     $('#pageSizeText').text(currentPageSize + ' rekordów');
 }
+
+// Filter search functionality
+$('.search-filter').on('input', function() {
+    const searchText = $(this).val().toLowerCase();
+    const filterType = $(this).attr('id').includes('partner') ? 'partner' : 'group';
+    const items = filterType === 'partner' ? $('.partner-filter-item') : $('.group-filter-item');
+    
+    if (searchText.length === 0) {
+        // Show all items if search is empty
+        items.show();
+    } else {
+        // Filter items based on search text
+        items.each(function() {
+            const itemText = $(this).find('label').data('search-text');
+            if (itemText.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+});
+
+// "Select All" button functionality
+$('.filter-select-all').on('click', function() {
+    const target = $(this).data('target');
+    const checkboxes = target === 'partner' 
+        ? $('.partner-filter-item:visible input[type="checkbox"]') 
+        : $('.group-filter-item:visible input[type="checkbox"]');
+    
+    // Check if all visible checkboxes are checked
+    const allChecked = checkboxes.length === checkboxes.filter(':checked').length;
+    
+    // Toggle checkboxes
+    checkboxes.prop('checked', !allChecked);
+    
+    // Update filter counters
+    updateFilterCounters();
+});
+
+// Clear search fields when dropdown is closed
+$('.dropdown').on('hidden.bs.dropdown', function() {
+    const searchInput = $(this).find('.search-filter');
+    if (searchInput.length) {
+        searchInput.val('');
+        // Reset visibility of all items
+        if (searchInput.attr('id').includes('partner')) {
+            $('.partner-filter-item').show();
+        } else {
+            $('.group-filter-item').show();
+        }
+    }
+});
 
 // Inicjalizacja stanu po załadowaniu strony
 document.addEventListener('DOMContentLoaded', function() {

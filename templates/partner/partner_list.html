@@ -12,53 +12,258 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Wyszukiwarka -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" action="{% url 'partner:partner_list' %}" class="row g-3">
+    {% csrf_token %}
+    
+    <!-- Search and Filters - Compact Wide Bar -->
+    <div class="card mb-2">
+        <div class="card-body py-2">
+            <form method="get" action="{% url 'partner:partner_list' %}" id="filterForm" class="row align-items-center">
+                <!-- Left section - Search -->
                 <div class="col-md-4">
-                    <div class="input-group">
-                        {{ filter_form.search }}
-                        <button class="btn btn-outline-primary" type="submit">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control form-control-sm" name="search" 
+                               placeholder="Szukaj po nazwie, NIP, mieście..." 
+                               value="{{ search_query|default:'' }}">
+                        <button class="btn btn-outline-primary btn-sm" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    {{ filter_form.country }}
+                
+                <!-- Middle section - Filter buttons -->
+                <div class="col-md-6">
+                    <div class="d-flex flex-wrap gap-2">
+                        <!-- Filtr: Kraj -->
+<div class="dropdown">
+    <button class="btn btn-sm btn-light filter-btn" type="button" id="countryFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-globe"></i>
+        <span class="ms-1">Kraje</span>
+        <span class="filter-badge badge bg-primary ms-1 d-none" id="countryFilterBadge">0</span>
+    </button>
+    <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="countryFilterDropdown">
+        <!-- Add search input -->
+        <div class="mb-2">
+            <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj kraju..." id="countrySearchInput">
+        </div>
+        <div style="max-height: 200px; overflow-y: auto;" id="countryFilterList">
+            {% for country_code, country_name in countries %}
+            <div class="form-check small country-filter-item">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="country" value="{{ country_code }}" id="filter_country_{{ country_code }}" 
+                    {% if country_code in selected_countries %}checked{% endif %}
+                >
+                <label class="form-check-label" for="filter_country_{{ country_code }}" data-search-text="{{ country_name|lower }}">
+                    <span class="flag-icon flag-icon-{{ country_code|lower }} me-1"></span>
+                    {{ country_name }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="country">Zaznacz wszystkie</button>
+            <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                <i class="fas fa-filter me-1"></i> Filtruj
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Filtr: Miasto -->
+<div class="dropdown">
+    <button class="btn btn-sm btn-light filter-btn" type="button" id="cityFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-city"></i>
+        <span class="ms-1">Miasta</span>
+        <span class="filter-badge badge bg-primary ms-1 d-none" id="cityFilterBadge">0</span>
+    </button>
+    <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="cityFilterDropdown">
+        <!-- Add search input -->
+        <div class="mb-2">
+            <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj miasta..." id="citySearchInput">
+        </div>
+        <div style="max-height: 200px; overflow-y: auto;" id="cityFilterList">
+            {% for city in cities %}
+            <div class="form-check small city-filter-item">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="city" value="{{ city }}" id="filter_city_{{ city|slugify }}"
+                    {% if city in selected_cities %}checked{% endif %}
+                >
+                <label class="form-check-label" for="filter_city_{{ city|slugify }}" data-search-text="{{ city|lower }}">
+                    {{ city }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="city">Zaznacz wszystkie</button>
+            <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                <i class="fas fa-filter me-1"></i> Filtruj
+            </button>
+        </div>
+    </div>
+</div>
+                        
+                        <!-- Filtr: VAT -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="vatStatusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="ms-1">Status VAT</span>
+                                <span class="filter-badge badge bg-primary ms-1 {% if not selected_status %}d-none{% endif %}" id="vatStatusFilterBadge">
+                                    {% if selected_status %}1{% endif %}
+                                </span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="min-width: 200px; font-size: 0.8rem;" aria-labelledby="vatStatusFilterDropdown">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_all" value="" {% if not selected_status %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_all">Wszystkie</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_verified" value="verified" {% if selected_status == 'verified' %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_verified">Aktywny</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_unverified" value="unverified" {% if selected_status == 'unverified' %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_unverified">Nieaktywny</label>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                                        <i class="fas fa-filter me-1"></i> Filtruj
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtr: Ilość rekordów na stronę -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="pageSizeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-list"></i>
+                                <span class="ms-1" id="pageSizeText">{{ selected_page_size|default:default_page_size }} rekordów</span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="font-size: 0.8rem;" aria-labelledby="pageSizeFilterDropdown">
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '50' %}active{% endif %}" data-page-size="50">
+                                    50 rekordów
+                                    {% if selected_page_size == '50' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '100' %}active{% endif %}" data-page-size="100">
+                                    100 rekordów
+                                    {% if selected_page_size == '100' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '200' %}active{% endif %}" data-page-size="200">
+                                    200 rekordów
+                                    {% if selected_page_size == '200' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '500' %}active{% endif %}" data-page-size="500">
+                                    500 rekordów
+                                    {% if selected_page_size == '500' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ filter_form.status }}
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+                
+                <!-- Right section - Action buttons -->
+                <div class="col-md-2 text-end">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-filter me-1"></i> Filtruj
+                    </button>
+                    
+                    <a href="{% url 'partner:partner_list' %}" class="btn btn-sm btn-outline-secondary ms-1">
+                        <i class="fas fa-undo me-1"></i> Reset
+                    </a>
                 </div>
             </form>
         </div>
     </div>
+    
+    <!-- Active Filters Display -->
+    {% if search_query or selected_countries or selected_cities or selected_status %}
+    <div class="card mb-2">
+        <div class="card-body py-2">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted small me-2">Aktywne filtry:</span>
+                
+                {% if search_query %}
+                <div class="active-filter">
+                    <span class="small">Wyszukiwanie: "{{ search_query }}"</span>
+                    <a href="{% url 'partner:partner_list' %}?{% for k, v in request.GET.items %}{% if k != 'search' and k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if selected_countries %}
+                {% for country_code in selected_countries %}
+                <div class="active-filter">
+                    <span class="badge badge-group">Kraj: 
+                    {% for code, name in countries %}
+                        {% if code == country_code %}
+                            <span class="flag-icon flag-icon-{{ code|lower }} me-1"></span> {{ name }}
+                        {% endif %}
+                    {% endfor %}
+                    </span>
+                    <a href="{% url 'partner:partner_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for c_code in selected_countries %}{% if c_code != country_code %}country={{ c_code }}&{% endif %}{% endfor %}{% for city in selected_cities %}city={{ city }}&{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                </div>
+                {% endfor %}
+                {% endif %}
+                
+                {% if selected_cities %}
+                {% for city in selected_cities %}
+                <div class="active-filter">
+                    <span class="badge badge-company">Miasto: {{ city }}</span>
+                    <a href="{% url 'partner:partner_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for country_code in selected_countries %}country={{ country_code }}&{% endfor %}{% for c in selected_cities %}{% if c != city %}city={{ c }}&{% endif %}{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                </div>
+                {% endfor %}
+                {% endif %}
+                
+                {% if selected_status %}
+                <div class="active-filter">
+                    <span class="small">
+                        Status VAT: 
+                        {% if selected_status == 'verified' %}
+                            <span class="badge badge-active">Aktywny</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Nieaktywny</span>
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'partner:partner_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for country_code in selected_countries %}country={{ country_code }}&{% endfor %}{% for city in selected_cities %}city={{ city }}&{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="ms-auto">
+                    <a href="{% url 'partner:partner_list' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Wyczyść wszystkie
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Lista partnerów -->
     <div class="card">
         <div class="card-body">
             {% if partners %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-sm">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
+                            <th scope="col">#</th>
                             <th scope="col">Nazwa</th>
                             <th scope="col">Kraj</th>
                             <th scope="col">VAT</th>
                             <th scope="col">Miasto</th>
                             <th scope="col">Kontakty</th>
-                            <th scope="col">VAT</th>
+                            <th scope="col">Status VAT</th>
                             <th scope="col">Akcje</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for partner in partners %}
                         <tr>
-                            <td>{{ partner.id }}</td>
+                            <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                             <td>{{ partner.name }}</td>
                             <td>
                                 {% if partner.country %}
@@ -71,28 +276,31 @@
                             <td>{{ partner.get_full_vat_number }}</td>
                             <td>{{ partner.city|default:"-" }}</td>
                             <td>
-                                <span class="badge bg-info">{{ partner.emails.count }}</span>
+                                <span class="badge badge-company">{{ partner.emails.count }}</span>
                             </td>
                             <td>
                                 {% if partner.is_verified %}
-                                    <span class="badge bg-success">Aktywny</span>
+                                    <span class="badge badge-active">Aktywny</span>
                                 {% else %}
-                                    <span class="badge bg-warning">Nieaktywny</span>
+                                    <span class="badge badge-inactive">Nieaktywny</span>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{% url 'partner:partner_update' partner.pk %}" class="btn btn-sm btn-outline-secondary">
+                                    <a href="{% url 'partner:partner_update' partner.pk %}" class="btn btn-sm btn-outline-secondary btn-action" title="Edytuj">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form method="post" action="{% url 'partner:partner_delete' partner.pk %}" 
                                           onsubmit="return confirm('Czy na pewno chcesz usunąć tego partnera?');" 
                                           style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger btn-action" title="Usuń">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    <a href="{% url 'partner:verify_vat' partner.pk %}" class="btn btn-sm btn-outline-info btn-action" title="Weryfikuj VAT">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -104,15 +312,15 @@
             <!-- Paginacja -->
             {% if is_paginated %}
             <nav aria-label="Nawigacja stronicowania">
-                <ul class="pagination justify-content-center">
+                <ul class="pagination pagination-sm justify-content-center mt-3">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Pierwsza">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Pierwsza">
                             <span aria-hidden="true">&laquo;&laquo;</span>
                         </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Poprzednia">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Poprzednia">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -122,18 +330,20 @@
                         {% if page_obj.number == i %}
                             <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
                         {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ i }}</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                            </li>
                         {% endif %}
                     {% endfor %}
                     
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Następna">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Następna">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.country %}&country={{ request.GET.country }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" aria-label="Ostatnia">
+                        <a class="page-link" href="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Ostatnia">
                             <span aria-hidden="true">&raquo;&raquo;</span>
                         </a>
                     </li>
@@ -141,6 +351,12 @@
                 </ul>
             </nav>
             {% endif %}
+            
+            <!-- Dodana informacja o liczbie wyświetlonych firm -->
+            <div class="text-end mt-3">
+                <span class="text-muted small">Wyświetlono {{ partners|length }} z {% if paginator %}{{ paginator.count }}{% else %}{{ partners|length }}{% endif %} firm</span>
+            </div>
+            
             {% else %}
             <div class="alert alert-info">
                 <i class="fas fa-info-circle me-2"></i> Brak partnerów do wyświetlenia.
@@ -148,4 +364,154 @@
             {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funkcja aktualizująca liczniki filtrów
+function updateFilterCounters() {
+    const countryCount = $('input[name="country"]:checked').length;
+    const cityCount = $('input[name="city"]:checked').length;
+    const statusSelected = $('input[name="status"]:checked').val() !== '';
+    
+    // Update country filter badge
+    if (countryCount > 0) {
+        $('#countryFilterBadge').text(countryCount).removeClass('d-none');
+    } else {
+        $('#countryFilterBadge').addClass('d-none');
+    }
+    
+    // Update city filter badge
+    if (cityCount > 0) {
+        $('#cityFilterBadge').text(cityCount).removeClass('d-none');
+    } else {
+        $('#cityFilterBadge').addClass('d-none');
+    }
+    
+    // Update vat status filter badge
+    if (statusSelected) {
+        $('#vatStatusFilterBadge').removeClass('d-none');
+    } else {
+        $('#vatStatusFilterBadge').addClass('d-none');
+    }
+    
+    // Update page size text
+    const defaultPageSize = "{{ default_page_size|default:'50' }}";
+    const currentPageSize = $('#pageSizeText').text().split(' ')[0];
+    $('#pageSizeText').text(currentPageSize + ' rekordów');
+}
+
+// Inicjalizacja stanu po załadowaniu strony
+document.addEventListener('DOMContentLoaded', function() {
+    // Obsługa dropdownów filtrów
+    
+    // Radio button change handler (for vat status)
+    $('input[type=radio][name=status]').on('change', function() {
+        updateFilterCounters();
+    });
+    
+    // Obsługa bezpośredniego wyboru rozmiaru strony
+    $('.page-size-item').on('click', function(e) {
+        e.preventDefault();
+        
+        // Pobierz wybrany rozmiar strony
+        const pageSize = $(this).data('page-size');
+        
+        // Aktualizuj tekst w przycisku dropdown
+        $('#pageSizeText').text(pageSize + ' rekordów');
+        
+        // Dodaj ukryte pole z rozmiarem strony do formularza
+        let pageSizeInput = $('#filterForm input[name="page_size"]');
+        if (pageSizeInput.length === 0) {
+            pageSizeInput = $('<input>').attr({
+                type: 'hidden',
+                name: 'page_size',
+                id: 'page_size_input'
+            }).appendTo('#filterForm');
+        }
+        pageSizeInput.val(pageSize);
+        
+        // Wyślij formularz
+        $('#filterForm').submit();
+    });
+    
+    // Prevent dropdown from closing when clicking inside (except for page-size-item)
+    $('.dropdown-menu').on('click', function(e) {
+        if (!$(e.target).hasClass('page-size-item') && 
+            !$(e.target).parent().hasClass('page-size-item')) {
+            e.stopPropagation();
+        }
+    });
+    
+    // Submit form when filter button clicked
+    $('.filter-submit-btn').on('click', function() {
+        updateFilterCounters();
+        // Close the dropdown
+        $(this).closest('.dropdown-menu').prev('.dropdown-toggle').dropdown('toggle');
+        // Submit the form
+        $('#filterForm').submit();
+    });
+    
+    // Update filter checkbox handling
+    $('.filter-checkbox').on('change', function() {
+        updateFilterCounters();
+    });
+    
+    // Initialize filter counters
+    updateFilterCounters();
+});
+
+    // Filter search functionality
+$('.search-filter').on('input', function() {
+    const searchText = $(this).val().toLowerCase();
+    const filterType = $(this).attr('id').includes('country') ? 'country' : 'city';
+    const items = filterType === 'country' ? $('.country-filter-item') : $('.city-filter-item');
+    
+    if (searchText.length === 0) {
+        // Show all items if search is empty
+        items.show();
+    } else {
+        // Filter items based on search text
+        items.each(function() {
+            const itemText = $(this).find('label').data('search-text');
+            if (itemText.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+});
+
+// "Select All" button functionality
+$('.filter-select-all').on('click', function() {
+    const target = $(this).data('target');
+    const checkboxes = target === 'country' 
+        ? $('.country-filter-item:visible input[type="checkbox"]') 
+        : $('.city-filter-item:visible input[type="checkbox"]');
+    
+    // Check if all visible checkboxes are checked
+    const allChecked = checkboxes.length === checkboxes.filter(':checked').length;
+    
+    // Toggle checkboxes
+    checkboxes.prop('checked', !allChecked);
+    
+    // Update filter counters
+    updateFilterCounters();
+});
+
+// Clear search fields when dropdown is closed
+$('.dropdown').on('hidden.bs.dropdown', function() {
+    const searchInput = $(this).find('.search-filter');
+    if (searchInput.length) {
+        searchInput.val('');
+        // Reset visibility of all items
+        if (searchInput.attr('id').includes('country')) {
+            $('.country-filter-item').show();
+        } else {
+            $('.city-filter-item').show();
+        }
+    }
+});
+</script>
 {% endblock %}

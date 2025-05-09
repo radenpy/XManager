@@ -1,0 +1,784 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_new %}Dodaj partnera{% else %}Edytuj partnera{% endif %} | XManager{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'partner/css/partner_form.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block page_title %}{% if is_new %}Dodaj partnera{% else %}Edytuj partnera: {{ partner.name }}{% endif %}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'partner:partner_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Powrót do listy
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{% if is_new %}{% url 'partner:partner_create' %}{% else %}{% url 'partner:partner_update' partner.pk %}{% endif %}" id="partnerForm">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Błędy formularza:</h5>
+                    <ul class="mb-0">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Tabs for form sections -->
+                <ul class="nav nav-tabs mb-3" id="partnerFormTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="main-data-tab" data-bs-toggle="tab" data-bs-target="#main-data" type="button" role="tab" aria-controls="main-data" aria-selected="true">
+                            <i class="fas fa-info-circle me-1"></i> Dane podstawowe
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">
+                            <i class="fas fa-envelope me-1"></i> Powiązani Subskrybenci
+                        </button>
+                    </li>
+                    
+                    {% if not is_new %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="verification-tab" data-bs-toggle="tab" data-bs-target="#verification" type="button" role="tab" aria-controls="verification" aria-selected="false">
+                            <i class="fas fa-check-circle me-1"></i> Weryfikacja VAT
+                        </button>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Tab content -->
+                <div class="tab-content" id="partnerFormTabContent">
+                    <!-- Main data tab -->
+                    <div class="tab-pane fade show active" id="main-data" role="tabpanel" aria-labelledby="main-data-tab">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.country.id_for_label }}" class="form-label">Kraj</label>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start country-dropdown-button" type="button" id="countryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {% if form.country.value %}
+                                            {% for code, name in countries %}
+                                                {% if code == form.country.value %}{{ name }}{% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            1. Wybierz kraj
+                                        {% endif %}
+                                    </button>
+                                    <input type="hidden" name="country" id="{{ form.country.id_for_label }}" value="{{ form.country.value|default:'' }}" required>
+                                    <ul class="dropdown-menu country-dropdown-menu w-100" aria-labelledby="countryDropdownButton">
+                                        <li class="px-2 mb-2">
+                                            <input type="text" class="form-control form-control-sm" id="countrySearchInput" placeholder="Szukaj...">
+                                        </li>
+                                        <div class="country-items">
+                                            {% for code, name in countries %}
+                                                <li data-country-code="{{ code }}"><a class="dropdown-item country-item" href="#" data-code="{{ code }}">{{ name }}</a></li>
+                                            {% endfor %}
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.vat_number.id_for_label }}" class="form-label">Numer VAT</label>
+                                <div class="input-group vat-input-group">
+                                    <span class="input-group-text country-prefix">{% if form.country.value %}{{ form.country.value }}{% else %}--{% endif %}</span>
+                                    <input type="text" name="vat_number" id="{{ form.vat_number.id_for_label }}" class="form-control" value="{{ form.vat_number.value|default:'' }}" placeholder="2. Wpisz NIP/VAT" required>
+                                    <!-- Przycisk weryfikacji będzie dynamicznie dodawany przez JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Nazwa firmy</label>
+                                <input type="text" name="name" id="{{ form.name.id_for_label }}" class="form-control" value="{{ form.name.value|default:'' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Numer telefonu</label>
+                                <input type="text" name="phone_number" id="{{ form.phone_number.id_for_label }}" class="form-control" value="{{ form.phone_number.value|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.street_name.id_for_label }}" class="form-label">Ulica</label>
+                                <input type="text" name="street_name" id="{{ form.street_name.id_for_label }}" class="form-control" value="{{ form.street_name.value|default:'' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="{{ form.building_number.id_for_label }}" class="form-label">Nr budynku</label>
+                                <input type="text" name="building_number" id="{{ form.building_number.id_for_label }}" class="form-control" value="{{ form.building_number.value|default:'' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="{{ form.apartment_number.id_for_label }}" class="form-label">Nr lokalu</label>
+                                <input type="text" name="apartment_number" id="{{ form.apartment_number.id_for_label }}" class="form-control" value="{{ form.apartment_number.value|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.postal_code.id_for_label }}" class="form-label">Kod pocztowy</label>
+                                <input type="text" name="postal_code" id="{{ form.postal_code.id_for_label }}" class="form-control" value="{{ form.postal_code.value|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.city.id_for_label }}" class="form-label">Miasto</label>
+                                <input type="text" name="city" id="{{ form.city.id_for_label }}" class="form-control" value="{{ form.city.value|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="{{ form.additional_info.id_for_label }}" class="form-label">Dodatkowe informacje</label>
+                                <textarea name="additional_info" id="{{ form.additional_info.id_for_label }}" class="form-control" rows="3">{{ form.additional_info.value|default:'' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Powiązani Subskrybenci tab -->
+                    <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+                        <div class="mb-4">
+                            <label for="id_email_contacts" class="form-label mb-2">Powiąż subskrybentów (maksymalnie 10)</label>
+                            
+                            <!-- Uproszczona struktura dla wyboru subskrybentów -->
+                            <select name="email_contacts" id="id_email_contacts" class="form-select" multiple="multiple">
+                                {% if form.email_contacts.value %}
+                                    {% for subscriber in form.email_contacts.value %}
+                                        <option value="{{ subscriber.id }}" selected>{{ subscriber.email }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            
+                            <div id="selectedContactsCounter" class="mt-2 text-end">
+                                <span id="selectedCount">{{ form.email_contacts.value|default:"0"|length }}</span> z maksymalnie 10 kontaktów
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if not is_new %}
+                    <!-- Weryfikacja VAT tab -->
+                    <div class="tab-pane fade" id="verification" role="tabpanel" aria-labelledby="verification-tab">
+                        <div class="verification-status mb-4">
+                            <h5 class="mb-3">Aktualny status VAT</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Status:</strong> 
+                                        {% if partner.is_verified %}
+                                            <span class="badge badge-active">Aktywny</span>
+                                        {% else %}
+                                            <span class="badge badge-inactive">Nieaktywny</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-0"><strong>Numer VAT:</strong> {{ partner.get_full_vat_number }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Data ostatniej weryfikacji:</strong> 
+                                        {% if partner.verification_date %}
+                                            {{ partner.verification_date|date:"d.m.Y H:i" }}
+                                        {% else %}
+                                            <span class="text-muted">Brak danych</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-0"><strong>ID weryfikacji:</strong> 
+                                        {% if partner.verification_id %}
+                                            <code>{{ partner.verification_id }}</code>
+                                        {% else %}
+                                            <span class="text-muted">Brak danych</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'partner:verify_vat' partner.pk %}" class="btn btn-primary">
+                                <i class="fas fa-sync-alt me-1"></i> Weryfikuj ponownie
+                            </a>
+                        </div>
+                        
+                        {% if verification_history %}
+                        <h5 class="mb-3">Historia weryfikacji</h5>
+                        <div class="verification-history">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>ID weryfikacji</th>
+                                        <th>Wiadomość</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in verification_history %}
+                                    <tr>
+                                        <td>{{ entry.verification_date|date:"d.m.Y H:i" }}</td>
+                                        <td>
+                                            {% if entry.is_verified %}
+                                                <span class="badge badge-active">Aktywny</span>
+                                            {% else %}
+                                                <span class="badge badge-inactive">Nieaktywny</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><code>{{ entry.verification_id|default:"-" }}</code></td>
+                                        <td>{{ entry.message|default:"-" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Brak historii weryfikacji dla tego partnera.
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Form buttons -->
+                <div class="d-flex mt-4 border-top pt-3 justify-content-between">
+                    <a href="{% url 'partner:partner_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Anuluj
+                    </a>
+                    
+                    <div>
+                        {% if not is_new %}
+                        <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#deletePartnerModal">
+                            <i class="fas fa-trash me-1"></i> Usuń
+                        </button>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> {% if is_new %}Dodaj partnera{% else %}Zapisz zmiany{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if not is_new %}
+    <!-- Modal potwierdzenia usunięcia -->
+    <div class="modal fade" id="deletePartnerModal" tabindex="-1" aria-labelledby="deletePartnerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePartnerModalLabel">Potwierdź usunięcie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Czy na pewno chcesz usunąć partnera <strong>{{ partner.name }}</strong>?</p>
+                    <p class="text-danger mb-0"><strong>Uwaga:</strong> Ta operacja jest nieodwracalna.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <form method="post" action="{% url 'partner:partner_delete' partner.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Usuń partnera</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Loader overlay for API operations -->
+    <div class="modal" id="loaderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Przetwarzanie...</span>
+                    </div>
+                    <h5 id="loaderMessage">Trwa komunikacja z API</h5>
+                    <p class="text-muted" id="loaderDetails">Prosimy o cierpliwość...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Definiujemy listę krajów UE
+    const EU_COUNTRY_CODES = [
+        'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+        'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'
+    ];
+    
+    // Initialize tooltips if Bootstrap includes them
+    try {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    } catch(e) {
+        console.log('Tooltips initialization skipped');
+    }
+    
+    // Przesuń kraj PL na początek listy krajów
+    movePolandToTop();
+    
+    // Country dropdown functionality
+    initCountryDropdown();
+    
+    // Initialize subscriber select with ajax search
+    initSubscriberSelect();
+    
+    // Form validation
+    initFormValidation();
+    
+    // Activate first tab on page load
+    document.querySelector('#partnerFormTabs button[data-bs-toggle="tab"]').click();
+    
+    /**
+     * Move Poland to the top of the country list
+     */
+    function movePolandToTop() {
+        const countryItems = document.querySelector('.country-items');
+        if (!countryItems) return;
+        
+        const polandItem = document.querySelector('[data-country-code="PL"]');
+        const germanyItem = document.querySelector('[data-country-code="DE"]');
+        const ukItem = document.querySelector('[data-country-code="GB"]');
+        
+        if (polandItem && countryItems.firstChild) {
+            countryItems.insertBefore(polandItem, countryItems.firstChild);
+        }
+        
+        if (germanyItem && countryItems.childNodes[1]) {
+            countryItems.insertBefore(germanyItem, countryItems.childNodes[1]);
+        }
+        
+        if (ukItem && countryItems.childNodes[2]) {
+            countryItems.insertBefore(ukItem, countryItems.childNodes[2]);
+        }
+    }
+    
+    /**
+     * Initialize country dropdown functionality
+     */
+    function initCountryDropdown() {
+        const countryDropdown = document.getElementById('countryDropdownButton');
+        const countryInput = document.getElementById('{{ form.country.id_for_label }}');
+        const countrySearchInput = document.getElementById('countrySearchInput');
+        const countryItems = document.querySelectorAll('.country-item');
+        
+        // Set initial country prefix
+        const countryPrefixElement = document.querySelector('.country-prefix');
+        countryPrefixElement.textContent = countryInput.value || '--';
+        
+        // Initialize verification button based on current country
+        updateVerificationButton(countryInput.value);
+
+        // Filter countries when searching
+        countrySearchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            document.querySelectorAll('.country-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.parentElement.style.display = '';
+                } else {
+                    item.parentElement.style.display = 'none';
+                }
+            });
+        });
+        
+        // Handle country selection
+        countryItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const code = this.getAttribute('data-code');
+                const name = this.textContent;
+                
+                // Update hidden input and dropdown button text
+                countryInput.value = code;
+                countryDropdown.textContent = name;
+                
+                // Update country prefix for VAT number
+                countryPrefixElement.textContent = code || '--';
+                
+                // Update verification button based on selected country
+                updateVerificationButton(code);
+                
+                // Hide dropdown
+                const dropdownInstance = bootstrap.Dropdown.getInstance(countryDropdown);
+                if (dropdownInstance) {
+                    dropdownInstance.hide();
+                }
+            });
+        });
+        
+        // Clear search when dropdown is closed
+        document.querySelector('.dropdown').addEventListener('hidden.bs.dropdown', function() {
+            countrySearchInput.value = '';
+            document.querySelectorAll('.country-item').forEach(item => {
+                item.parentElement.style.display = '';
+            });
+        });
+    }
+    
+    /**
+     * Update verification button based on selected country
+     */
+    function updateVerificationButton(countryCode) {
+        const btnContainer = document.querySelector('.vat-input-group');
+        const currentBtn = document.getElementById('verificationBtn');
+        
+        // Remove existing button if it exists
+        if (currentBtn) {
+            currentBtn.remove();
+        }
+        
+        let buttonHTML = '';
+        
+        // Create appropriate button based on country
+        if (countryCode === 'PL') {
+            buttonHTML = `
+                <button type="button" class="btn btn-primary" id="verificationBtn" data-api="mf">
+                    <i class="fas fa-database me-1"></i> Pobierz dane z API MF
+                </button>
+            `;
+        } else if (EU_COUNTRY_CODES.includes(countryCode)) {
+            buttonHTML = `
+                <button type="button" class="btn btn-success" id="verificationBtn" data-api="vies">
+                    <i class="fas fa-check-circle me-1"></i> Weryfikuj w VIES EU
+                </button>
+            `;
+        }
+        
+        // Add new button if any was generated
+        if (buttonHTML) {
+            btnContainer.insertAdjacentHTML('beforeend', buttonHTML);
+            
+            // Add event listener to the new button
+            document.getElementById('verificationBtn').addEventListener('click', handleVerificationClick);
+        }
+    }
+    
+    /**
+     * Handle verification button click
+     */
+    function handleVerificationClick(e) {
+        const apiType = e.currentTarget.getAttribute('data-api');
+        const country = $('#{{ form.country.id_for_label }}').val();
+        const vatNumber = $('#{{ form.vat_number.id_for_label }}').val();
+        
+        if (!vatNumber) {
+            showAlert('Wprowadź numer VAT, aby przeprowadzić weryfikację.', 'danger');
+            return;
+        }
+        
+        // Show loader
+        $('#loaderMessage').text(`Weryfikacja w ${apiType === 'mf' ? 'API MF' : 'VIES EU'}`);
+        $('#loaderDetails').text(`Trwa komunikacja z ${apiType === 'mf' ? 'API Ministerstwa Finansów' : 'systemem VIES'}...`);
+        $('#loaderModal').modal('show');
+        
+        // Call appropriate API
+        const endpoint = apiType === 'mf' 
+            ? "{% url 'partner:fetch_mf_data' %}" 
+            : "{% url 'partner:fetch_vies_data' %}";
+        
+        $.ajax({
+            url: endpoint,
+            type: 'GET',
+            data: apiType === 'mf' ? { nip: vatNumber } : { country: country, vat: vatNumber },
+            timeout: 20000,
+            cache: false,
+            success: function(response) {
+                // Hide loader
+                $('#loaderModal').modal('hide');
+                
+                // Add small delay for auto-fill
+                setTimeout(function() {
+                    if (response.success) {
+                        // Auto-fill form fields
+                        autoFillField('{{ form.name.id_for_label }}', response.data.name);
+                        autoFillField('{{ form.street_name.id_for_label }}', response.data.street_name);
+                        autoFillField('{{ form.building_number.id_for_label }}', response.data.building_number);
+                        autoFillField('{{ form.apartment_number.id_for_label }}', response.data.apartment_number);
+                        autoFillField('{{ form.postal_code.id_for_label }}', response.data.postal_code);
+                        autoFillField('{{ form.city.id_for_label }}', response.data.city);
+                    } else {
+                        showAlert('Nie udało się pobrać danych: ' + response.message, 'warning');
+                    }
+                }, 300);
+            },
+            error: function(xhr, status, error) {
+                // Hide loader
+                $('#loaderModal').modal('hide');
+                
+                // Error handling
+                let errorMessage = `Wystąpił błąd podczas komunikacji z ${apiType === 'mf' ? 'API MF' : 'VIES EU'}.`;
+                if (status === 'timeout') {
+                    errorMessage = `Przekroczono czas oczekiwania na odpowiedź z ${apiType === 'mf' ? 'API MF' : 'VIES EU'}. Spróbuj ponownie później.`;
+                } else if (xhr.responseText) {
+                    try {
+                        const errorData = JSON.parse(xhr.responseText);
+                        if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                    } catch (e) {
+                        errorMessage += ` Błąd: ${error}. Status: ${xhr.status}`;
+                    }
+                }
+                
+                showAlert(errorMessage, 'danger');
+            },
+            complete: function() {
+                // Make sure loader is hidden
+                $('#loaderModal').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                $('body').css('padding-right', '');
+            }
+        });
+    }
+    
+    /**
+     * Initialize subscriber select with AJAX search - NAPRAWIONA WERSJA
+     */
+    function initSubscriberSelect() {
+        // Inicjalizacja Select2 dla emaili
+        setTimeout(function() {
+            const emailSelect = $('#id_email_contacts');
+            
+            // Zniszcz istniejący Select2 jeśli istnieje
+            if (emailSelect.hasClass('select2-hidden-accessible')) {
+                emailSelect.select2('destroy');
+            }
+            
+            // Inicjalizacja z naprawionymi opcjami
+            emailSelect.select2({
+                placeholder: 'Szukaj ...',
+                allowClear: true,
+                tags: true,
+                width: '100%',
+                maximumSelectionLength: 10,
+                dropdownParent: $('#contacts'),
+                language: {
+                    noResults: function() {
+                        return "Brak wyników. Wpisz adres email, aby utworzyć nowego subskrybenta.";
+                    },
+                    maximumSelected: function(e) {
+                        return "Możesz wybrać maksymalnie " + e.maximum + " subskrybentów";
+                    }
+                },
+                escapeMarkup: function(markup) {
+                    return markup; // Pozwól funkcji formatującej działać
+                },
+                ajax: {
+                    url: '/partner/api/subscribers/lookup/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term || '',
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.results.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.email,
+                                    first_name: item.first_name || '',
+                                    last_name: item.last_name || ''
+                                };
+                            }),
+                            pagination: {
+                                more: data.has_more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                templateResult: formatSubscriberResult,
+                templateSelection: formatSubscriberSelection,
+                createTag: function(params) {
+                    const term = $.trim(params.term);
+                    
+                    if (term === '') {
+                        return null;
+                    }
+                    
+                    // Sprawdź czy to poprawny email
+                    if (!isValidEmail(term)) {
+                        showAlert('Wprowadź poprawny adres email.', 'warning');
+                        return null;
+                    }
+                    
+                    return {
+                        id: term,
+                        text: term,
+                        newTag: true
+                    };
+                }
+            });
+            
+            // Ustawienie licznika wybranych elementów
+            emailSelect.on('change', function() {
+                const selectedCount = $(this).val() ? $(this).val().length : 0;
+                $('#selectedCount').text(selectedCount);
+                
+                if (selectedCount > 10) {
+                    $('#selectedContactsCounter').addClass('text-danger');
+                } else {
+                    $('#selectedContactsCounter').removeClass('text-danger');
+                }
+            });
+            
+            // Inicjalizuj licznik
+            const initialCount = emailSelect.val() ? emailSelect.val().length : 0;
+            $('#selectedCount').text(initialCount);
+            
+            // Obsługa zakładek - naprawiona wersja
+            $('#contacts-tab').on('shown.bs.tab', function() {
+                // Force reinitialization to fix display issues
+                emailSelect.select2('destroy');
+                initSubscriberSelect();
+            });
+        }, 100);
+    }
+    
+    /**
+     * Format subscriber dropdown results - NAPRAWIONA WERSJA
+     */
+    function formatSubscriberResult(subscriber) {
+        if (subscriber.loading) {
+            return "Wyszukiwanie...";
+        }
+        
+        if (subscriber.newTag) {
+            return $('<div><i class="fas fa-plus-circle"></i> Dodaj nowy email: <strong>' + escapeHtml(subscriber.text) + '</strong></div>');
+        }
+        
+        const name = subscriber.first_name || '';
+        const surname = subscriber.last_name || '';
+        let fullName = '';
+        
+        if (name || surname) {
+            fullName = '(' + name + ' ' + surname + ')';
+        }
+        
+        return $('<div>' + escapeHtml(subscriber.text) + ' <span class="text-muted">' + escapeHtml(fullName) + '</span></div>');
+    }
+    
+    /**
+     * Format subscriber selection display - NAPRAWIONA WERSJA
+     */
+    function formatSubscriberSelection(subscriber) {
+        return escapeHtml(subscriber.text);
+    }
+    
+    /**
+     * Helper function to escape HTML
+     */
+    function escapeHtml(text) {
+        if (!text) return '';
+        
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+    
+    /**
+     * Initialize form validation
+     */
+    function initFormValidation() {
+        $('#partnerForm').on('submit', function(e) {
+            const selectedEmails = $('#id_email_contacts').val();
+            
+            if (selectedEmails && selectedEmails.length > 10) {
+                e.preventDefault();
+                showAlert('Możesz wybrać maksymalnie 10 adresów email.', 'danger');
+                
+                // Switch to the contacts tab
+                $('#contacts-tab').tab('show');
+                return false;
+            }
+            
+            return true;
+        });
+    }
+    
+    /**
+     * Email validation function
+     */
+    function isValidEmail(email) {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(email);
+    }
+    
+    /**
+     * Show alert message
+     */
+    function showAlert(message, type) {
+        // Check if there's already an alert
+        let alertElement = document.querySelector('.alert-message');
+        
+        if (!alertElement) {
+            // Create alert element
+            alertElement = document.createElement('div');
+            alertElement.className = `alert alert-${type} alert-dismissible fade show alert-message`;
+            alertElement.role = 'alert';
+            
+            // Add alert before the form tabs
+            const formTabs = document.getElementById('partnerFormTabs');
+            formTabs.parentNode.insertBefore(alertElement, formTabs);
+        } else {
+            // Update existing alert
+            alertElement.className = `alert alert-${type} alert-dismissible fade show alert-message`;
+        }
+        
+        // Set content
+        alertElement.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Auto-hide after 5 seconds
+        setTimeout(function() {
+            if (alertElement.parentNode) {
+                const bsAlert = new bootstrap.Alert(alertElement);
+                bsAlert.close();
+            }
+        }, 5000);
+    }
+    
+    /**
+     * Auto-fill field with animation
+     */
+    function autoFillField(id, value) {
+        if (!value) return;
+        
+        const field = document.getElementById(id);
+        if (!field) return;
+        
+        field.value = value;
+        
+        // Add animation class
+        field.classList.add('field-autofilled');
+        
+        // Remove class after animation
+        setTimeout(function() {
+            field.classList.remove('field-autofilled');
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

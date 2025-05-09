@@ -3,7 +3,6 @@ body {
     font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #f8f9fa;
     font-size: 12px !important;
-    /* Base font size for everything */
 }
 
 /* Layout */
@@ -16,7 +15,6 @@ main {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1030;
     background-color: #1a365d !important;
-    /* Navy blue header */
 }
 
 .navbar .navbar-brand,
@@ -66,7 +64,6 @@ main {
 
 .sidebar .nav-link.active {
     color: #1a365d;
-    /* Updated to navy */
     background-color: rgba(26, 54, 93, 0.1);
 }
 
@@ -194,7 +191,7 @@ main {
 .input-group-sm>.form-control,
 .input-group-sm>.input-group-text,
 .input-group-sm>.btn {
-    font-size: 12px !important;
+    font-size: 11px !important;
     padding: 0.5rem 0.75rem;
     border-color: #e2e8f0;
     border-radius: 6px;
@@ -223,29 +220,6 @@ main {
 select[multiple] {
     height: auto;
     min-height: 120px;
-}
-
-/* Select2 styling */
-.select2-container--default .select2-selection--single,
-.select2-container--default .select2-selection--multiple {
-    border-color: #e2e8f0;
-    border-radius: 6px;
-}
-
-.select2-container--default .select2-selection--single {
-    height: 38px;
-    padding: 0.375rem 0.75rem;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 38px;
-}
-
-/* Ensure all Select2 dropdown options and selected items have consistent font size */
-.select2-container--default .select2-selection--multiple .select2-selection__choice,
-.select2-container--default .select2-results__option,
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    font-size: 12px !important;
 }
 
 /* Standardize all buttons */
@@ -323,7 +297,7 @@ select[multiple] {
     padding: 0.5rem !important;
     vertical-align: middle !important;
     line-height: 1.2;
-    font-size: 12px !important;
+    font-size: 11px !important;
 }
 
 .table tr {
@@ -333,7 +307,7 @@ select[multiple] {
 /* Badge styling */
 .badge {
     font-weight: 400;
-    font-size: 11px !important;
+    font-size: 10px !important;
     padding: 0.35em 0.65em;
     border-radius: 4px;
     display: inline-block;
@@ -536,126 +510,574 @@ td .btn-group {
     font-size: 12px !important;
 }
 
-/* Fix filter styles */
-.filter-btn {
-    border: 1px solid #dee2e6;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
+/* ============== PARTNER SPECIFIC STYLES ============== */
+
+/* Tabs styling */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #e9ecef #e9ecef #dee2e6;
+    isolation: isolate;
+}
+
+.nav-tabs .nav-link.active {
+    color: #212529;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+/* Country dropdown styling */
+.country-dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0.5rem 0;
+}
+
+.country-dropdown-menu .dropdown-item {
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+}
+
+.country-dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.country-dropdown-button {
+    text-align: left;
+    background-color: #fff;
+    border-color: #ced4da;
+    position: relative;
+    padding-left: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.country-dropdown-button::after {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* VAT number input group */
+.vat-input-group .country-prefix {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    min-width: 3rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.vat-input-group .form-control {
+    border-left: 0;
+}
+
+.vat-input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Subscriber select styling - Improved */
+.subscriber-select-container {
+    position: relative;
+}
+
+/* Select2 container fixes */
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+}
+
+/* Fix for the selected items in Select2 */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #f0f4f8 !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 4px !important;
+    padding: 2px 8px !important;
+    margin-right: 5px !important;
+    margin-top: 4px !important;
+    font-size: 12px !important;
+    color: #4a5568 !important;
+}
+
+/* Fix for the selection remove button (X) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #718096 !important;
+    margin-right: 4px !important;
+    margin-left: 0 !important;
+    border: none !important;
+    background: none !important;
+    float: none !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    font-size: 14px !important;
+    border-right: 0 !important;
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
+}
+
+/* Fix for the multiple X issue by ensuring proper display */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    display: inline !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #e53e3e !important;
+    background: none !important;
+}
+
+/* Fix search field padding */
+.select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+    margin-top: 3px !important;
+    padding: 0px 8px !important;
     font-size: 12px !important;
 }
 
-.filter-badge {
-    font-size: 10px !important;
-    padding: 0.2em 0.5em;
+/* Make dropdown cleaner */
+.select2-dropdown {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Active filter chip styles */
-.active-filter {
-    display: inline-flex;
-    align-items: center;
-    background-color: #f0f0f0;
-    border-radius: 30px;
-    padding: 0.25rem 0.75rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.25rem;
+.select2-results__option {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #edf2f7 !important;
+    color: #2d3748 !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #e2e8f0 !important;
+}
+
+/* Custom styling for subscriber result items */
+.subscriber-result {
+    padding: 5px 0;
+}
+
+.subscriber-result .subscriber-email {
+    font-weight: 500;
+}
+
+.subscriber-result .subscriber-name {
+    font-size: 0.85em;
+    color: #6c757d;
+}
+
+.new-email-option {
+    color: #28a745;
+    font-weight: 500;
+    padding: 5px 0;
+}
+
+/* Country items ordered with Poland first */
+.country-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.country-items li[data-country-code="PL"] {
+    order: -100 !important;
+}
+
+.country-items li[data-country-code="DE"] {
+    order: -99 !important;
+}
+
+.country-items li[data-country-code="GB"] {
+    order: -98 !important;
+}
+
+.country-items li[data-country-code="FR"] {
+    order: -97 !important;
+}
+
+/* Fix for removing X from selection */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove span {
+    display: none !important;
+}
+
+/* Dodatkowe style dla modala */
+.modal-backdrop {
+    z-index: 1040;
+}
+
+.modal {
+    z-index: 1050;
+}
+
+/* Poprawienie stylów dla listy krajów - sortowanie z Polską na początku */
+.country-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.country-items li[data-country-code="PL"] {
+    order: -100 !important;
+}
+
+.country-items li[data-country-code="DE"] {
+    order: -99 !important;
+}
+
+.country-items li[data-country-code="GB"] {
+    order: -98 !important;
+}
+
+.country-items li[data-country-code="FR"] {
+    order: -97 !important;
+}
+
+/* Animacja dla autouzupełnianych pól */
+.field-autofilled {
+    animation: highlight-field 2s ease;
+}
+
+@keyframes highlight-field {
+    0% {
+        background-color: #ffffff;
+    }
+
+    10% {
+        background-color: #d1e7dd;
+    }
+
+    90% {
+        background-color: #d1e7dd;
+    }
+
+    100% {
+        background-color: #ffffff;
+    }
+}
+
+/* SELECT2 - POPRAWIONE STYLE */
+
+/* Główny kontener */
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 100% !important;
+}
+
+/* Kontener dla trybu wielokrotnego wyboru */
+.select2-container--default .select2-selection--multiple {
+    min-height: 38px !important;
+    cursor: text;
+    padding: 4px 8px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+    background-color: #fff;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center !important;
+}
+
+/* Poprawka dla skupionego pola */
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #a0aec0 !important;
+    box-shadow: 0 0 0 0.15rem rgba(26, 54, 93, 0.15) !important;
+    outline: 0;
+}
+
+/* Kontener wewnętrzny dla elementów */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100%;
+}
+
+/* Wybrany element (tag) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #edf2f7 !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 4px !important;
+    box-sizing: border-box;
+    display: flex !important;
+    align-items: center !important;
+    margin: 2px 4px 2px 0 !important;
+    padding: 2px 6px 2px 20px !important;
+    position: relative !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px !important;
+    line-height: 1.5;
+    color: #4a5568 !important;
+}
+
+/* Przycisk usunięcia (X) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    display: block !important;
+    position: absolute !important;
+    left: 2px !important;
+    top: 2px !important;
+    color: #a0aec0 !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    line-height: 1;
+    padding: 0 !important;
+    width: 14px;
+    height: 14px;
+    text-align: center;
+    margin: 0 !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #e53e3e !important;
+    background-color: transparent !important;
+}
+
+/* Pole wyszukiwania */
+.select2-container--default .select2-selection--multiple .select2-search--inline {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.5;
+}
+
+.select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+    margin: 0 !important;
+    padding: 0 8px !important;
+    height: 28px !important;
+    min-width: 150px !important;
+    font-size: 11px !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #4a5568 !important;
+    font-family: inherit;
+}
+
+/* Dropdown menu */
+.select2-dropdown {
+    background-color: white;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    left: -100000px;
+    width: 100%;
+    z-index: 1051 !important;
+}
+
+/* Wyszukiwarka w dropdown */
+.select2-search--dropdown {
+    display: block;
+    padding: 8px;
+}
+
+.select2-search--dropdown .select2-search__field {
+    padding: 6px 8px !important;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    color: #4a5568 !important;
+    outline: none !important;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: #a0aec0 !important;
+    box-shadow: 0 0 0 0.15rem rgba(26, 54, 93, 0.15) !important;
+}
+
+/* Wyniki wyszukiwania */
+.select2-results {
+    display: block;
+}
+
+.select2-results__options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.select2-results__option {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+    color: #4a5568 !important;
+    line-height: 1.5;
+    user-select: none;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #e2e8f0 !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #edf2f7 !important;
+    color: #2d3748 !important;
+}
+
+/* "Dodaj nowy" element */
+.new-email-option {
+    display: flex !important;
+    align-items: center !important;
+    color: #2c7a7b !important;
     font-size: 11px !important;
 }
 
-.active-filter .badge {
+.new-email-option i {
+    margin-right: 6px !important;
+    color: #2c7a7b !important;
+    font-size: 13px !important;
+}
+
+.new-email-option strong {
+    font-weight: 600 !important;
+}
+
+/* Licznik wybranych */
+#selectedContactsCounter {
+    margin-top: 4px !important;
+    text-align: right;
+    font-size: 11px !important;
+    color: #718096 !important;
+}
+
+#selectedContactsCounter.text-danger {
+    color: #e53e3e !important;
+    font-weight: 500 !important;
+}
+
+/* Naprawiony problem pustej przestrzeni w dropdownie */
+.select2-results__option[role="group"] {
+    padding: 0 !important;
+}
+
+/* Popraw wyświetlanie elementu z pełnym imieniem i nazwiskiem */
+.subscriber-display {
+    font-size: 11px !important;
+    color: #4a5568 !important;
+}
+
+.subscriber-display .text-muted {
+    color: #718096 !important;
     font-size: 10px !important;
 }
 
-.active-filter .filter-remove {
-    color: #dc3545;
-    opacity: 0.7;
-    text-decoration: none;
+/* Napraw problem z wieloma elementami X w wybranym tagu */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove span {
+    display: none !important;
 }
 
-.active-filter .filter-remove:hover {
-    opacity: 1;
+/* Napraw wyświetlanie tagu w wybranym elemencie */
+.select2-selection__choice__display {
+    padding: 0 !important;
 }
 
-/* Styles for bulk actions section */
-.bulk-actions {
-    margin-bottom: 1.5rem;
+/* Załadowanie/brak wyników */
+.select2-results__message {
+    color: #718096 !important;
+    font-style: italic;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
 }
 
-.bulk-actions .card {
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* Napraw problem z wyświetlaniem selekta po zmianie zakładki */
+.select2-container {
+    z-index: 1050 !important;
 }
 
-.bulk-actions .card-body {
-    padding: 0.75rem 1rem;
+/* Style dla pola wyszukiwania */
+.select2-container .select2-search--inline {
+    float: left;
 }
 
-.bulk-actions .card-title {
-    font-size: 12px !important;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-    color: #4b5563;
+.select2-container .select2-search--inline .select2-search__field {
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    height: 30px !important;
+    vertical-align: middle !important;
+    box-sizing: border-box;
+    border: none;
+    font-size: 0.875rem;
+    max-width: 100%;
+    resize: none;
+    font-family: sans-serif;
+    overflow: hidden;
+    word-break: keep-all;
 }
 
-/* Action buttons container */
-.bulk-actions-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-}
+/* Poprawka dla przycisku X w Select2 - dodaj na końcu pliku CSS */
 
-/* Standardize page titles */
-.page-title,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
+/* Zwiększ widoczność przycisku X */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    color: #a0aec0 !important;
+    font-weight: bold !important;
     font-size: 14px !important;
-    font-weight: 600;
+    /* Powiększony rozmiar */
+    width: 18px !important;
+    /* Powiększona szerokość */
+    height: 100% !important;
+    /* Rozciągnięcie na pełną wysokość */
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* Fix scrollable area in dropdowns */
-.dropdown-menu .scrollable-area {
-    max-height: 180px;
-    overflow-y: auto;
-    margin-bottom: 0.5rem;
-    padding-right: 0.25rem;
+/* Efekt hover dla przycisku X */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #e53e3e !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Fix some specific dropdown menus */
-#companiesDropdown+.dropdown-menu,
-#groupsDropdown+.dropdown-menu {
-    min-width: 300px !important;
-    max-width: 400px !important;
+/* Dodaj wyraźny znak X jeśli standardowy jest niewidoczny */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove::before {
+    content: "×" !important;
+    /* Dodaj znak × */
+    display: block !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
 }
 
-/* VAT verification section styling */
-.vat-verification-result {
-    border-left: 4px solid #28a745;
-    padding-left: 15px;
-    margin: 15px 0;
-    font-size: 12px !important;
+/* Ukryj oryginalny tekst przycisku, jeśli istnieje */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove>* {
+    display: none !important;
 }
 
-.verification-details {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 0.5rem;
-    border: 1px solid #dee2e6;
-    font-size: 12px !important;
-}
-
-/* Fix login form */
-.login-form .form-label,
-.login-form .form-control {
-    font-size: 12px !important;
+/* Dostosuj padding dla tekstu, aby robić miejsce dla X */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    padding-left: 20px !important;
+    /* Zwiększ padding z lewej */
 }

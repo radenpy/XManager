@@ -136,9 +136,27 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         form.instance.updated_by = self.request.user
 
+        # Check if this is a draft save
+        is_draft = 'save_as_draft' in self.request.POST or 'is_draft' in self.request.POST
+
         # Create the newsletter
         newsletter = form.save(commit=False)
 
+        # If draft, we don't need to validate recipients
+        if is_draft:
+            newsletter.status = 'draft'
+            # Save the newsletter
+            newsletter.save()
+            # Save the many-to-many fields
+            form.save_m2m()
+            # Set the object so the success_url can be generated
+            self.object = newsletter
+
+            messages.success(self.request, _(
+                'Newsletter draft saved successfully.'))
+            return redirect(self.get_success_url())
+
+        # Normal processing for non-draft submissions
         # Handle 'send to all subscribers' option
         if form.cleaned_data.get('all_subscribers'):
             newsletter.save()  # Save to get an ID first
@@ -161,8 +179,17 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
         # Save the many-to-many fields
         form.save_m2m()
 
+        # Set the object so the success_url can be generated
+        self.object = newsletter
+
         # Update the recipient count
         newsletter.update_recipient_count()
+
+        # Check if save_and_preview button was clicked (NEW CODE)
+        if 'save_and_preview' in self.request.POST:
+            messages.success(self.request, _(
+                'Newsletter saved. Here is the preview.'))
+            return redirect('newsletter:newsletter_preview', slug=newsletter.slug)
 
         # Process sending if needed
         if send_now:
@@ -170,8 +197,10 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
             # Here we'll just simulate it with a simple flag
             # send_newsletter.delay(newsletter.id)  # This would be a Celery task
             messages.success(self.request, _('Newsletter queued for sending.'))
+        else:
+            messages.success(self.request, _(
+                'Newsletter created successfully.'))
 
-        messages.success(self.request, _('Newsletter created successfully.'))
         return redirect(self.get_success_url())
 
 
@@ -261,27 +290,45 @@ class NewsletterDeleteView(LoginRequiredMixin, DeleteView):
 
 class NewsletterPreviewView(LoginRequiredMixin, DetailView):
     """
-    View for previewing newsletters
+    View for previewing newsletters with confirmation options
     """
     model = Newsletter
-    template_name = 'newsletter/newsletter_preview.html'
+    template_name = 'newsletter/newsletter_preview_confirm.html'
     context_object_name = 'newsletter'
 
-    def get(self, request, *args, **kwargs):
-        """Generate the preview HTML"""
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         newsletter = self.get_object()
 
-        # Get the template
+        # Calculate recipient stats
+        direct_subscribers_count = newsletter.subscribers.count()
+
+        # Group subscribers (with potential duplicates)
+        group_subscribers = set()
+        for group in newsletter.subscriber_groups.all():
+            group_subscribers.update(
+                group.subscriber.values_list('id', flat=True))
+
+        # Total unique recipients
+        all_recipients = set(
+            newsletter.subscribers.values_list('id', flat=True))
+        all_recipients.update(group_subscribers)
+        total_unique = len(all_recipients)
+
+        # Add stats to context
+        context['stats'] = {
+            'direct_subscribers': direct_subscribers_count,
+            'group_subscribers': len(group_subscribers),
+            'total_unique': total_unique,
+        }
+
+        # Get the HTML content - Fix the syntax here
         template_html = self._get_template_html(newsletter)
-
-        # Replace placeholders
         html_content = template_html.replace('{{content}}', newsletter.content)
+        html_content = html_content.replace('{{subject}}', newsletter.subject)
+        context['newsletter_content'] = html_content
 
-        # Add tracking pixel and context for preview
-        html_content = html_content.replace(
-            '</body>', '<p class="preview-notice">This is a preview.</p></body>')
-
-        return HttpResponse(html_content)
+        return context
 
     def _get_template_html(self, newsletter):
         """Get the HTML template for the newsletter"""
@@ -412,6 +459,35 @@ class NewsletterSendTestView(LoginRequiredMixin, View):
             </body>
             </html>
             """
+
+
+class NewsletterSendView(LoginRequiredMixin, View):
+    """View for finalizing and sending newsletters"""
+
+    def post(self, request, slug):
+        newsletter = get_object_or_404(Newsletter, slug=slug)
+
+        # Check if we can send this newsletter
+        if newsletter.status in ['sent', 'sending']:
+            messages.error(request, _(
+                'This newsletter has already been sent or is in the process of sending.'))
+            return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
+
+        # Update status based on scheduled vs. immediate
+        if newsletter.scheduled_date and newsletter.scheduled_date > timezone.now():
+            newsletter.status = 'scheduled'
+            message = _('Newsletter scheduled successfully.')
+        else:
+            newsletter.status = 'sending'
+            message = _('Newsletter sending has started.')
+
+            # In a real application, this would trigger a background task
+            # For example: send_newsletter_task.delay(newsletter.id)
+
+        newsletter.save()
+
+        messages.success(request, message)
+        return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
 
 
 # Newsletter Template views

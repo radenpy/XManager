@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Preview Newsletter | XManager{% endblock %}
+
+{% block page_title %}Preview: {{ newsletter.subject }}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to List
+    </a>
+    <a href="{% url 'newsletter:newsletter_update' slug=newsletter.slug %}" class="btn btn-outline-primary">
+        <i class="fas fa-edit me-1"></i> Edit Newsletter
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Newsletter Preview Frame -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Newsletter Preview</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="preview-frame border" style="height: 600px; overflow: auto;">
+                    <iframe id="preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Confirmation Panel -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Delivery Summary</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Total Recipients:</span>
+                        <span class="badge bg-primary rounded-pill">{{ stats.total_unique }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Direct Subscribers:</span>
+                        <span>{{ stats.direct_subscribers }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>From Groups:</span>
+                        <span>{{ stats.group_subscribers }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Status:</span>
+                        <span class="badge bg-{{ newsletter.status|default:'secondary' }}">
+                            {{ newsletter.get_status_display|default:"Draft" }}
+                        </span>
+                    </li>
+                    {% if newsletter.scheduled_date %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Scheduled For:</span>
+                        <span>{{ newsletter.scheduled_date|date:"F j, Y, g:i a" }}</span>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <div class="d-grid gap-2">
+                    {% if newsletter.status == 'scheduled' %}
+                        <form method="post" action="{% url 'newsletter:newsletter_send' slug=newsletter.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-clock me-1"></i> Confirm Schedule
+                            </button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'newsletter:newsletter_send' slug=newsletter.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-paper-plane me-1"></i> Send Now
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <a href="{% url 'newsletter:newsletter_update' slug=newsletter.slug %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-edit me-1"></i> Edit Newsletter
+                    </a>
+                    
+                    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-list me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Send Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Send Test Email</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'newsletter:newsletter_send_test' slug=newsletter.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="id_email" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-envelope me-1"></i> Send Test Email
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to write the newsletter content to the iframe
+    document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.getElementById('preview-iframe');
+        const content = `{{ newsletter_content|safe|escapejs }}`;
+        
+        const iframeDoc = iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(content);
+        iframeDoc.close();
+    });
+</script>
+{% endblock %}

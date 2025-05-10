@@ -202,7 +202,71 @@
                     </div>
                 </div>
                 
-                
+                <script>
+// Natychmiastowe rozwiązanie problemu z wyszukiwarką grup
+document.addEventListener('DOMContentLoaded', function() {
+    // Ten skrypt dodaje bezpośrednie pola formularza dla każdej zaznaczonej grupy
+    const form = document.getElementById('newsletter-form');
+    
+    // Dodajemy obsługę submitu formularza, aby dodać pola dla zaznaczonych grup
+    form.addEventListener('submit', function(e) {
+        // Sprawdź, czy to przycisk "Save as Draft" - jeśli tak, nie rób walidacji
+        const isDraft = e.submitter && e.submitter.name === 'save_as_draft';
+        
+        // Znajdź wszystkie zaznaczone checkbox'y grup
+        const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
+        
+        // Jeśli nie ma zaznaczonych grup i nie jest to draft, sprawdź dodatkowe maile
+        if (!isDraft && checkedGroups.length === 0) {
+            const additionalEmails = document.getElementById('additional-emails');
+            const hasEmails = additionalEmails && additionalEmails.value.trim();
+            
+            if (!hasEmails) {
+                alert('You must select at least one recipient or group, or provide additional email addresses.');
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        // Usuń wszystkie istniejące ukryte pola dla grup
+        document.querySelectorAll('input[name="subscriber_groups"]').forEach(field => field.remove());
+        
+        // Dodaj nowe ukryte pole dla każdej zaznaczonej grupy
+        checkedGroups.forEach(checkbox => {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'subscriber_groups';
+            hiddenField.value = checkbox.value;
+            form.appendChild(hiddenField);
+        });
+        
+        // Pozwól formularzowi kontynuować wysyłanie
+        return true;
+    });
+    
+    // Monitoruj wyszukiwarkę grup - zachowaj zaznaczone wartości
+    const groupSearch = document.getElementById('group-search');
+    if (groupSearch) {
+        groupSearch.addEventListener('input', function() {
+            // Zapisz wszystkie aktualnie zaznaczone grupy
+            const checkedGroupIds = [];
+            document.querySelectorAll('.group-checkbox:checked').forEach(cb => {
+                checkedGroupIds.push(cb.value);
+            });
+            
+            // Po zakończeniu wyszukiwania, odtwórz zaznaczenie
+            setTimeout(function() {
+                checkedGroupIds.forEach(id => {
+                    const checkbox = document.querySelector(`.group-checkbox[value="${id}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }, 100);
+        });
+    }
+});
+</script>
                 
             </form>
         </div>

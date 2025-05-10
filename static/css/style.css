@@ -1081,3 +1081,70 @@ td .btn-group {
     padding-left: 20px !important;
     /* Zwiększ padding z lewej */
 }
+
+/* Dodatkowe style dla zgód newslettera */
+
+/* Style dla nagłówka listy subskrybentów */
+#subscribers-list .list-group-item.bg-light {
+    background-color: #f7fafc !important;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 11px !important;
+    letter-spacing: 0.05em;
+}
+
+/* Poprawa wyglądu badge'y zgód */
+.badge.badge-active {
+    background-color: rgba(72, 187, 120, 0.15);
+    color: #2f855a;
+    border: 1px solid rgba(72, 187, 120, 0.2);
+    font-size: 10px !important;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+}
+
+.badge.badge-inactive {
+    background-color: rgba(237, 100, 100, 0.15);
+    color: #c53030;
+    border: 1px solid rgba(237, 100, 100, 0.2);
+    font-size: 10px !important;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+}
+
+/* Dodanie ikony do badge'y */
+.badge.badge-active i,
+.badge.badge-inactive i {
+    font-size: 9px !important;
+    margin-right: 0.25rem;
+}
+
+/* Poprawa wyglądu przełącznika włączania/wyłączania */
+.form-check-input.exclude-checkbox {
+    width: 2.5em !important;
+}
+
+/* Lepsza separacja wierszy na liście subskrybentów */
+#subscribers-list .list-group-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 0.75rem !important;
+}
+
+#subscribers-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Dodanie efektu hover na liście subskrybentów */
+#subscribers-list .list-group-item:not(.bg-light):hover {
+    background-color: rgba(26, 54, 93, 0.03);
+}
+
+/* Wyróżnienie opisu kalkulacji */
+.card-body .text-muted.small.mb-3 {
+    background-color: rgba(56, 178, 172, 0.05);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    border-left: 3px solid rgba(56, 178, 172, 0.3);
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+}

@@ -20,6 +20,8 @@ urlpatterns = [
          views.NewsletterTemplateDeleteView.as_view(), name='template_delete'),
     path('templates/<int:pk>/preview/',
          views.NewsletterTemplatePreviewView.as_view(), name='template_preview'),
+    path('newsletters/<slug:slug>/send/',
+         views.NewsletterSendView.as_view(), name='newsletter_send'),
 
     # Newsletter detail views - These should come AFTER more specific patterns
     path('<slug:slug>/', views.NewsletterDetailView.as_view(),
@@ -43,4 +45,6 @@ urlpatterns = [
          name='api_subscribers_count'),
     path('api/recipients/count/', api.get_recipients_count,
          name='api_recipients_count'),
+
+
 ]

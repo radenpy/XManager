@@ -37,4 +37,9 @@ urlpatterns = [
     # App includes
     path('partner/', include('apps.partner.urls')),
     path('subscribers/', include('apps.subscriber.urls')),
+    # Aplikacja Newsletter
+
+    path('newsletter/', include('apps.newsletter.urls', namespace='newsletter')),
+
+
 ]

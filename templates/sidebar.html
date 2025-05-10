@@ -1,11 +1,11 @@
-<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+<nav id="sidebar" class="col-md-2 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <!-- Zawartość sidebara -->
         {% block sidebar %}
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
-                    <i class="fas fa-chart-line me-2"></i> Dashboard
+                    <i class="fas fa-chart-line me-1"></i><span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
             
@@ -13,23 +13,39 @@
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.app_name == 'partner' %}active{% endif %}" 
                   href="{% url 'partner:partner_list' %}">
-                    <i class="fas fa-building me-2"></i> Firmy
+                    <i class="fas fa-building me-1"></i><span class="sidebar-text">Firmy</span>
                 </a>
             </li>
             
             <!-- Subskrybenci -->
             <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
+                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' and request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
                   href="{% url 'subscribers:subscriber_list' %}">
-                    <i class="fas fa-envelope me-2"></i> Subskrybenci
+                    <i class="fas fa-envelope me-1"></i><span class="sidebar-text">Subskrybenci</span>
                 </a>
             </li>
             
             <!-- Grupy Subskrybentów -->
             <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'group_list' %}active{% endif %}" 
+                <a class="nav-link {% if request.resolver_match.url_name == 'group_list' and request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
                   href="{% url 'subscribers:group_list' %}">
-                    <i class="fas fa-users me-2"></i> Grupy Subskrybentów
+                    <i class="fas fa-users me-1"></i><span class="sidebar-text">Grupy Subskrybentów</span>
+                </a>
+            </li>
+            
+            <!-- Newsletter -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.app_name == 'newsletter' and request.resolver_match.url_name == 'newsletter_list' %}active{% endif %}" 
+                   href="{% url 'newsletter:newsletter_list' %}">
+                    <i class="fas fa-paper-plane me-1"></i><span class="sidebar-text">Newslettery</span>
+                </a>
+            </li>
+            
+            <!-- Szablony Newsletterów -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.app_name == 'newsletter' and request.resolver_match.url_name == 'template_list' %}active{% endif %}" 
+                   href="{% url 'newsletter:template_list' %}">
+                    <i class="fas fa-file-code me-1"></i><span class="sidebar-text">Szablony Newsletterów</span>
                 </a>
             </li>
             

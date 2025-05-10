@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Template | XManager{% endblock %}
+
+{% block page_title %}Create Newsletter Template{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Templates
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="template-form">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <!-- Template Info -->
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Template Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h6>Template Requirements</h6>
+                            <p class="mb-1">Your template must include the following placeholder:</p>
+                            <ul class="mb-1">
+                                <li><code>{{content}}</code> - Where the newsletter content will be inserted</li>
+                            </ul>
+                            <p class="mb-0">You can also use these optional placeholders:</p>
+                            <ul class="mb-0">
+                                <li><code>{{subject}}</code> - The newsletter subject</li>
+                                <li><code>{{unsubscribe_url}}</code> - URL for unsubscribing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <!-- HTML Content -->
+                        <div class="mb-3">
+                            <label for="{{ form.html_content.id_for_label }}" class="form-label">HTML Content *</label>
+                            {{ form.html_content }}
+                            {% if form.html_content.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.html_content.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Use HTML to create your template. The <code>{{content}}</code> placeholder is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save Template</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add syntax highlighting for the HTML editor if a library like CodeMirror is available
+        if (typeof CodeMirror !== 'undefined') {
+            const editor = CodeMirror.fromTextArea(document.getElementById('{{ form.html_content.id_for_label }}'), {
+                mode: 'htmlmixed',
+                theme: 'default',
+                lineNumbers: true,
+                lineWrapping: true,
+                autoCloseTags: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                extraKeys: {"Ctrl-Space": "autocomplete"}
+            });
+        }
+    });
+</script>
+{% endblock %}

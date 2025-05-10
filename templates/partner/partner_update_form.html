@@ -37,14 +37,9 @@
                             <i class="fas fa-info-circle me-1"></i> Dane podstawowe
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="address-tab" data-bs-toggle="tab" data-bs-target="#address" type="button" role="tab" aria-controls="address" aria-selected="false">
-                            <i class="fas fa-map-marker-alt me-1"></i> Adres
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
+                       <li class="nav-item" role="presentation">
                         <button class="nav-link" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">
-                            <i class="fas fa-envelope me-1"></i> Kontakty e-mail
+                            <i class="fas fa-envelope me-1"></i> Powiązani Subskrybenci
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -63,15 +58,11 @@
                                 <label for="{{ form.country.id_for_label }}" class="form-label">Kraj</label>
                                 <div class="dropdown">
                                     <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="countryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        {% if form.country.value %}
-                                            {% for code, name in countries %}
-                                                {% if code == form.country.value %}{{ name }}{% endif %}
-                                            {% endfor %}
-                                        {% else %}
-                                            Wybierz kraj
-                                        {% endif %}
+                                        {% for code, name in countries %}
+                                            {% if code == form.country.value %}{{ name }}{% endif %}
+                                        {% endfor %}
                                     </button>
-                                    <input type="hidden" name="country" id="{{ form.country.id_for_label }}" value="{{ form.country.value|default:'' }}" required>
+                                    <input type="hidden" name="country" id="{{ form.country.id_for_label }}" value="{{ form.country.value }}" required>
                                     <ul class="dropdown-menu country-dropdown-menu w-100" aria-labelledby="countryDropdownButton" style="max-height: 300px; overflow-y: auto;">
                                         <li class="px-2 mb-2">
                                             <input type="text" class="form-control form-control-sm" id="countrySearchInput" placeholder="Szukaj...">
@@ -83,23 +74,17 @@
                                         </div>
                                     </ul>
                                 </div>
-                                {% if form.country.help_text and not form.country.value %}
-                                <div class="form-text">{{ form.country.help_text }}</div>
-                                {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label for="{{ form.vat_number.id_for_label }}" class="form-label">Numer VAT</label>
                                 <div class="input-group">
-                                    <span class="input-group-text country-prefix">{% if form.country.value %}{{ form.country.value }}{% else %}--{% endif %}</span>
-                                    <input type="text" name="vat_number" id="{{ form.vat_number.id_for_label }}" class="form-control" value="{{ form.vat_number.value|default:'' }}" placeholder="Wprowadź numer VAT (bez prefiksu kraju)" required>
+                                    <span class="input-group-text country-prefix">{{ form.country.value }}</span>
+                                    <input type="text" name="vat_number" id="{{ form.vat_number.id_for_label }}" class="form-control" value="{{ form.vat_number.value }}" placeholder="Wprowadź numer VAT (bez prefiksu kraju)" required>
                                     
                                     <a href="{% url 'partner:verify_vat' partner.pk %}" class="btn btn-primary" id="verifyVATBtn">
                                         <i class="fas fa-sync-alt me-1"></i> Weryfikuj
                                     </a>
                                 </div>
-                                {% if form.vat_number.help_text and not form.vat_number.value %}
-                                <div class="form-text">{{ form.vat_number.help_text }}</div>
-                                {% endif %}
                             </div>
                         </div>
                         
@@ -111,27 +96,6 @@
                             <div class="col-md-4">
                                 <label for="{{ form.phone_number.id_for_label }}" class="form-label">Numer telefonu</label>
                                 <input type="text" name="phone_number" id="{{ form.phone_number.id_for_label }}" class="form-control" value="{{ form.phone_number.value|default:'' }}">
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="{{ form.additional_info.id_for_label }}" class="form-label">Dodatkowe informacje</label>
-                                <textarea name="additional_info" id="{{ form.additional_info.id_for_label }}" class="form-control" rows="3">{{ form.additional_info.value|default:'' }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Address tab -->
-                    <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="{{ form.city.id_for_label }}" class="form-label">Miasto</label>
-                                <input type="text" name="city" id="{{ form.city.id_for_label }}" class="form-control" value="{{ form.city.value|default:'' }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.postal_code.id_for_label }}" class="form-label">Kod pocztowy</label>
-                                <input type="text" name="postal_code" id="{{ form.postal_code.id_for_label }}" class="form-control" value="{{ form.postal_code.value|default:'' }}">
                             </div>
                         </div>
                         
@@ -149,32 +113,106 @@
                                 <input type="text" name="apartment_number" id="{{ form.apartment_number.id_for_label }}" class="form-control" value="{{ form.apartment_number.value|default:'' }}">
                             </div>
                         </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.postal_code.id_for_label }}" class="form-label">Kod pocztowy</label>
+                                <input type="text" name="postal_code" id="{{ form.postal_code.id_for_label }}" class="form-control" value="{{ form.postal_code.value|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.city.id_for_label }}" class="form-label">Miasto</label>
+                                <input type="text" name="city" id="{{ form.city.id_for_label }}" class="form-control" value="{{ form.city.value|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="{{ form.additional_info.id_for_label }}" class="form-label">Dodatkowe informacje</label>
+                                <textarea name="additional_info" id="{{ form.additional_info.id_for_label }}" class="form-control" rows="3">{{ form.additional_info.value|default:'' }}</textarea>
+                            </div>
+                        </div>
                     </div>
                     
-                    <!-- Email contacts tab -->
+                    <!-- Powiązani Subskrybenci tab -->
                     <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-                        <div class="mb-3">
-                            <label for="id_email_contacts" class="form-label">Powiązane adresy email (maksymalnie 10)</label>
-                            <div class="contact-select-container">
-                                <div class="input-group mb-2">
-                                    <input type="text" id="subscriberSearchInput" class="form-control" placeholder="Wyszukaj po adresie email, imieniu lub nazwisku...">
-                                    <button type="button" class="btn btn-outline-secondary" id="clearSubscriberSearch">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                        <div class="mb-4">
+                            <h5 class="mb-3">Powiązani subskrybenci (maksymalnie 10)</h5>
+                            
+                            <!-- Obecnie powiązani subskrybenci -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Obecnie powiązani</span>
+                                        <span class="badge bg-primary" id="subscriberCount">{{ form.email_contacts.value|length }}</span>
+                                    </div>
                                 </div>
-                                <select name="email_contacts" id="id_email_contacts" class="form-control select2-emails" multiple data-placeholder="Wybierz lub dodaj adres email">
-                                    {% if form.email_contacts.value %}
+                                <div class="card-body p-0">
+                                    <ul class="list-group list-group-flush" id="linkedSubscribersList">
                                         {% for subscriber in form.email_contacts.value %}
-                                            <option value="{{ subscriber.id }}" selected>{{ subscriber.email }}</option>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center" data-subscriber-id="{{ subscriber.id }}">
+                                            <div>
+                                                <strong>{{ subscriber.email }}</strong>
+                                                {% if subscriber.first_name or subscriber.last_name %}
+                                                <br><small class="text-muted">{{ subscriber.first_name }} {{ subscriber.last_name }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-subscriber-btn" data-subscriber-id="{{ subscriber.id }}">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </li>
+                                        {% empty %}
+                                        <li class="list-group-item text-center text-muted" id="noSubscribersMessage">
+                                            Brak powiązanych subskrybentów
+                                        </li>
                                         {% endfor %}
-                                    {% endif %}
-                                </select>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i> Możesz wpisać nowy adres email, aby automatycznie utworzyć nowego subskrybenta.
+                            
+                            <!-- Ukryte pole przechowujące ID wybranych subskrybentów -->
+                            <div id="subscriberIdsContainer">
+                                {% for subscriber in form.email_contacts.value %}
+                                <input type="hidden" name="email_contacts" value="{{ subscriber.id }}" class="subscriber-id-input" data-subscriber-id="{{ subscriber.id }}">
+                                {% endfor %}
                             </div>
-                            <div id="selectedContactsCounter" class="mt-2 text-end small">
-                                <span id="selectedCount">{{ form.email_contacts.value|default:"0"|length }}</span> z maksymalnie 10 kontaktów
+                            
+                            <!-- Wyszukiwarka subskrybentów -->
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Wyszukaj i dodaj subskrybenta</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <input type="text" id="subscriberSearchInput" class="form-control" placeholder="Wyszukaj po adresie email, imieniu lub nazwisku...">
+                                            <button type="button" id="searchSubscriberBtn" class="btn btn-primary">
+                                                <i class="fas fa-search"></i> Szukaj
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="searchResults" class="mt-3 d-none">
+                                        <h6 class="mb-2">Wyniki wyszukiwania:</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Email</th>
+                                                        <th>Imię</th>
+                                                        <th>Nazwisko</th>
+                                                        <th>Akcja</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="searchResultsBody">
+                                                    <!-- Wyniki wyszukiwania będą dodawane tutaj przez JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="noSearchResultsMessage" class="alert alert-info d-none">
+                                            <i class="fas fa-info-circle me-2"></i> Nie znaleziono subskrybentów pasujących do kryteriów wyszukiwania.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -368,147 +406,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize Select2 for subscribers with AJAX
-    const emailContactsSelect = $('#id_email_contacts');
-    
-    emailContactsSelect.select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: 'Wybierz lub dodaj adres email',
-        allowClear: true,
-        tags: true,
-        maximumSelectionLength: 10,
-        ajax: {
-            url: '/partner/api/subscribers/lookup/',
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    search: params.term || '',
-                    page: params.page || 1
-                };
-            },
-            processResults: function(data, params) {
-                params.page = params.page || 1;
-                
-                return {
-                    results: data.results.map(function(item) {
-                        return {
-                            id: item.id,
-                            text: item.email,
-                            first_name: item.first_name,
-                            last_name: item.last_name
-                        };
-                    }),
-                    pagination: {
-                        more: data.has_more
-                    }
-                };
-            },
-            cache: true
-        },
-        templateResult: formatSubscriberResult,
-        templateSelection: formatSubscriberSelection,
-        createTag: function(params) {
-            const term = $.trim(params.term);
-            
-            if (term === '') {
-                return null;
-            }
-            
-            // Check if it's a valid email
-            if (!isValidEmail(term)) {
-                return null;
-            }
-            
-            return {
-                id: term,
-                text: term,
-                newTag: true
-            };
-        }
-    });
-    
-    // Clear subscriber search button
-    $('#clearSubscriberSearch').on('click', function() {
-        $('#subscriberSearchInput').val('');
-        // Trigger a search with empty query to reset results
-        emailContactsSelect.data('select2').trigger('query', { term: '' });
-    });
-    
-    // Custom search input handler
-    $('#subscriberSearchInput').on('input', function() {
-        const searchTerm = $(this).val();
-        // Trigger the search manually on the Select2
-        emailContactsSelect.data('select2').trigger('query', { term: searchTerm });
-    });
-    
-    // Update counter on selection change
-    emailContactsSelect.on('change', function(e) {
-        const selectedCount = $(this).val() ? $(this).val().length : 0;
-        $('#selectedCount').text(selectedCount);
-        
-        // Highlight in red if too many are selected
-        if (selectedCount > 10) {
-            $('#selectedContactsCounter').addClass('text-danger');
-        } else {
-            $('#selectedContactsCounter').removeClass('text-danger');
-        }
-    });
-    
-    // Format subscriber dropdown results
-    function formatSubscriberResult(subscriber) {
-        if (subscriber.loading) {
-            return subscriber.text;
-        }
-        
-        if (subscriber.newTag) {
-            return $(`
-                <div class="new-subscriber-option">
-                    <i class="fas fa-plus-circle me-1"></i> 
-                    Dodaj nowego subskrybenta: <strong>${subscriber.text}</strong>
-                </div>
-            `);
-        }
-        
-        const fullName = (subscriber.first_name || subscriber.last_name) 
-            ? `${subscriber.first_name || ''} ${subscriber.last_name || ''}`.trim() 
-            : '';
-            
-        return $(`
-            <div class="subscriber-result">
-                <div><strong>${subscriber.text}</strong></div>
-                ${fullName ? `<div class="text-muted small">${fullName}</div>` : ''}
-            </div>
-        `);
-    }
-    
-    // Format subscriber selection display
-    function formatSubscriberSelection(subscriber) {
-        // For new tags, just show the email
-        if (subscriber.newTag) {
-            return subscriber.text;
-        }
-        
-        // For existing subscribers, show email and name if available
-        const fullName = (subscriber.first_name || subscriber.last_name) 
-            ? `${subscriber.first_name || ''} ${subscriber.last_name || ''}`.trim() 
-            : '';
-            
-        return fullName ? `${subscriber.text} (${fullName})` : subscriber.text;
-    }
-    
-    // Email validation function
-    function isValidEmail(email) {
-        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return regex.test(email);
-    }
-    
     // Form validation before submit
     $('#partnerForm').on('submit', function(e) {
-        const selectedEmails = emailContactsSelect.val();
+        const subscriberInputs = $('.subscriber-id-input');
         
-        if (selectedEmails && selectedEmails.length > 10) {
+        if (subscriberInputs.length > 10) {
             e.preventDefault();
             alert('Możesz wybrać maksymalnie 10 adresów email.');
             
@@ -522,56 +424,204 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Activate first tab on page load
     document.querySelector('#partnerFormTabs button[data-bs-toggle="tab"]').click();
+    
+    // Inicjalizacja obsługi subskrybentów
+    initSubscriberHandler();
 });
+
+// Funkcje do obsługi powiązanych subskrybentów
+function initSubscriberHandler() {
+    // Obsługa wyszukiwania subskrybentów
+    $('#searchSubscriberBtn').on('click', function() {
+        const searchTerm = $('#subscriberSearchInput').val().trim();
+        if (!searchTerm) return;
+        
+        // Zmień wygląd przycisku i zablokuj go podczas wyszukiwania
+        const originalButtonText = $(this).html();
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Wyszukiwanie...');
+        $(this).prop('disabled', true);
+        
+        // Ukryj poprzednie wyniki wyszukiwania
+        $('#searchResults').removeClass('d-none');
+        $('#noSearchResultsMessage').addClass('d-none');
+        
+        // Wyświetl loader
+        $('#searchResultsBody').html('<tr><td colspan="4" class="text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"></div> Wyszukiwanie...</td></tr>');
+        
+        // Wykonaj wyszukiwanie
+        $.ajax({
+            url: '/partner/api/subscribers/lookup/',
+            type: 'GET',
+            data: { search: searchTerm },
+            success: function(response) {
+                const results = response.results || [];
+                $('#searchResultsBody').empty();
+                
+                // Przywróć wygląd przycisku
+                $('#searchSubscriberBtn').html(originalButtonText);
+                $('#searchSubscriberBtn').prop('disabled', false);
+                
+                // Jeśli nie ma wyników
+                if (results.length === 0) {
+                    $('#noSearchResultsMessage').removeClass('d-none');
+                    return;
+                }
+                
+                // Pobierz ID aktualnie powiązanych subskrybentów
+                const linkedIds = $('.subscriber-id-input').map(function() {
+                    return $(this).val();
+                }).get();
+                
+                // Wyświetl wyniki
+                results.forEach(function(subscriber) {
+                    const isLinked = linkedIds.includes(subscriber.id.toString());
+                    const row = `
+                        <tr>
+                            <td>${subscriber.email}</td>
+                            <td>${subscriber.first_name || '-'}</td>
+                            <td>${subscriber.last_name || '-'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm ${isLinked ? 'btn-secondary disabled' : 'btn-primary'} add-subscriber-btn" 
+                                    data-subscriber-id="${subscriber.id}" 
+                                    data-subscriber-email="${subscriber.email}"
+                                    data-subscriber-fname="${subscriber.first_name || ''}"
+                                    data-subscriber-lname="${subscriber.last_name || ''}"
+                                    ${isLinked ? 'disabled' : ''}>
+                                    ${isLinked ? 'Już dodany' : 'Dodaj'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    $('#searchResultsBody').append(row);
+                });
+                
+                // Dodaj obsługę przycisku dodawania
+                $('.add-subscriber-btn').on('click', addSubscriber);
+            },
+            error: function() {
+                // Przywróć wygląd przycisku
+                $('#searchSubscriberBtn').html(originalButtonText);
+                $('#searchSubscriberBtn').prop('disabled', false);
+                
+                $('#searchResultsBody').html('<tr><td colspan="4" class="text-center text-danger">Wystąpił błąd podczas wyszukiwania.</td></tr>');
+            }
+        });
+    });
+    
+    // Enter w polu wyszukiwania uruchamia wyszukiwanie
+    $('#subscriberSearchInput').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#searchSubscriberBtn').click();
+        }
+    });
+    
+    // Obsługa usuwania subskrybenta
+    $(document).on('click', '.remove-subscriber-btn', function() {
+        const subscriberId = $(this).data('subscriber-id');
+        
+        // Usuń element z listy
+        $(`#linkedSubscribersList li[data-subscriber-id="${subscriberId}"]`).remove();
+        
+        // Usuń ukryte pole
+        $(`.subscriber-id-input[data-subscriber-id="${subscriberId}"]`).remove();
+        
+        // Aktualizuj licznik
+        updateSubscriberCount();
+        
+        // Jeśli nie ma już powiązanych subskrybentów, pokaż komunikat
+        if ($('#linkedSubscribersList li').length === 0) {
+            $('#linkedSubscribersList').append('<li class="list-group-item text-center text-muted" id="noSubscribersMessage">Brak powiązanych subskrybentów</li>');
+        }
+        
+        // Aktualizuj przyciski w wynikach wyszukiwania, jeśli są widoczne
+        if ($('#searchResults').is(':visible')) {
+            const searchButton = $(`.add-subscriber-btn[data-subscriber-id="${subscriberId}"]`);
+            if (searchButton.length) {
+                searchButton.removeClass('btn-secondary disabled')
+                           .addClass('btn-primary')
+                           .text('Dodaj')
+                           .prop('disabled', false);
+            }
+        }
+    });
+    
+    // Inicjalizacja licznika przy starcie
+    updateSubscriberCount();
+}
+
+// Funkcja dodająca subskrybenta do listy
+function addSubscriber() {
+    const btn = $(this);
+    const id = btn.data('subscriber-id');
+    const email = btn.data('subscriber-email');
+    const firstName = btn.data('subscriber-fname');
+    const lastName = btn.data('subscriber-lname');
+    
+    // Sprawdź limit 10 subskrybentów
+    if ($('.subscriber-id-input').length >= 10) {
+        alert('Możesz powiązać maksymalnie 10 subskrybentów.');
+        return;
+    }
+    
+    // Usuń komunikat "brak powiązanych" jeśli istnieje
+    $('#noSubscribersMessage').remove();
+    
+    // Dodaj do listy
+    const subscriberItem = `
+        <li class="list-group-item d-flex justify-content-between align-items-center" data-subscriber-id="${id}">
+            <div>
+                <strong>${email}</strong>
+                ${(firstName || lastName) ? `<br><small class="text-muted">${firstName} ${lastName}</small>` : ''}
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-subscriber-btn" data-subscriber-id="${id}">
+                <i class="fas fa-times"></i>
+            </button>
+        </li>
+    `;
+    $('#linkedSubscribersList').append(subscriberItem);
+    
+    // Dodaj ukryte pole z ID
+    $('#subscriberIdsContainer').append(`<input type="hidden" name="email_contacts" value="${id}" class="subscriber-id-input" data-subscriber-id="${id}">`);
+    
+    // Deaktywuj przycisk
+    btn.removeClass('btn-primary').addClass('btn-secondary disabled').text('Już dodany').prop('disabled', true);
+    
+    // Animacja przewijania do nowo dodanego elementu
+    const newItem = $('#linkedSubscribersList li').last();
+    $('#linkedSubscribersList').animate({
+        scrollTop: newItem.offset().top - $('#linkedSubscribersList').offset().top + $('#linkedSubscribersList').scrollTop()
+    }, 500);
+    
+    // Podświetl nowo dodany element na krótko
+    newItem.addClass('bg-light');
+    setTimeout(() => {
+        newItem.removeClass('bg-light');
+    }, 1500);
+    
+    // Aktualizuj licznik
+    updateSubscriberCount();
+}
+
+// Aktualizacja licznika subskrybentów
+function updateSubscriberCount() {
+    const count = $('.subscriber-id-input').length;
+    $('#subscriberCount').text(count);
+    
+    // Wyróżnij licznik na czerwono, jeśli przekroczono limit
+    if (count > 10) {
+        $('#subscriberCount').addClass('text-danger');
+    } else {
+        $('#subscriberCount').removeClass('text-danger');
+    }
+}
 </script>
 
 <style>
-/* Custom styles for subscriber selection */
-.contact-select-container {
-    position: relative;
-}
-
-.select2-container--bootstrap-5 .select2-selection {
-    border-radius: 0.375rem;
-    border-color: #ced4da;
-    padding: 0.25rem 0.5rem;
-    min-height: 38px;
-}
-
-/* Style dla Select2 country - wyraźniejsze jako dropdown */
-.select2-container--bootstrap-5.select2-container--focus .select2-selection,
-.select2-container--bootstrap-5.select2-container--open .select2-selection {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Dodanie strzałki w dół, aby było widać że to dropdown */
-.select2-container--bootstrap-5 .select2-selection--single {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 16px 12px;
-    padding-right: 2rem !important;
-}
-
-/* Style dla dropdown kraju */
+/* Custom styles for the partner edit page */
 .country-dropdown-menu {
-    border: 1px solid #ced4da;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    z-index: 1050;
-}
-
-.dropdown-toggle {
-    background-color: #fff;
-    text-align: left;
-    position: relative;
-}
-
-.dropdown-toggle::after {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .country-items {
@@ -579,18 +629,37 @@ document.addEventListener('DOMContentLoaded', function() {
     overflow-y: auto;
 }
 
-.new-subscriber-option {
-    padding: 8px;
-    color: #198754;
+/* Style dla listy subskrybentów */
+#linkedSubscribersList {
+    max-height: 300px;
+    overflow-y: auto;
+    transition: background-color 0.3s ease;
 }
 
-.subscriber-result {
-    padding: 8px;
+/* Animacja podświetlenia dla nowo dodanych elementów */
+.bg-light {
+    transition: background-color 1.5s ease;
 }
 
-/* Make sure modals appear above Select2 dropdowns */
-.modal {
-    z-index: 1060;
+/* Wyszukiwarka subskrybentów - tabela wyników */
+#searchResults .table {
+    border: 1px solid #dee2e6;
+}
+
+#searchResults .table th {
+    background-color: #f8f9fa;
+}
+
+/* Responsywność dla małych ekranów */
+@media (max-width: 768px) {
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    #linkedSubscribersList .list-group-item {
+        padding: 0.5rem;
+    }
 }
 </style>
 {% endblock %}

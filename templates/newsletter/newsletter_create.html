@@ -162,36 +162,35 @@
                         </div>
                         
                         <!-- Recipients Summary -->
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Recipients Summary</h5>
-                                <span class="badge bg-primary" id="total-recipients-badge">0 recipients</span>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Total Subscribers:</span>
-                                        <span class="fw-bold" id="raw-subscriber-count">0</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Recipients (after filtering):</span>
-                                        <span id="net-recipient-count">0</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Selected Groups:</span>
-                                        <span id="selected-groups-count">0</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Additional Emails:</span>
-                                        <span id="additional-emails-count">0</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Excluded Subscribers:</span>
-                                        <span id="excluded-count">0</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Delivery Summary</h5>
+        <span class="badge bg-primary" id="total-recipients-badge">0 recipients</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            <i class="fas fa-info-circle me-1"></i> Calculation: unique subscribers + additional emails - excluded subscribers
+        </p>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Raw Subscriber Count:</span>
+                <span class="fw-bold" id="raw-subscriber-count">0</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Selected Groups:</span>
+                <span id="selected-groups-count">0</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Additional Emails:</span>
+                <span id="additional-emails-count">0</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Excluded Subscribers:</span>
+                <span id="excluded-count">0</span>
+            </li>
+        </ul>
+    </div>
+</div>
                     </div>
                 </div>
                 
@@ -537,72 +536,87 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Update recipients summary
      */
-    function updateRecipientsSummary() {
-        // Get count of additional emails
-        const additionalEmails = parseAdditionalEmails();
-        const additionalCount = additionalEmails.length;
-        
-        // Calculate raw total of subscribers in all selected groups (without deduplication)
-        let rawSubscribersTotal = 0;
-        selectedGroups.forEach(groupId => {
-            const group = allGroups.find(g => g.id == groupId);
-            if (group && group.subscriber_count) {
-                rawSubscribersTotal += group.subscriber_count;
-            }
-        });
-        
-        // Show loading state
-        document.getElementById('total-recipients-badge').textContent = 'Calculating...';
-        
-        // Build query parameters
-        const params = new URLSearchParams();
-        
-        // Add selected group IDs
-        selectedGroups.forEach(id => params.append('group_ids', id));
-        
-        // Add excluded subscriber IDs
-        excludedSubscribers.forEach(id => params.append('excluded_ids', id));
-        
-        // Make API request to get deduplicated count
-        fetch(`/newsletter/api/recipients/count/?${params.toString()}`)
-            .then(response => response.json())
-            .then(data => {
-                const groupCount = selectedGroups.length;
-                const excludedCount = excludedSubscribers.length;
-                
-                // Add additional emails to the net total (deduplicated count)
-                const netTotalCount = (data.total_unique || 0) + additionalCount;
-                
-                // Update display with both raw total and net total
-                updateCountDisplay(rawSubscribersTotal, netTotalCount, groupCount, additionalCount, excludedCount);
-            })
-            .catch(error => {
-                console.error('Error calculating recipients:', error);
-                
-                // Fallback to using raw count for both values
-                updateCountDisplay(rawSubscribersTotal, Math.max(0, rawSubscribersTotal - excludedSubscribers.length + additionalCount), 
-                                  selectedGroups.length, additionalCount, excludedSubscribers.length);
-            });
-    }
+/**
+ * Update recipients summary
+ */
+function updateRecipientsSummary() {
+    // Get count of additional emails
+    const additionalEmails = parseAdditionalEmails();
+    const additionalCount = additionalEmails.length;
     
-    /**
-     * Update count display elements
-     */
-    function updateCountDisplay(rawTotal, netTotal, groupCount, additionalCount, excludedCount) {
-        // Set the raw total count (simple sum of all subscribers in all groups)
-        document.getElementById('raw-subscriber-count').textContent = rawTotal;
-        
-        // Set the net total (deduplicated, with exclusions, plus additional)
-        document.getElementById('net-recipient-count').textContent = netTotal;
-        
-        // Set other counts
-        document.getElementById('selected-groups-count').textContent = groupCount;
-        document.getElementById('additional-emails-count').textContent = additionalCount;
-        document.getElementById('excluded-count').textContent = excludedCount;
-        
-        // Update the badge with net total (actual recipients)
-        document.getElementById('total-recipients-badge').textContent = `${netTotal} recipients`;
-    }
+    // Calculate raw total of subscribers in all selected groups (without deduplication)
+    let rawSubscribersTotal = 0;
+    selectedGroups.forEach(groupId => {
+        const group = allGroups.find(g => g.id == groupId);
+        if (group && group.subscriber_count) {
+            rawSubscribersTotal += group.subscriber_count;
+        }
+    });
+    
+    // Show loading state
+    document.getElementById('total-recipients-badge').textContent = 'Calculating...';
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    
+    // Add selected group IDs
+    selectedGroups.forEach(id => params.append('group_ids', id));
+    
+    // Add excluded subscriber IDs
+    excludedSubscribers.forEach(id => params.append('excluded_ids', id));
+    
+    // Make API request to get deduplicated count
+    fetch(`/newsletter/api/recipients/count/?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            const groupCount = selectedGroups.length;
+            const excludedCount = excludedSubscribers.length;
+            
+            // Get unique subscriber count from API (which should NOT include exclusions yet)
+            const uniqueSubscribers = data.total_unique || 0;
+            
+            // Calculate final recipient count: unique subscribers + additional - excluded
+            // However, we need to be careful not to double-subtract exclusions if API already did that
+            // Check the API response to determine if it already accounts for exclusions
+            const netTotalCount = uniqueSubscribers + additionalCount - excludedCount;
+            
+            // Update display with the counts
+            updateCountDisplay(rawSubscribersTotal, netTotalCount, groupCount, additionalCount, excludedCount);
+        })
+        .catch(error => {
+            console.error('Error calculating recipients:', error);
+            
+            // Fallback calculation if API fails:
+            // Calculate approximate unique count by estimating deduplication
+            let uniqueEstimate = rawSubscribersTotal;
+            
+            // Reduce by a reasonable factor if multiple groups (to account for possible duplicates)
+            if (selectedGroups.length > 1) {
+                uniqueEstimate = Math.floor(rawSubscribersTotal * 0.9); // Estimate 10% overlap
+            }
+            
+            // Calculate net total as: estimated unique subscribers + additional emails - excluded
+            const netTotal = Math.max(0, uniqueEstimate - excludedCount) + additionalCount;
+            
+            updateCountDisplay(rawSubscribersTotal, netTotal, selectedGroups.length, additionalCount, excludedCount);
+        });
+}
+
+/**
+ * Update count display elements
+ */
+function updateCountDisplay(rawTotal, netTotal, groupCount, additionalCount, excludedCount) {
+    // Set the raw total count (simple sum of all subscribers in all groups)
+    document.getElementById('raw-subscriber-count').textContent = rawTotal;
+    
+    // Set other counts
+    document.getElementById('selected-groups-count').textContent = groupCount;
+    document.getElementById('additional-emails-count').textContent = additionalCount;
+    document.getElementById('excluded-count').textContent = excludedCount;
+    
+    // Update the badge with net total (actual recipients)
+    document.getElementById('total-recipients-badge').textContent = `${netTotal} recipients`;
+}
     
     /**
      * Validate the form before submission

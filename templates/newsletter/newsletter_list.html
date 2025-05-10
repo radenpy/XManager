@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Newsletters | XManager{% endblock %}
+
+{% block page_title %}Newsletters{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:newsletter_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Create Newsletter
+    </a>
+    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary ms-2">
+        <i class="fas fa-file-code me-1"></i> Manage Templates
+    </a>
+{% endblock %}
+
+{% block content %}
+    <!-- Filter Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'newsletter:newsletter_list' %}" class="row g-3">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="subject" placeholder="Search by subject..." 
+                               value="{{ request.GET.subject|default:'' }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All statuses</option>
+                        <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>Draft</option>
+                        <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                        <option value="sending" {% if request.GET.status == 'sending' %}selected{% endif %}>Sending</option>
+                        <option value="sent" {% if request.GET.status == 'sent' %}selected{% endif %}>Sent</option>
+                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" name="date_from" placeholder="From date" 
+                           value="{{ request.GET.date_from|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex">
+                        <input type="date" class="form-control" name="date_to" placeholder="To date" 
+                               value="{{ request.GET.date_to|default:'' }}">
+                        <button type="submit" class="btn btn-primary ms-2">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Drafts</h6>
+                            <h3 class="mb-0">{{ status_counts.draft }}</h3>
+                        </div>
+                        <i class="fas fa-edit text-muted fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer p-1">
+                    <a href="?status=draft" class="small text-decoration-none d-block text-center">View all</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Scheduled</h6>
+                            <h3 class="mb-0">{{ status_counts.scheduled }}</h3>
+                        </div>
+                        <i class="fas fa-calendar-alt text-primary fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer p-1">
+                    <a href="?status=scheduled" class="small text-decoration-none d-block text-center">View all</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Sending</h6>
+                            <h3 class="mb-0">{{ status_counts.sending }}</h3>
+                        </div>
+                        <i class="fas fa-paper-plane text-warning fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer p-1">
+                    <a href="?status=sending" class="small text-decoration-none d-block text-center">View all</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Sent</h6>
+                            <h3 class="mb-0">{{ status_counts.sent }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer p-1">
+                    <a href="?status=sent" class="small text-decoration-none d-block text-center">View all</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Failed</h6>
+                            <h3 class="mb-0">{{ status_counts.failed }}</h3>
+                        </div>
+                        <i class="fas fa-exclamation-circle text-danger fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer p-1">
+                    <a href="?status=failed" class="small text-decoration-none d-block text-center">View all</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletters List -->
+    <div class="card">
+        <div class="card-body">
+            {% if newsletters %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Recipients</th>
+                                <th>Created</th>
+                                <th>Scheduled/Sent</th>
+                                <th>Stats</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for newsletter in newsletters %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'newsletter:newsletter_detail' slug=newsletter.slug %}" class="text-decoration-none">
+                                            {{ newsletter.subject }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if newsletter.status == 'draft' %}
+                                            <span class="badge bg-secondary">Draft</span>
+                                        {% elif newsletter.status == 'scheduled' %}
+                                            <span class="badge bg-primary">Scheduled</span>
+                                        {% elif newsletter.status == 'sending' %}
+                                            <span class="badge bg-warning">Sending</span>
+                                        {% elif newsletter.status == 'sent' %}
+                                            <span class="badge bg-success">Sent</span>
+                                        {% elif newsletter.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ newsletter.total_recipients }}</td>
+                                    <td>{{ newsletter.created_at|date:"d M Y H:i" }}</td>
+                                    <td>
+                                        {% if newsletter.status == 'scheduled' %}
+                                            {{ newsletter.scheduled_date|date:"d M Y H:i" }}
+                                        {% elif newsletter.status == 'sent' %}
+                                            {{ newsletter.sent_date|date:"d M Y H:i" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if newsletter.status == 'sent' %}
+                                            <small>
+                                                <i class="fas fa-eye"></i> {{ newsletter.open_count }} 
+                                                <i class="fas fa-mouse-pointer ms-2"></i> {{ newsletter.click_count }}
+                                            </small>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'newsletter:newsletter_detail' slug=newsletter.slug %}" class="btn btn-sm btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-sm btn-outline-info" title="Preview" target="_blank">
+                                                <i class="fas fa-desktop"></i>
+                                            </a>
+                                            {% if newsletter.status == 'draft' %}
+                                                <a href="{% url 'newsletter:newsletter_update' slug=newsletter.slug %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if is_paginated %}
+                    <nav aria-label="Pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No newsletters found.
+                    {% if request.GET %}
+                        <a href="{% url 'newsletter:newsletter_list' %}" class="alert-link">Clear filters</a> to see all newsletters.
+                    {% else %}
+                        <a href="{% url 'newsletter:newsletter_create' %}" class="alert-link">Create your first newsletter</a> to get started.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize any JS components here
+    });
+</script>
+{% endblock %}

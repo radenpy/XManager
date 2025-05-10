@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ newsletter.subject }} | Newsletter Details{% endblock %}
+
+{% block page_title %}Newsletter: {{ newsletter.subject }}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Newsletters
+    </a>
+    
+    {% if newsletter.status == 'draft' %}
+        <a href="{% url 'newsletter:newsletter_update' slug=newsletter.slug %}" class="btn btn-outline-primary ms-2">
+            <i class="fas fa-edit me-1"></i> Edit
+        </a>
+        <a href="{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}" class="btn btn-outline-danger ms-2">
+            <i class="fas fa-trash me-1"></i> Delete
+        </a>
+    {% endif %}
+    
+    <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-outline-info ms-2" target="_blank">
+        <i class="fas fa-desktop me-1"></i> Preview
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Main Content -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Newsletter Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>{{ newsletter.subject }}</h4>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="me-3">
+                                <span class="badge 
+                                    {% if newsletter.status == 'draft' %}bg-secondary
+                                    {% elif newsletter.status == 'scheduled' %}bg-primary
+                                    {% elif newsletter.status == 'sending' %}bg-warning
+                                    {% elif newsletter.status == 'sent' %}bg-success
+                                    {% elif newsletter.status == 'failed' %}bg-danger{% endif %}">
+                                    {{ newsletter.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="me-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i> Created: {{ newsletter.created_at|date:"d M Y H:i" }}
+                                </small>
+                            </div>
+                            {% if newsletter.status == 'scheduled' and newsletter.scheduled_date %}
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i> Scheduled: {{ newsletter.scheduled_date|date:"d M Y H:i" }}
+                                    </small>
+                                </div>
+                            {% endif %}
+                            {% if newsletter.status == 'sent' and newsletter.sent_date %}
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-paper-plane me-1"></i> Sent: {{ newsletter.sent_date|date:"d M Y H:i" }}
+                                    </small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Content Preview</h5>
+                        <div class="card">
+                            <div class="card-body bg-light">
+                                <div class="content-preview">
+                                    {{ newsletter.content|safe }}
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        View Full Preview
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Template</h5>
+                        {% if newsletter.template %}
+                            <p>
+                                <a href="{% url 'newsletter:template_update' pk=newsletter.template.pk %}">
+                                    {{ newsletter.template.name }}
+                                </a>
+                                {% if newsletter.template.description %}
+                                    <small class="text-muted ms-2">{{ newsletter.template.description }}</small>
+                                {% endif %}
+                            </p>
+                        {% else %}
+                            <p class="text-muted">Using default template</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Send Test Email -->
+            {% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Send Test Email</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'newsletter:newsletter_send_test' slug=newsletter.slug %}" class="d-flex">
+                            {% csrf_token %}
+                            <div class="flex-grow-1 me-2">
+                                {{ test_form.email }}
+                                {% if test_form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in test_form.email.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Test</button>
+                        </form>
+                        <small class="text-muted mt-2">Send a test email to verify how the newsletter will look in an email client.</small>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Sidebar Content -->
+            
+            <!-- Recipient Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recipients</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Total Recipients</h6>
+                        <h3>{{ stats.total_unique }}</h3>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Direct Subscribers</h6>
+                        <p>{{ stats.direct_subscribers }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>From Groups</h6>
+                        <p>{{ stats.group_subscribers }}</p>
+                    </div>
+                    
+                    {% if newsletter.subscriber_groups.exists %}
+                        <div class="mb-3">
+                            <h6>Groups</h6>
+                            <ul>
+                                {% for group in newsletter.subscriber_groups.all %}
+                                    <li>{{ group.group_name }} ({{ group.subscriber.count }} subscribers)</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Statistics Card -->
+            {% if newsletter.status == 'sent' %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <h6>Open Rate</h6>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="me-2">
+                                        <h3 class="mb-0">{{ stats.open_rate|floatformat:1 }}%</h3>
+                                    </div>
+                                    <div>
+                                        <small class="d-block">{{ newsletter.open_count }} opens</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <h6>Click Rate</h6>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="me-2">
+                                        <h3 class="mb-0">{{ stats.click_rate|floatformat:1 }}%</h3>
+                                    </div>
+                                    <div>
+                                        <small class="d-block">{{ newsletter.click_count }} clicks</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Tracking Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Tracking Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Tracking ID</h6>
+                        <code>{{ newsletter.tracking_id }}</code>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Slug</h6>
+                        <code>{{ newsletter.slug }}</code>
+                    </div>
+                    
+                    {% if newsletter.status == 'sent' %}
+                        <div class="mb-3">
+                            <h6>Recent Activity</h6>
+                            {% with events=newsletter.tracking_events.all|slice:":5" %}
+                                {% if events %}
+                                    <ul class="list-group">
+                                        {% for event in events %}
+                                            <li class="list-group-item small">
+                                                <strong>{{ event.get_event_type_display }}</strong> by {{ event.subscriber.email }}
+                                                <br>
+                                                <small class="text-muted">{{ event.created_at|date:"d M Y H:i" }}</small>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted">No activity recorded yet.</p>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .content-preview {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Any JavaScript initialization can go here
+    });
+</script>
+{% endblock %}

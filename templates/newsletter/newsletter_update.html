@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Newsletter | XManager{% endblock %}
+
+{% block page_title %}Edit Newsletter{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Newsletters
+    </a>
+    <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-outline-info ms-2" target="_blank">
+        <i class="fas fa-desktop me-1"></i> Preview
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="newsletter-form">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <!-- Main Content -->
+                        <h5 class="mb-3">Newsletter Content</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject *</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.subject.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.subject.help_text %}
+                                <div class="form-text">{{ form.subject.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.template.id_for_label }}" class="form-label">Template</label>
+                            {{ form.template }}
+                            {% if form.template.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.template.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.template.help_text %}
+                                <div class="form-text">{{ form.template.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">Content *</label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.content.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                You can use Markdown or HTML in the content. 
+                                <a href="#" class="toggle-editor-help">Show formatting help</a>
+                            </div>
+                            
+                            <div class="editor-help mt-2 d-none">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>Formatting Tips</h6>
+                                        <ul class="mb-0">
+                                            <li><code># Heading 1</code> - Creates a large heading</li>
+                                            <li><code>## Heading 2</code> - Creates a medium heading</li>
+                                            <li><code>**bold text**</code> - Creates <strong>bold text</strong></li>
+                                            <li><code>*italic text*</code> - Creates <em>italic text</em></li>
+                                            <li><code>[link text](https://example.com)</code> - Creates a <a href="#">link</a></li>
+                                            <li><code>![alt text](image.jpg)</code> - Embeds an image</li>
+                                            <li>You can also use HTML tags</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <!-- Sidebar Content -->
+                        
+                        <!-- Newsletter Info -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="card-title mb-0">Newsletter Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Status:</strong> 
+                                    {% if newsletter.status == 'draft' %}
+                                        <span class="badge bg-secondary">Draft</span>
+                                    {% elif newsletter.status == 'scheduled' %}
+                                        <span class="badge bg-primary">Scheduled</span>
+                                    {% elif newsletter.status == 'sending' %}
+                                        <span class="badge bg-warning">Sending</span>
+                                    {% elif newsletter.status == 'sent' %}
+                                        <span class="badge bg-success">Sent</span>
+                                    {% elif newsletter.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Created:</strong> {{ newsletter.created_at|date:"d M Y H:i" }}</p>
+                                <p><strong>Last Updated:</strong> {{ newsletter.updated_at|date:"d M Y H:i" }}</p>
+                                
+                                {% if newsletter.status == 'scheduled' and newsletter.scheduled_date %}
+                                    <p><strong>Scheduled for:</strong> {{ newsletter.scheduled_date|date:"d M Y H:i" }}</p>
+                                {% endif %}
+                                
+                                {% if newsletter.status == 'sent' and newsletter.sent_date %}
+                                    <p><strong>Sent on:</strong> {{ newsletter.sent_date|date:"d M Y H:i" }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Delivery Options -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Delivery Options</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if newsletter.status == 'draft' %}
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            {{ form.send_now }}
+                                            <label class="form-check-label" for="{{ form.send_now.id_for_label }}">
+                                                Send immediately
+                                            </label>
+                                        </div>
+                                        {% if form.send_now.help_text %}
+                                            <div class="form-text">{{ form.send_now.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            {{ form.schedule_send }}
+                                            <label class="form-check-label" for="{{ form.schedule_send.id_for_label }}">
+                                                Schedule for later
+                                            </label>
+                                        </div>
+                                        {% if form.schedule_send.help_text %}
+                                            <div class="form-text">{{ form.schedule_send.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div id="scheduled-date-container" class="mb-3 d-none">
+                                        <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">Scheduled Date *</label>
+                                        {{ form.scheduled_date }}
+                                        {% if form.scheduled_date.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.scheduled_date.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                        {{ form.status }}
+                                        {% if form.status.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.status.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i> 
+                                        Delivery options can only be changed for newsletters in draft status.
+                                    </div>
+                                    
+                                    {{ form.scheduled_date.as_hidden }}
+                                    {{ form.status.as_hidden }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Recipients -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recipients</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if newsletter.status == 'draft' %}
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            {{ form.all_subscribers }}
+                                            <label class="form-check-label" for="{{ form.all_subscribers.id_for_label }}">
+                                                Send to all subscribers
+                                            </label>
+                                        </div>
+                                        {% if form.all_subscribers.help_text %}
+                                            <div class="form-text">{{ form.all_subscribers.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div id="specific-recipients-container">
+                                        <div class="mb-3">
+                                            <label for="{{ form.subscribers.id_for_label }}" class="form-label">Select Specific Subscribers</label>
+                                            {{ form.subscribers }}
+                                            {% if form.subscribers.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.subscribers.errors %}
+                                                        {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="{{ form.subscriber_groups.id_for_label }}" class="form-label">Select Subscriber Groups</label>
+                                            {{ form.subscriber_groups }}
+                                            {% if form.subscriber_groups.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.subscriber_groups.errors %}
+                                                        {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i> 
+                                        Recipients can only be changed for newsletters in draft status.
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Total Recipients:</strong> {{ newsletter.total_recipients }}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Direct Subscribers:</strong> {{ newsletter.subscribers.count }}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Subscriber Groups:</strong> {{ newsletter.subscriber_groups.count }}
+                                    </div>
+                                    
+                                    {{ form.subscribers.as_hidden }}
+                                    {{ form.subscriber_groups.as_hidden }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'newsletter:newsletter_detail' slug=newsletter.slug %}" class="btn btn-outline-secondary">Cancel</a>
+                    <div>
+                        {% if newsletter.status == 'draft' %}
+                            <button type="submit" name="save_as_draft" class="btn btn-outline-primary me-2">Save as Draft</button>
+                            <button type="submit" class="btn btn-primary">Save and Continue</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle editor help
+        document.querySelector('.toggle-editor-help').addEventListener('click', function(e) {
+            e.preventDefault();
+            const helpSection = document.querySelector('.editor-help');
+            helpSection.classList.toggle('d-none');
+            this.textContent = helpSection.classList.contains('d-none') ? 'Show formatting help' : 'Hide formatting help';
+        });
+
+        {% if newsletter.status == 'draft' %}
+        // Schedule toggle
+        const scheduleCheckbox = document.getElementById('{{ form.schedule_send.id_for_label }}');
+        const scheduledDateContainer = document.getElementById('scheduled-date-container');
+        
+        scheduleCheckbox.addEventListener('change', function() {
+            scheduledDateContainer.classList.toggle('d-none', !this.checked);
+        });
+        
+        // Toggle the scheduled date field based on the initial value
+        if (scheduleCheckbox.checked) {
+            scheduledDateContainer.classList.remove('d-none');
+        }
+        
+        // All subscribers toggle
+        const allSubscribersCheckbox = document.getElementById('{{ form.all_subscribers.id_for_label }}');
+        const specificRecipientsContainer = document.getElementById('specific-recipients-container');
+        
+        allSubscribersCheckbox.addEventListener('change', function() {
+            specificRecipientsContainer.classList.toggle('d-none', this.checked);
+        });
+        
+        // Toggle the specific recipients container based on the initial value
+        if (allSubscribersCheckbox.checked) {
+            specificRecipientsContainer.classList.add('d-none');
+        }
+        {% endif %}
+        
+        // Initialize WYSIWYG editor
+        // Note: This would be replaced with your actual editor initialization
+        // For example, if using TinyMCE, Summernote, or CKEditor
+        if (typeof initializeWysiwygEditor === 'function') {
+            initializeWysiwygEditor('#{{ form.content.id_for_label }}');
+        }
+        
+        // Initialize Select2 for dropdowns
+        if (typeof $ !== 'undefined' && $.fn.select2) {
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                width: '100%'
+            });
+            
+            $('.select2-multiple').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Select options',
+                closeOnSelect: false
+            });
+        }
+    });
+</script>
+{% endblock %}

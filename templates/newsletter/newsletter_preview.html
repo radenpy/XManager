@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ newsletter.subject }} - Preview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .preview-banner {
+            background-color: #dc3545;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .preview-controls {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .preview-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .preview-controls button:hover {
+            background-color: #0069d9;
+        }
+        .preview-frame {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .preview-controls select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            margin-right: 10px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        a {
+            color: #3498db;
+        }
+        .preview-notice {
+            background-color: #ffc107;
+            color: #333;
+            padding: 10px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-banner">
+        <strong>PREVIEW MODE</strong> - This is how your newsletter will appear to recipients
+    </div>
+    
+    <div class="preview-controls">
+        <select id="device-selector">
+            <option value="desktop">Desktop</option>
+            <option value="tablet">Tablet</option>
+            <option value="mobile">Mobile</option>
+        </select>
+        <button onclick="window.print()">Print</button>
+        <button onclick="window.close()">Close Preview</button>
+    </div>
+    
+    <div class="preview-frame" id="preview-container">
+        <!-- Newsletter content is directly embedded here by the view -->
+        {{ newsletter_content|safe }}
+    </div>
+    
+    <div class="preview-notice">
+        This is only a preview. No emails have been sent.
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deviceSelector = document.getElementById('device-selector');
+            const previewContainer = document.getElementById('preview-container');
+            
+            deviceSelector.addEventListener('change', function() {
+                // Remove existing size classes
+                previewContainer.className = 'preview-frame';
+                
+                // Add new size class based on selection
+                switch(this.value) {
+                    case 'mobile':
+                        previewContainer.style.maxWidth = '375px';
+                        break;
+                    case 'tablet':
+                        previewContainer.style.maxWidth = '768px';
+                        break;
+                    case 'desktop':
+                    default:
+                        previewContainer.style.maxWidth = '100%';
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

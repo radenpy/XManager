@@ -202,71 +202,7 @@
                     </div>
                 </div>
                 
-                <script>
-// Natychmiastowe rozwiązanie problemu z wyszukiwarką grup
-document.addEventListener('DOMContentLoaded', function() {
-    // Ten skrypt dodaje bezpośrednie pola formularza dla każdej zaznaczonej grupy
-    const form = document.getElementById('newsletter-form');
-    
-    // Dodajemy obsługę submitu formularza, aby dodać pola dla zaznaczonych grup
-    form.addEventListener('submit', function(e) {
-        // Sprawdź, czy to przycisk "Save as Draft" - jeśli tak, nie rób walidacji
-        const isDraft = e.submitter && e.submitter.name === 'save_as_draft';
-        
-        // Znajdź wszystkie zaznaczone checkbox'y grup
-        const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
-        
-        // Jeśli nie ma zaznaczonych grup i nie jest to draft, sprawdź dodatkowe maile
-        if (!isDraft && checkedGroups.length === 0) {
-            const additionalEmails = document.getElementById('additional-emails');
-            const hasEmails = additionalEmails && additionalEmails.value.trim();
-            
-            if (!hasEmails) {
-                alert('You must select at least one recipient or group, or provide additional email addresses.');
-                e.preventDefault();
-                return false;
-            }
-        }
-        
-        // Usuń wszystkie istniejące ukryte pola dla grup
-        document.querySelectorAll('input[name="subscriber_groups"]').forEach(field => field.remove());
-        
-        // Dodaj nowe ukryte pole dla każdej zaznaczonej grupy
-        checkedGroups.forEach(checkbox => {
-            const hiddenField = document.createElement('input');
-            hiddenField.type = 'hidden';
-            hiddenField.name = 'subscriber_groups';
-            hiddenField.value = checkbox.value;
-            form.appendChild(hiddenField);
-        });
-        
-        // Pozwól formularzowi kontynuować wysyłanie
-        return true;
-    });
-    
-    // Monitoruj wyszukiwarkę grup - zachowaj zaznaczone wartości
-    const groupSearch = document.getElementById('group-search');
-    if (groupSearch) {
-        groupSearch.addEventListener('input', function() {
-            // Zapisz wszystkie aktualnie zaznaczone grupy
-            const checkedGroupIds = [];
-            document.querySelectorAll('.group-checkbox:checked').forEach(cb => {
-                checkedGroupIds.push(cb.value);
-            });
-            
-            // Po zakończeniu wyszukiwania, odtwórz zaznaczenie
-            setTimeout(function() {
-                checkedGroupIds.forEach(id => {
-                    const checkbox = document.querySelector(`.group-checkbox[value="${id}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-                });
-            }, 100);
-        });
-    }
-});
-</script>
+
                 
             </form>
         </div>
@@ -275,12 +211,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {% block extra_js %}
 
-
-
 <script>
 /**
- * Newsletter Form Handling
- * Implements recipient selection and management
+ * Newsletter Form Handling - Improved Version
  */
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Newsletter form script loaded');
@@ -318,52 +251,51 @@ document.addEventListener('DOMContentLoaded', function() {
     let excludedSubscribers = [];
 
     /**
-     * Override form submission to bypass hidden field issues 
+     * Properly handle form submission
      */
     if (form) {
         form.addEventListener('submit', function(e) {
-            // For save as draft, we don't need validation
-            if (e.submitter && e.submitter.name === 'save_as_draft') {
-                // Just make sure the draft flag is set
-                const draftInput = document.createElement('input');
-                draftInput.type = 'hidden';
-                draftInput.name = 'is_draft';
-                draftInput.value = 'true';
-                this.appendChild(draftInput);
-                return true; // Let the form submit normally
-            }
-
-            // For other submissions, ensure we have recipients
+            // Check if this is "Save as Draft" - no validation needed
+            const isDraft = e.submitter && e.submitter.name === 'save_as_draft';
+            
+            // Get all checked groups
             const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
-            const additionalEmails = document.getElementById('additional-emails');
-            const hasEmails = additionalEmails && additionalEmails.value.trim().length > 0;
+            const hasGroups = checkedGroups.length > 0;
             
-            console.log('Form submission intercepted');
-            console.log('- Checked groups count:', checkedGroups.length);
-            console.log('- Has additional emails:', hasEmails);
+            // Check additional emails
+            const hasEmails = additionalEmailsTextarea && additionalEmailsTextarea.value.trim().length > 0;
             
-            // Validate - must have at least one group or additional email
-            if (checkedGroups.length === 0 && !hasEmails) {
-                e.preventDefault(); // Stop form submission
+            // For non-drafts, validate that we have recipients
+            if (!isDraft && !hasGroups && !hasEmails) {
+                e.preventDefault();
                 alert('You must select at least one recipient or group, or provide additional email addresses.');
                 return false;
             }
             
-            // Clear any existing hidden fields for groups
-            const existingFields = form.querySelectorAll('input[name="direct_group_ids"]');
-            existingFields.forEach(field => field.remove());
+            // Clean up existing fields to avoid duplicates
+            form.querySelectorAll('input[name="subscriber_groups"]').forEach(field => field.remove());
             
-            // Add fresh hidden fields for selected groups
+            // Add a hidden field for each selected group
             checkedGroups.forEach(checkbox => {
                 const field = document.createElement('input');
                 field.type = 'hidden';
-                field.name = 'direct_group_ids';
+                field.name = 'subscriber_groups';
                 field.value = checkbox.value;
                 form.appendChild(field);
-                console.log('Added group ID:', checkbox.value);
+                console.log('Added group ID to form:', checkbox.value);
             });
             
-            // For save_and_preview, we need to add a field
+            // Add hidden field for excluded subscribers
+            if (excludedSubscribers.length > 0) {
+                form.querySelectorAll('input[name="excluded_subscribers"]').forEach(field => field.remove());
+                const excludedField = document.createElement('input');
+                excludedField.type = 'hidden';
+                excludedField.name = 'excluded_subscribers';
+                excludedField.value = excludedSubscribers.join(',');
+                form.appendChild(excludedField);
+            }
+            
+            // Add hidden field for save_and_preview if needed
             if (e.submitter && e.submitter.name === 'save_and_preview') {
                 const previewInput = document.createElement('input');
                 previewInput.type = 'hidden';
@@ -372,7 +304,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.appendChild(previewInput);
             }
             
-            return true; // Continue with form submission
+            // Add draft flag if needed
+            if (isDraft) {
+                const draftInput = document.createElement('input');
+                draftInput.type = 'hidden';
+                draftInput.name = 'is_draft';
+                draftInput.value = 'true';
+                form.appendChild(draftInput);
+            }
+            
+            return true;
         });
     }
     
@@ -383,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Loading groups...');
         groupsList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Loading groups...</span></div>';
         
-        // Fetch subscriber groups from the API
         fetch('/newsletter/api/subscriber-groups/')
             .then(response => response.json())
             .then(data => {
@@ -404,18 +344,18 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Rendering groups list. Search term:', searchTerm);
         console.log('Selected groups before rendering:', selectedGroups);
         
-        // Save current checked state before clearing the list
+        // Save current checked state
         const checkedGroupIds = [];
         document.querySelectorAll('.group-checkbox:checked').forEach(cb => {
             checkedGroupIds.push(parseInt(cb.value));
         });
         console.log('Currently checked group IDs:', checkedGroupIds);
         
-        // Merge with selectedGroups to make sure we don't lose selections
+        // Merge with selectedGroups to maintain selections
         selectedGroups = [...new Set([...selectedGroups, ...checkedGroupIds])];
         console.log('Updated selected groups:', selectedGroups);
         
-        // Now clear and rebuild the list
+        // Clear and rebuild the list
         groupsList.innerHTML = '';
         
         if (allGroups.length === 0) {
@@ -448,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.id = `group-${group.id}`;
             checkbox.value = group.id;
             
-            // IMPORTANT: Check the box if this group is in selectedGroups
+            // Check if this group is selected
             checkbox.checked = selectedGroups.includes(parseInt(group.id)) || selectedGroups.includes(group.id);
             
             checkbox.addEventListener('change', function() {
@@ -472,9 +412,6 @@ document.addEventListener('DOMContentLoaded', function() {
             item.appendChild(badge);
             groupsList.appendChild(item);
         });
-        
-        // After rendering, update the hidden input to ensure it's current
-        updateHiddenInputs();
         
         // Also update subscriber lists if needed
         if (selectedGroups.length > 0) {
@@ -542,9 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show loading
         subscribersList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Loading subscribers...</span></div>';
-        
-        // Based on your API structure, we need to fetch subscribers for each group
-        // and combine them
         
         // Track promises for all group subscriber requests
         const fetchPromises = [];
@@ -690,7 +624,6 @@ document.addEventListener('DOMContentLoaded', function() {
             label.textContent = 'Include';
             
             formCheck.appendChild(checkbox);
-            // Uncomment if you want the label
             // formCheck.appendChild(label);
             excludeDiv.appendChild(formCheck);
             
@@ -878,6 +811,15 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDeliveryOptions();
     updateRecipientsSummary();
     initializeSearch();
+    
+    // Set up event listeners for radio buttons
+    sendNowRadio.addEventListener('change', updateDeliveryOptions);
+    scheduleRadio.addEventListener('change', updateDeliveryOptions);
+    
+    // Set up event listener for additional emails textarea
+    additionalEmailsTextarea.addEventListener('input', debounce(function() {
+        updateRecipientsSummary();
+    }, 500));
     
     // Additional debugging info
     console.log('Initial form state:');

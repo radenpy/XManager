@@ -120,12 +120,38 @@ class Newsletter(CoreModel):
         all_recipients = direct_subscribers.union(group_subscribers)
         return len(all_recipients)
 
-    def update_recipient_count(self):
-        """
-        Update the total_recipients field
-        """
-        self.total_recipients = self.get_recipient_count()
-        self.save(update_fields=['total_recipients'])
+
+def update_recipient_count(self):
+    """
+    Aktualizuje liczbę odbiorców na podstawie grup i indywidualnych subskrybentów
+    """
+    count = 0
+
+    # Zlicz odbiorców z grup (jeśli model ma taką relację)
+    if hasattr(self, 'recipient_groups'):
+        for group in self.recipient_groups.all():
+            count += group.subscriber.count()
+
+    # Dodaj indywidualnych odbiorców (jeśli model ma taką relację)
+    if hasattr(self, 'subscribers'):
+        # Pobierz wszystkie identyfikatory subskrybentów z grup
+        group_subscriber_ids = []
+        if hasattr(self, 'recipient_groups'):
+            for group in self.recipient_groups.all():
+                group_subscriber_ids.extend(
+                    group.subscriber.values_list('id', flat=True)
+                )
+
+        # Policz indywidualnych subskrybentów, którzy nie są w grupach
+        individual_subscribers = self.subscribers.exclude(
+            id__in=group_subscriber_ids).count()
+        count += individual_subscribers
+
+    # Aktualizuj pole
+    self.total_recipients = count
+    self.save(update_fields=['total_recipients'])
+
+    return count
 
     class Meta:
         verbose_name = "Newsletter"

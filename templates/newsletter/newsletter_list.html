@@ -204,64 +204,66 @@
                                                 Actions
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown{{ newsletter.id }}">
-                                                <!-- Common actions for all statuses -->
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="alert('Clone feature coming soon!')">
-                                                        <i class="fas fa-copy fa-fw me-1"></i> Clone (Coming Soon)
-                                                    </a>
-                                                </li>
-                                                
-                                                <!-- Status-specific actions -->
-                                                {% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="{% url 'newsletter:newsletter_create' %}?edit={{ newsletter.slug }}">
-                                                            <i class="fas fa-edit fa-fw me-1"></i> Edit in Wizard
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                
-                                                    {% if newsletter.status == 'draft' %}
-                                                    <li>
-                                                        <a class="dropdown-item text-danger" href="#" 
-                                                           onclick="confirmDelete('{{ newsletter.subject }}', '{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}')">
-                                                            <i class="fas fa-trash fa-fw me-1"></i> Delete
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                
-                                                {% if newsletter.status == 'scheduled' %}
-                                                    <li>
-                                                        <a class="dropdown-item text-warning" href="#" onclick="alert('Cancel feature coming soon!')">
-                                                            <i class="fas fa-ban fa-fw me-1"></i> Cancel Sending (Coming Soon)
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                
-                                                {% if newsletter.status == 'sent' or newsletter.status == 'sending' %}
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#" onclick="alert('Detailed reports coming soon!')">
-                                                            <i class="fas fa-chart-bar fa-fw me-1"></i> Detailed Report (Coming Soon)
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                
-                                                {% if newsletter.status == 'sent' %}
-                                                    <li>
-                                                        <a class="dropdown-item" href="#" onclick="alert('Export feature coming soon!')">
-                                                            <i class="fas fa-download fa-fw me-1"></i> Export Data (Coming Soon)
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                
-                                                {% if newsletter.status == 'failed' %}
-                                                    <li>
-                                                        <a class="dropdown-item text-info" href="#" onclick="alert('Retry feature coming soon!')">
-                                                            <i class="fas fa-redo fa-fw me-1"></i> Retry Sending (Coming Soon)
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
+                                           <!-- Znajdź tę sekcję w newsletter_list.html i zastąp ją poniższym kodem -->
+
+<!-- Common actions for all statuses -->
+<li>
+    <a class="dropdown-item" href="{% url 'newsletter:newsletter_clone' slug=newsletter.slug %}">
+        <i class="fas fa-copy fa-fw me-1"></i> Clone
+    </a>
+</li>
+
+<!-- Status-specific actions -->
+{% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
+    <li><hr class="dropdown-divider"></li>
+    <li>
+        <a class="dropdown-item" href="{% url 'newsletter:newsletter_create' %}?edit={{ newsletter.slug }}">
+            <i class="fas fa-edit fa-fw me-1"></i> Edit in Wizard
+        </a>
+    </li>
+{% endif %}
+
+{% if newsletter.status == 'draft' %}
+    <li>
+        <a class="dropdown-item text-danger" href="#" 
+           onclick="confirmDelete('{{ newsletter.subject }}', '{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}')">
+            <i class="fas fa-trash fa-fw me-1"></i> Delete
+        </a>
+    </li>
+{% endif %}
+
+{% if newsletter.status == 'scheduled' %}
+    <li>
+        <a class="dropdown-item text-warning" href="#" onclick="alert('Cancel feature coming soon!')">
+            <i class="fas fa-ban fa-fw me-1"></i> Cancel Sending (Coming Soon)
+        </a>
+    </li>
+{% endif %}
+
+{% if newsletter.status == 'sent' or newsletter.status == 'sending' %}
+    <li><hr class="dropdown-divider"></li>
+    <li>
+        <a class="dropdown-item" href="{% url 'newsletter:newsletter_report' slug=newsletter.slug %}">
+            <i class="fas fa-chart-bar fa-fw me-1"></i> Detailed Report
+        </a>
+    </li>
+{% endif %}
+
+{% if newsletter.status == 'sent' %}
+    <li>
+        <a class="dropdown-item" href="#" onclick="alert('Export feature coming soon!')">
+            <i class="fas fa-download fa-fw me-1"></i> Export Data (Coming Soon)
+        </a>
+    </li>
+{% endif %}
+
+{% if newsletter.status == 'failed' %}
+    <li>
+        <a class="dropdown-item text-info" href="#" onclick="alert('Retry feature coming soon!')">
+            <i class="fas fa-redo fa-fw me-1"></i> Retry Sending (Coming Soon)
+        </a>
+    </li>
+{% endif %}
                                             </ul>
                                         </div>
                                     </td>

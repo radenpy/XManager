@@ -24,9 +24,6 @@ urlpatterns = [
          views.NewsletterSendView.as_view(), name='newsletter_send'),
 
 
-
-
-
     # Newsletter detail views - These should come AFTER more specific patterns
 
     path('<slug:slug>/delete/', views.NewsletterDeleteView.as_view(),
@@ -45,6 +42,16 @@ urlpatterns = [
          name='api_subscribers_count'),
     path('api/recipients/count/', api.get_recipients_count,
          name='api_recipients_count'),
+
+    # Nowe URL-e
+    path('<slug:slug>/clone/', views.NewsletterCloneView.as_view(),
+         name='newsletter_clone'),
+    path('<slug:slug>/report/', views.NewsletterReportView.as_view(),
+         name='newsletter_report'),
+
+    # Podgląd newslettera
+    path('<slug:slug>/preview/', views.NewsletterPreviewView.as_view(),
+         name='newsletter_preview'),
 
 
 ]

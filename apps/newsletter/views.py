@@ -21,6 +21,7 @@ from .models import Newsletter, NewsletterTracking
 
 import logging
 import uuid
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -592,10 +593,14 @@ class NewsletterReportView(LoginRequiredMixin, View):
             ).count()
         except:
             # Jeśli model nie istnieje lub wystąpi inny błąd, użyj przykładowych danych
-            unique_opens = int(total_recipients * 0.35)  # 35% open rate
-            total_opens = int(unique_opens * 1.2)  # 20% więcej niż unique
-            unique_clicks = int(unique_opens * 0.4)  # 40% click-through rate
-            total_clicks = int(unique_clicks * 1.3)  # 30% więcej niż unique
+            # co najmniej 1, 35% open rate
+            unique_opens = max(1, int(total_recipients * 0.35))
+            # co najmniej 1, 20% więcej niż unique
+            total_opens = max(1, int(unique_opens * 1.2))
+            # co najmniej 1, 40% click-through rate
+            unique_clicks = max(1, int(unique_opens * 0.4))
+            # co najmniej 1, 30% więcej niż unique
+            total_clicks = max(1, int(unique_clicks * 1.3))
 
         # Oblicz wskaźniki (unikaj dzielenia przez zero)
         open_rate = (unique_opens / total_recipients *
@@ -604,6 +609,11 @@ class NewsletterReportView(LoginRequiredMixin, View):
                       100) if total_recipients > 0 else 0
         click_to_open_rate = (unique_clicks / unique_opens *
                               100) if unique_opens > 0 else 0
+
+        # Oblicz średnią liczbę otwarć i kliknięć
+        avg_opens_per_opener = total_opens / unique_opens if unique_opens > 0 else 0
+        avg_clicks_per_clicker = total_clicks / \
+            unique_clicks if unique_clicks > 0 else 0
 
         return {
             'total_recipients': total_recipients,
@@ -614,6 +624,8 @@ class NewsletterReportView(LoginRequiredMixin, View):
             'open_rate': open_rate,
             'click_rate': click_rate,
             'click_to_open_rate': click_to_open_rate,
+            'avg_opens_per_opener': avg_opens_per_opener,
+            'avg_clicks_per_clicker': avg_clicks_per_clicker
         }
 
     def _get_link_stats(self, newsletter):

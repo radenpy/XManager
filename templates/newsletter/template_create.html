@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Create Template | XManager{% endblock %}
+{% block title %}Utwórz Szablon | XManager{% endblock %}
 
-{% block page_title %}Create Newsletter Template{% endblock %}
+{% block page_title %}Utwórz Szablon Newslettera{% endblock %}
 
 {% block page_actions %}
     <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Back to Templates
+        <i class="fas fa-arrow-left me-1"></i> Powrót do Szablonów
     </a>
 {% endblock %}
 
@@ -29,7 +29,7 @@
                     <div class="col-md-4">
                         <!-- Template Info -->
                         <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Template Name *</label>
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Nazwa Szablonu *</label>
                             {{ form.name }}
                             {% if form.name.errors %}
                                 <div class="invalid-feedback d-block">
@@ -41,7 +41,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Opis</label>
                             {{ form.description }}
                             {% if form.description.errors %}
                                 <div class="invalid-feedback d-block">
@@ -53,23 +53,57 @@
                         </div>
                         
                         <div class="alert alert-info">
-                            <h6>Template Requirements</h6>
-                            <p class="mb-1">Your template must include the following placeholder:</p>
+                            <h6>Wymagania dla Szablonu</h6>
+                            <p class="mb-1">Twój szablon musi zawierać następujący element zastępczy:</p>
                             <ul class="mb-1">
-                                <li><code>{{content}}</code> - Where the newsletter content will be inserted</li>
+                                <li><code>{{content}}</code> - Miejsce, gdzie zostanie wstawiona treść newslettera</li>
                             </ul>
-                            <p class="mb-0">You can also use these optional placeholders:</p>
+                            <p class="mb-0">Możesz również użyć opcjonalnych elementów zastępczych:</p>
                             <ul class="mb-0">
-                                <li><code>{{subject}}</code> - The newsletter subject</li>
-                                <li><code>{{unsubscribe_url}}</code> - URL for unsubscribing</li>
+                                <li><code>{{subject}}</code> - Temat newslettera</li>
+                                <li><code>{{unsubscribe_url}}</code> - Link do rezygnacji z subskrypcji</li>
+                                <li><code>{{recipient_name}}</code> - Imię odbiorcy</li>
+                                <li><code>{{recipient_email}}</code> - Email odbiorcy</li>
                             </ul>
+                        </div>
+                        
+                        <!-- Template Samples Section -->
+                        <div class="mt-4">
+                            <h6>Przykładowe Szablony</h6>
+                            <div class="list-group">
+                                <button type="button" class="list-group-item list-group-item-action" id="sample-basic">
+                                    <i class="fas fa-file-alt me-2"></i> Podstawowy Szablon
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action" id="sample-promo">
+                                    <i class="fas fa-tag me-2"></i> Szablon Promocyjny
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action" id="sample-newsletter">
+                                    <i class="fas fa-newspaper me-2"></i> Szablon Newslettera
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="col-md-8">
-                        <!-- HTML Content -->
+                        <!-- Editor Type Selection -->
                         <div class="mb-3">
-                            <label for="{{ form.html_content.id_for_label }}" class="form-label">HTML Content *</label>
+                            <label class="form-label">Typ Edytora</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="editor-type" id="editor-html" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="editor-html">
+                                    <i class="fas fa-code me-1"></i> Edytor HTML
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="editor-type" id="editor-wysiwyg" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="editor-wysiwyg">
+                                    <i class="fas fa-edit me-1"></i> Edytor Wizualny
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- HTML Editor -->
+                        <div id="html-editor-container" class="mb-3">
+                            <label for="{{ form.html_content.id_for_label }}" class="form-label">Zawartość HTML *</label>
                             {{ form.html_content }}
                             {% if form.html_content.errors %}
                                 <div class="invalid-feedback d-block">
@@ -79,39 +113,389 @@
                                 </div>
                             {% endif %}
                             <div class="form-text">
-                                Use HTML to create your template. The <code>{{content}}</code> placeholder is required.
+                                Użyj HTML do utworzenia szablonu. Element <code>{{content}}</code> jest wymagany.
                             </div>
+                        </div>
+                        
+                        <!-- WYSIWYG Editor (initially hidden) -->
+                        <div id="wysiwyg-editor-container" class="mb-3 d-none">
+                            <label for="wysiwyg-editor" class="form-label">Edytor Wizualny *</label>
+                            <div id="wysiwyg-editor" class="form-control" style="min-height: 300px;"></div>
+                            <div class="form-text">
+                                Użyj edytora wizualnego do utworzenia szablonu. Dodaj element <code>{{content}}</code> w miejscu, gdzie powinna być wstawiona treść newslettera.
+                            </div>
+                            <input type="hidden" id="wysiwyg-content" name="wysiwyg_content">
+                        </div>
+                        
+                        <!-- Preview Button -->
+                        <div class="mb-3 text-end">
+                            <button type="button" class="btn btn-outline-secondary" id="preview-btn">
+                                <i class="fas fa-eye me-1"></i> Podgląd Szablonu
+                            </button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="d-flex justify-content-between">
-                    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">Anuluj</a>
                     <div>
-                        <button type="submit" class="btn btn-primary">Save Template</button>
+                        <button type="button" class="btn btn-outline-primary me-2" id="save-draft-btn">Zapisz jako Wersję Roboczą</button>
+                        <button type="submit" class="btn btn-primary">Zapisz Szablon</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    
+    <!-- Template Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Podgląd Szablonu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="preview-frame" style="width: 100%; height: 500px; border: 1px solid #ddd;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/xml/xml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/javascript/javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/css/css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/edit/closetag.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/hint/show-hint.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/hint/html-hint.min.js"></script>
+
+<!-- Include TinyMCE for WYSIWYG editing -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add syntax highlighting for the HTML editor if a library like CodeMirror is available
-        if (typeof CodeMirror !== 'undefined') {
-            const editor = CodeMirror.fromTextArea(document.getElementById('{{ form.html_content.id_for_label }}'), {
-                mode: 'htmlmixed',
-                theme: 'default',
-                lineNumbers: true,
-                lineWrapping: true,
-                autoCloseTags: true,
-                autoCloseBrackets: true,
-                matchBrackets: true,
-                extraKeys: {"Ctrl-Space": "autocomplete"}
-            });
-        }
+        // Inicjalizacja CodeMirror dla edytora HTML
+        const htmlTextArea = document.getElementById('{{ form.html_content.id_for_label }}');
+        const htmlEditor = CodeMirror.fromTextArea(htmlTextArea, {
+            mode: 'htmlmixed',
+            lineNumbers: true,
+            lineWrapping: true,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            extraKeys: {"Ctrl-Space": "autocomplete"},
+            theme: 'default',
+            height: '400px'
+        });
+        
+        // Ustawienie elastycznego rozmiaru dla edytora CodeMirror
+        htmlEditor.setSize(null, 400);
+        
+        // Inicjalizacja TinyMCE dla edytora wizualnego (WYSIWYG)
+        tinymce.init({
+            selector: '#wysiwyg-editor',
+            height: 400,
+            menubar: true,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | bold italic backcolor | \
+                     alignleft aligncenter alignright alignjustify | \
+                     bullist numlist outdent indent | removeformat | help | code',
+            setup: function(editor) {
+                // Dodanie przycisku dla elementu zastępczego treści
+                editor.ui.registry.addButton('contentplaceholder', {
+                    text: '{{content}}',
+                    tooltip: 'Wstaw element zastępczy treści',
+                    onAction: function() {
+                        editor.insertContent('{{content}}');
+                    }
+                });
+                
+                // Dodanie menu dla elementów zastępczych
+                editor.ui.registry.addMenuButton('placeholders', {
+                    text: 'Wstaw Element',
+                    tooltip: 'Wstaw element zastępczy szablonu',
+                    fetch: function(callback) {
+                        const items = [
+                            {
+                                type: 'menuitem',
+                                text: 'Treść',
+                                onAction: function() {
+                                    editor.insertContent('{{content}}');
+                                }
+                            },
+                            {
+                                type: 'menuitem',
+                                text: 'Temat',
+                                onAction: function() {
+                                    editor.insertContent('{{subject}}');
+                                }
+                            },
+                            {
+                                type: 'menuitem',
+                                text: 'URL Rezygnacji',
+                                onAction: function() {
+                                    editor.insertContent('{{unsubscribe_url}}');
+                                }
+                            },
+                            {
+                                type: 'menuitem',
+                                text: 'Imię Odbiorcy',
+                                onAction: function() {
+                                    editor.insertContent('{{recipient_name}}');
+                                }
+                            },
+                            {
+                                type: 'menuitem',
+                                text: 'Email Odbiorcy',
+                                onAction: function() {
+                                    editor.insertContent('{{recipient_email}}');
+                                }
+                            }
+                        ];
+                        callback(items);
+                    }
+                });
+                
+                // Dodanie niestandardowych przycisków do paska narzędzi
+                editor.ui.registry.addButton('placeholders', {
+                    icon: 'template',
+                    tooltip: 'Wstaw element zastępczy',
+                    onAction: function() {
+                        editor.execCommand('mceInsertContent', false, '{{content}}');
+                    }
+                });
+            },
+            toolbar_mode: 'sliding',
+            content_css: [
+                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+                '//www.tiny.cloud/css/codepen.min.css'
+            ]
+        });
+        
+        // Przełączanie między edytorami
+        document.getElementById('editor-html').addEventListener('change', function() {
+            document.getElementById('html-editor-container').classList.remove('d-none');
+            document.getElementById('wysiwyg-editor-container').classList.add('d-none');
+            htmlEditor.refresh(); // Odświeżenie CodeMirror, aby naprawić problemy z renderowaniem
+        });
+        
+        document.getElementById('editor-wysiwyg').addEventListener('change', function() {
+            document.getElementById('html-editor-container').classList.add('d-none');
+            document.getElementById('wysiwyg-editor-container').classList.remove('d-none');
+            
+            // Podczas przełączania do edytora WYSIWYG, zaktualizuj zawartość TinyMCE z edytora HTML
+            const htmlContent = htmlEditor.getValue();
+            tinymce.get('wysiwyg-editor').setContent(htmlContent);
+        });
+        
+        // Funkcjonalność przycisku podglądu
+        document.getElementById('preview-btn').addEventListener('click', function() {
+            let htmlContent;
+            
+            if (document.getElementById('editor-html').checked) {
+                htmlContent = htmlEditor.getValue();
+            } else {
+                htmlContent = tinymce.get('wysiwyg-editor').getContent();
+            }
+            
+            // Zastąp elementy zastępcze przykładową treścią do podglądu
+            htmlContent = htmlContent
+                .replace(/{{content}}/g, '<p>To jest przykładowa treść, która zostanie wstawiona podczas wysyłania newslettera.</p>')
+                .replace(/{{subject}}/g, 'Przykładowy Temat Newslettera')
+                .replace(/{{unsubscribe_url}}/g, '#link-do-rezygnacji')
+                .replace(/{{recipient_name}}/g, 'Jan Kowalski')
+                .replace(/{{recipient_email}}/g, 'jan.kowalski@przyklad.pl');
+            
+            // Ustaw zawartość w iframe
+            const previewFrame = document.getElementById('preview-frame');
+            const previewWin = previewFrame.contentWindow || previewFrame.contentDocument.document || previewFrame.contentDocument;
+            previewWin.document.open();
+            previewWin.document.write(htmlContent);
+            previewWin.document.close();
+            
+            // Pokaż modal
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            previewModal.show();
+        });
+        
+        // Wysłanie formularza
+        document.getElementById('template-form').addEventListener('submit', function(e) {
+            // Jeśli używamy edytora WYSIWYG, synchronizuj zawartość z ukrytym polem
+            if (document.getElementById('editor-wysiwyg').checked) {
+                const wysiwygContent = tinymce.get('wysiwyg-editor').getContent();
+                htmlEditor.setValue(wysiwygContent); // Zaktualizuj również edytor CodeMirror
+            }
+        });
+        
+        // Przycisk zapisywania jako wersja robocza
+        document.getElementById('save-draft-btn').addEventListener('click', function() {
+            // Dodaj ukryte pole wskazujące, że to wersja robocza
+            const draftInput = document.createElement('input');
+            draftInput.type = 'hidden';
+            draftInput.name = 'is_draft';
+            draftInput.value = 'true';
+            document.getElementById('template-form').appendChild(draftInput);
+            
+            // Wyślij formularz
+            document.getElementById('template-form').submit();
+        });
+        
+        // Przykładowe szablony
+        const samples = {
+            'basic': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 20px 0; }
+        .content { padding: 20px; background-color: #f9f9f9; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{subject}}</h1>
+        </div>
+        <div class="content">
+            {{content}}
+        </div>
+        <div class="footer">
+            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasz newsletter.</p>
+            <p><a href="{{unsubscribe_url}}">Kliknij tutaj, aby zrezygnować z subskrypcji</a></p>
+        </div>
+    </div>
+</body>
+</html>`,
+            'promo': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { background-color: #ff6b6b; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: white; }
+        .cta-button { display: inline-block; background-color: #ff6b6b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; }
+        .promo-code { background-color: #f9f9f9; padding: 10px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Specjalna Oferta dla {{recipient_name}}</h1>
+        </div>
+        <div class="content">
+            {{content}}
+            
+            <div class="promo-code">
+                RABAT20TERAZ
+            </div>
+            
+            <p style="text-align: center;">
+                <a href="#" class="cta-button">Kup Teraz</a>
+            </p>
+        </div>
+        <div class="footer">
+            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasze promocje.</p>
+            <p><a href="{{unsubscribe_url}}">Rezygnacja z subskrypcji</a> | <a href="#">Zobacz w przeglądarce</a></p>
+        </div>
+    </div>
+</body>
+</html>`,
+            'newsletter': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body { font-family: Georgia, 'Times New Roman', Times, serif; line-height: 1.6; margin: 0; padding: 0; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { padding: 20px; border-bottom: 3px solid #4a90e2; }
+        .logo { text-align: center; }
+        .logo img { max-width: 150px; }
+        .newsletter-title { text-align: center; margin: 20px 0; }
+        .content { padding: 20px; background-color: white; }
+        .article { margin-bottom: 30px; }
+        .article-title { color: #4a90e2; }
+        .article-meta { font-size: 12px; color: #777; margin-bottom: 10px; }
+        .article-summary { margin-bottom: 10px; }
+        .read-more { color: #4a90e2; text-decoration: none; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; background-color: #f9f9f9; border-top: 1px solid #ddd; }
+        .social-links { text-align: center; margin: 20px 0; }
+        .social-links a { margin: 0 10px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://via.placeholder.com/150x50?text=Twoje+Logo" alt="Logo firmy">
+            </div>
+            <div class="newsletter-title">
+                <h1>{{subject}}</h1>
+                <p>Newsletter dla {{recipient_name}} - Maj 2025</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            {{content}}
+        </div>
+        
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">LinkedIn</a> | <a href="#">Instagram</a>
+            </div>
+            <p>© 2025 Twoja Firma. Wszelkie prawa zastrzeżone.</p>
+            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasz newsletter.</p>
+            <p><a href="{{unsubscribe_url}}">Rezygnacja z subskrypcji</a> | <a href="#">Preferencje</a> | <a href="#">Zobacz w przeglądarce</a></p>
+        </div>
+    </div>
+</body>
+</html>`
+        };
+        
+        // Wczytaj przykładowe szablony
+        document.getElementById('sample-basic').addEventListener('click', function() {
+            htmlEditor.setValue(samples.basic);
+            if (document.getElementById('editor-wysiwyg').checked) {
+                tinymce.get('wysiwyg-editor').setContent(samples.basic);
+            }
+        });
+        
+        document.getElementById('sample-promo').addEventListener('click', function() {
+            htmlEditor.setValue(samples.promo);
+            if (document.getElementById('editor-wysiwyg').checked) {
+                tinymce.get('wysiwyg-editor').setContent(samples.promo);
+            }
+        });
+        
+        document.getElementById('sample-newsletter').addEventListener('click', function() {
+            htmlEditor.setValue(samples.newsletter);
+            if (document.getElementById('editor-wysiwyg').checked) {
+                tinymce.get('wysiwyg-editor').setContent(samples.newsletter);
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -127,10 +127,10 @@
                                         <th scope="row">Open Rate</th>
                                         <td>{{ stats.open_rate|floatformat:1 }}%</td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row">Average Opens per Opener</th>
-                                        <td>{{ stats.total_opens|default:0|divisibleby:stats.unique_opens|default:1|floatformat:1 }}</td>
-                                    </tr>
+<tr>
+    <th scope="row">Average Opens per Opener</th>
+    <td>{{ stats.avg_opens_per_opener|floatformat:1 }}</td>
+</tr>
                                 </tbody>
                             </table>
                         </div>
@@ -166,10 +166,10 @@
                                         <th scope="row">Click-to-Open Rate</th>
                                         <td>{{ stats.click_to_open_rate|floatformat:1 }}%</td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row">Average Clicks per Clicker</th>
-                                        <td>{{ stats.total_clicks|default:0|divisibleby:stats.unique_clicks|default:1|floatformat:1 }}</td>
-                                    </tr>
+<tr>
+    <th scope="row">Average Clicks per Clicker</th>
+    <td>{{ stats.avg_clicks_per_clicker|floatformat:1 }}</td>
+</tr>
                                 </tbody>
                             </table>
                         </div>

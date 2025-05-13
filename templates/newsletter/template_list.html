@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Szablony newslettera | XManager{% endblock %}
+
+{% block page_title %}Szablony newslettera{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:template_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Utwórz szablon
+    </a>
+{% endblock %}
+
+{% block content %}
+    <!-- Karta filtrowania -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'newsletter:template_list' %}" class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Szukaj po nazwie..." 
+                               value="{{ request.GET.search|default:'' }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Filtruj</button>
+                    {% if request.GET.search %}
+                        <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary ms-2">Wyczyść</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista szablonów -->
+    <div class="card">
+        <div class="card-body">
+            {% if templates %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nazwa</th>
+                                <th>Opis</th>
+                                <th>Utworzono</th>
+                                <th>Użycie</th>
+                                <th>Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in templates %}
+                                <tr>
+                                    <td>{{ template.name }}</td>
+                                    <td>
+                                        {% if template.description %}
+                                            {{ template.description|truncatechars:50 }}
+                                        {% else %}
+                                            <span class="text-muted">Brak opisu</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ template.created_at|date:"d M Y" }}</td>
+                                    <td>
+                                        {% with count=template.newsletters.count %}
+                                            {% if count > 0 %}
+                                                <span class="badge bg-info">{{ count }} newsletter{{ count|pluralize:"y" }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Nieużywany</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="actionDropdown{{ template.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Akcje
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown{{ template.id }}">
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'newsletter:template_update' pk=template.pk %}">
+                                                        <i class="fas fa-edit fa-fw me-1"></i> Edytuj
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'newsletter:template_preview' pk=template.pk %}" target="_blank">
+                                                        <i class="fas fa-desktop fa-fw me-1"></i> Podgląd
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'newsletter:template_duplicate' pk=template.pk %}">
+                                                        <i class="fas fa-copy fa-fw me-1"></i> Duplikuj
+                                                    </a>
+                                                </li>
+                                                {% if template.newsletters.count == 0 %}
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="{% url 'newsletter:template_delete' pk=template.pk %}">
+                                                        <i class="fas fa-trash fa-fw me-1"></i> Usuń
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if is_paginated %}
+                    <nav aria-label="Stronicowanie" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Pierwsza</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Poprzednia</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Następna</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Ostatnia</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Nie znaleziono szablonów.
+                    {% if request.GET.search %}
+                        <a href="{% url 'newsletter:template_list' %}" class="alert-link">Wyczyść filtry</a>, aby zobaczyć wszystkie szablony.
+                    {% else %}
+                        <a href="{% url 'newsletter:template_create' %}" class="alert-link">Utwórz swój pierwszy szablon</a>, aby rozpocząć.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

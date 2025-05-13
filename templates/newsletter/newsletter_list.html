@@ -1,3 +1,4 @@
+```html
 {% extends "base.html" %}
 {% load static %}
 
@@ -158,9 +159,7 @@
                             {% for newsletter in newsletters %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'newsletter:newsletter_detail' slug=newsletter.slug %}" class="text-decoration-none">
-                                            {{ newsletter.subject }}
-                                        </a>
+                                        {{ newsletter.subject }}
                                     </td>
                                     <td>
                                         {% if newsletter.status == 'draft' %}
@@ -187,31 +186,83 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if newsletter.status == 'sent' %}
+                                        {% if newsletter.status == 'sent' or newsletter.status == 'sending' %}
                                             <small>
                                                 <i class="fas fa-eye"></i> {{ newsletter.open_count }} 
                                                 <i class="fas fa-mouse-pointer ms-2"></i> {{ newsletter.click_count }}
+                                                <button class="btn btn-sm btn-link p-0 ms-1" data-bs-toggle="tooltip" title="View detailed stats in future version">
+                                                    <i class="fas fa-chart-bar text-primary"></i>
+                                                </button>
                                             </small>
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <div class="btn-group">
-                                            <a href="{% url 'newsletter:newsletter_detail' slug=newsletter.slug %}" class="btn btn-sm btn-outline-primary" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-sm btn-outline-info" title="Preview" target="_blank">
-                                                <i class="fas fa-desktop"></i>
-                                            </a>
-                                            {% if newsletter.status == 'draft' %}
-                                                <a href="{% url 'newsletter:newsletter_update' slug=newsletter.slug %}" class="btn btn-sm btn-outline-secondary" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            {% endif %}
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="actionDropdown{{ newsletter.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown{{ newsletter.id }}">
+                                                <!-- Common actions for all statuses -->
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="alert('Clone feature coming soon!')">
+                                                        <i class="fas fa-copy fa-fw me-1"></i> Clone (Coming Soon)
+                                                    </a>
+                                                </li>
+                                                
+                                                <!-- Status-specific actions -->
+                                                {% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'newsletter:newsletter_create' %}?edit={{ newsletter.slug }}">
+                                                            <i class="fas fa-edit fa-fw me-1"></i> Edit in Wizard
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                    {% if newsletter.status == 'draft' %}
+                                                    <li>
+                                                        <a class="dropdown-item text-danger" href="#" 
+                                                           onclick="confirmDelete('{{ newsletter.subject }}', '{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}')">
+                                                            <i class="fas fa-trash fa-fw me-1"></i> Delete
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if newsletter.status == 'scheduled' %}
+                                                    <li>
+                                                        <a class="dropdown-item text-warning" href="#" onclick="alert('Cancel feature coming soon!')">
+                                                            <i class="fas fa-ban fa-fw me-1"></i> Cancel Sending (Coming Soon)
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if newsletter.status == 'sent' or newsletter.status == 'sending' %}
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="#" onclick="alert('Detailed reports coming soon!')">
+                                                            <i class="fas fa-chart-bar fa-fw me-1"></i> Detailed Report (Coming Soon)
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if newsletter.status == 'sent' %}
+                                                    <li>
+                                                        <a class="dropdown-item" href="#" onclick="alert('Export feature coming soon!')">
+                                                            <i class="fas fa-download fa-fw me-1"></i> Export Data (Coming Soon)
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if newsletter.status == 'failed' %}
+                                                    <li>
+                                                        <a class="dropdown-item text-info" href="#" onclick="alert('Retry feature coming soon!')">
+                                                            <i class="fas fa-redo fa-fw me-1"></i> Retry Sending (Coming Soon)
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
                                         </div>
                                     </td>
                                 </tr>
@@ -267,12 +318,106 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the newsletter "<span id="newsletterTitle"></span>"?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize any JS components here
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize any JS components here
+    
+    // Delete confirmation modal handlers
+    window.confirmDelete = function(title, deleteUrl) {
+        // Set the newsletter title
+        document.getElementById('newsletterTitle').textContent = title;
+        
+        // Przygotuj przycisk usuwania, aby wysyłał żądanie POST
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        
+        // Usuń poprzednie listenery, aby uniknąć duplikacji
+        const newBtn = confirmDeleteBtn.cloneNode(true);
+        confirmDeleteBtn.parentNode.replaceChild(newBtn, confirmDeleteBtn);
+        
+        // Dodaj nowy listener do przycisku
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Utwórz formularz do wysłania żądania POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = deleteUrl;
+            form.style.display = 'none';
+            
+            // Bezpiecznie pobierz token CSRF
+            const csrfElement = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            
+            // Jeśli element z tokenem CSRF został znaleziony, dodaj go do formularza
+            if (csrfElement) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfElement.value;
+                form.appendChild(csrfInput);
+            } else {
+                // Jeśli nie znaleziono tokenu CSRF, można dodać token z cookies (alternatywny sposób)
+                const csrfToken = getCookie('csrftoken');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                } else {
+                    console.warn('CSRF token not found. The request might fail.');
+                }
+            }
+            
+            // Dodaj formularz do dokumentu i wyślij
+            document.body.appendChild(form);
+            form.submit();
+        });
+        
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+    };
+    
+    // Pomocnicza funkcja do pobierania wartości cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Czy to cookie zaczyna się od nazwy, której szukamy?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
 </script>
 {% endblock %}
+```

@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Newsletter Report: {{ newsletter.subject }} | XManager{% endblock %}
+
+{% block page_title %}Newsletter Report: {{ newsletter.subject }}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to List
+    </a>
+    <a href="{% url 'newsletter:newsletter_clone' slug=newsletter.slug %}" class="btn btn-primary ms-2">
+        <i class="fas fa-copy me-1"></i> Clone Newsletter
+    </a>
+{% endblock %}
+
+{% block content %}
+    <!-- Overview Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Overview</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Subject:</strong> {{ newsletter.subject }}</p>
+                    <p><strong>Sent Date:</strong> {{ newsletter.sent_date|date:"F d, Y H:i" }}</p>
+                    <p><strong>Sender:</strong> {{ newsletter.created_by.get_full_name|default:newsletter.created_by.username }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Status:</strong> 
+                        <span class="badge bg-success">Sent</span>
+                    </p>
+                    <p><strong>Recipients:</strong> {{ stats.total_recipients }}</p>
+                    <p><strong>Template:</strong> {{ newsletter.template.name|default:"Default Template" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Open Rate</h6>
+                    <h2 class="mb-0">{{ stats.open_rate|floatformat:1 }}%</h2>
+                    <p class="small text-muted">{{ stats.unique_opens }} unique opens</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Click Rate</h6>
+                    <h2 class="mb-0">{{ stats.click_rate|floatformat:1 }}%</h2>
+                    <p class="small text-muted">{{ stats.unique_clicks }} unique clicks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Click-to-Open Rate</h6>
+                    <h2 class="mb-0">{{ stats.click_to_open_rate|floatformat:1 }}%</h2>
+                    <p class="small text-muted">Clicks among opens</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Total Opens</h6>
+                    <h2 class="mb-0">{{ stats.total_opens }}</h2>
+                    <p class="small text-muted">Including repeat opens</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Stats -->
+    <div class="card mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Detailed Statistics</h5>
+            <div>
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="exportDataBtn">
+                    <i class="fas fa-download me-1"></i> Export Data
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="statsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="opens-tab" data-bs-toggle="tab" data-bs-target="#opens" type="button" role="tab" aria-controls="opens" aria-selected="true">Opens</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="clicks-tab" data-bs-toggle="tab" data-bs-target="#clicks" type="button" role="tab" aria-controls="clicks" aria-selected="false">Clicks</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="devices-tab" data-bs-toggle="tab" data-bs-target="#devices" type="button" role="tab" aria-controls="devices" aria-selected="false">Devices</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab" aria-controls="timeline" aria-selected="false">Timeline</button>
+                </li>
+            </ul>
+            <div class="tab-content pt-4" id="statsTabContent">
+                <!-- Opens Tab -->
+                <div class="tab-pane fade show active" id="opens" role="tabpanel" aria-labelledby="opens-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Open Statistics</h6>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Total Recipients</th>
+                                        <td>{{ stats.total_recipients }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Unique Opens</th>
+                                        <td>{{ stats.unique_opens }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Total Opens</th>
+                                        <td>{{ stats.total_opens }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Open Rate</th>
+                                        <td>{{ stats.open_rate|floatformat:1 }}%</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Average Opens per Opener</th>
+                                        <td>{{ stats.total_opens|default:0|divisibleby:stats.unique_opens|default:1|floatformat:1 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Open Rate Over Time</h6>
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="openRateChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Clicks Tab -->
+                <div class="tab-pane fade" id="clicks" role="tabpanel" aria-labelledby="clicks-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Click Statistics</h6>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Total Clicks</th>
+                                        <td>{{ stats.total_clicks }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Unique Clickers</th>
+                                        <td>{{ stats.unique_clicks }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Click Rate</th>
+                                        <td>{{ stats.click_rate|floatformat:1 }}%</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Click-to-Open Rate</th>
+                                        <td>{{ stats.click_to_open_rate|floatformat:1 }}%</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Average Clicks per Clicker</th>
+                                        <td>{{ stats.total_clicks|default:0|divisibleby:stats.unique_clicks|default:1|floatformat:1 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Most Clicked Links</h6>
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="clicksChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>Link Performance</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Link</th>
+                                        <th>URL</th>
+                                        <th>Clicks</th>
+                                        <th>Unique Clicks</th>
+                                        <th>Click Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for link in links %}
+                                    <tr>
+                                        <td>{{ link.text|truncatechars:30 }}</td>
+                                        <td>{{ link.url|truncatechars:40 }}</td>
+                                        <td>{{ link.total_clicks }}</td>
+                                        <td>{{ link.unique_clicks }}</td>
+                                        <td>{{ link.click_rate|floatformat:1 }}%</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No link data available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Devices Tab -->
+                <div class="tab-pane fade" id="devices" role="tabpanel" aria-labelledby="devices-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Device Types</h6>
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="deviceTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Email Clients</h6>
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="emailClientChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Tab -->
+                <div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>Activity Timeline</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Action</th>
+                                        <th>Recipient</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in timeline_events %}
+                                    <tr>
+                                        <td>{{ event.timestamp|date:"M d, Y H:i:s" }}</td>
+                                        <td>
+                                            {% if event.action == 'open' %}
+                                                <span class="badge bg-primary">Open</span>
+                                            {% elif event.action == 'click' %}
+                                                <span class="badge bg-success">Click</span>
+                                            {% elif event.action == 'sent' %}
+                                                <span class="badge bg-info">Sent</span>
+                                            {% elif event.action == 'bounce' %}
+                                                <span class="badge bg-danger">Bounce</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ event.action|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ event.recipient }}</td>
+                                        <td>{{ event.details|default:"-" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No timeline data available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Newsletter Content Preview -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Newsletter Content</h5>
+        </div>
+        <div class="card-body">
+            <div class="border p-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+                {{ newsletter.content|safe }}
+            </div>
+            <a href="{% url 'newsletter:newsletter_preview' slug=newsletter.slug %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                <i class="fas fa-external-link-alt me-1"></i> Open Full Newsletter
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sample data - in a real application, you would pass this data from your view
+    const opensData = {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+        datasets: [{
+            label: 'Open Rate (%)',
+            data: [15, 25, 28, 30, 31, 32, 32],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.3,
+            fill: true
+        }]
+    };
+    
+    const clicksData = {
+        labels: ['Link 1', 'Link 2', 'Link 3', 'Link 4', 'Link 5'],
+        datasets: [{
+            label: 'Clicks',
+            data: [45, 29, 20, 15, 10],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    const deviceData = {
+        labels: ['Desktop', 'Mobile', 'Tablet'],
+        datasets: [{
+            label: 'Device Types',
+            data: [55, 35, 10],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 206, 86, 0.6)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    const clientData = {
+        labels: ['Gmail', 'Apple Mail', 'Outlook', 'Yahoo', 'Other'],
+        datasets: [{
+            label: 'Email Clients',
+            data: [40, 25, 20, 10, 5],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    const timelineData = {
+        labels: ['Hour 1', 'Hour 2', 'Hour 3', 'Hour 4', 'Hour 5', 'Hour 6', 'Hour 12', 'Hour 24', 'Hour 48'],
+        datasets: [
+            {
+                label: 'Opens',
+                data: [10, 25, 35, 45, 50, 53, 65, 70, 72],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Clicks',
+                data: [5, 12, 18, 22, 25, 28, 32, 35, 38],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                tension: 0.3,
+                fill: true
+            }
+        ]
+    };
+    
+    // Create charts
+    const openRateChart = new Chart(
+        document.getElementById('openRateChart'),
+        {
+            type: 'line',
+            data: opensData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage (%)'
+                        }
+                    }
+                }
+            }
+        }
+    );
+    
+    const clicksChart = new Chart(
+        document.getElementById('clicksChart'),
+        {
+            type: 'bar',
+            data: clicksData,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        }
+    );
+    
+    const deviceTypeChart = new Chart(
+        document.getElementById('deviceTypeChart'),
+        {
+            type: 'doughnut',
+            data: deviceData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        }
+    );
+    
+    const emailClientChart = new Chart(
+        document.getElementById('emailClientChart'),
+        {
+            type: 'doughnut',
+            data: clientData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        }
+    );
+    
+    const timelineChart = new Chart(
+        document.getElementById('timelineChart'),
+        {
+            type: 'line',
+            data: timelineData,
+            options: {
+                responsive: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y + '%';
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Percentage (%)'
+                        }
+                    }
+                }
+            }
+        }
+    );
+    
+    // Export Data Button
+    document.getElementById('exportDataBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Export feature would download analytics data as CSV or Excel file.');
+        // In a real application, this would trigger a download of the newsletter statistics
+    });
+});
+</script>
+{% endblock %}

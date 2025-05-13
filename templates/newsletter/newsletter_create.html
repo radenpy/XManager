@@ -12,8 +12,38 @@
 {% endblock %}
 
 {% block content %}
+{% if edit_mode %}
+<input type="hidden" name="newsletter_id" value="{{ newsletter.id }}">
+{% endif %}
     <div class="card">
         <div class="card-body">
+            <!-- Wizard Steps Navigation -->
+            <div class="wizard-navigation mb-4">
+                <div class="progress" style="height: 3px;">
+                    <div class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100" id="wizard-progress-bar"></div>
+                </div>
+                <ul class="nav nav-pills nav-wizard" id="wizardSteps" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="step1-tab" data-bs-toggle="pill" data-bs-target="#step1" type="button" role="tab" aria-controls="step1" aria-selected="true">
+                            <span class="wizard-step-icon">1</span>
+                            <span class="wizard-step-text">Content</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="step2-tab" data-bs-toggle="pill" data-bs-target="#step2" type="button" role="tab" aria-controls="step2" aria-selected="false">
+                            <span class="wizard-step-icon">2</span>
+                            <span class="wizard-step-text">Recipients</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="step3-tab" data-bs-toggle="pill" data-bs-target="#step3" type="button" role="tab" aria-controls="step3" aria-selected="false">
+                            <span class="wizard-step-icon">3</span>
+                            <span class="wizard-step-text">Delivery</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
             <form method="post" id="newsletter-form">
                 {% csrf_token %}
                 
@@ -25,13 +55,13 @@
                     </div>
                 {% endif %}
                 
-                <!-- Content Section -->
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <h5 class="mb-3">Newsletter Content</h5>
+                <div class="tab-content" id="wizardTabContent">
+                    <!-- Step 1: Content -->
+                    <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
+                        <h4 class="mb-4">Newsletter Content</h4>
                         
                         <!-- Subject -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="{{ form.subject.id_for_label }}" class="form-label">Subject *</label>
                             {{ form.subject }}
                             {% if form.subject.errors %}
@@ -40,7 +70,7 @@
                         </div>
                         
                         <!-- Template -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="{{ form.template.id_for_label }}" class="form-label">Template</label>
                             <select id="{{ form.template.id_for_label }}" name="{{ form.template.html_name }}" class="form-select">
                                 <option value="">Default Template</option>
@@ -54,7 +84,7 @@
                         </div>
                         
                         <!-- Content -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="{{ form.content.id_for_label }}" class="form-label">Content *</label>
                             {{ form.content }}
                             {% if form.content.errors %}
@@ -62,109 +92,89 @@
                             {% endif %}
                             <div class="form-text">You can use Markdown or HTML in the content.</div>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="row mb-4">
-                    <!-- Recipients Options -->
-                    <div class="col-md-8">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Recipients</h5>
+                        
+                        <!-- Attachments -->
+                        <div class="mb-4">
+                            <label class="form-label">Attachments</label>
+                            <div class="input-group mb-2">
+                                <input type="file" class="form-control" id="attachment" name="attachment" multiple>
+                                <button class="btn btn-outline-secondary" type="button" id="clear-attachments">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <!-- Left side: Groups list -->
-                                    <div class="col-md-5">
-                                        <div class="mb-3">
-                                            <label class="form-label">Subscriber Groups</label>
-                                            <div class="input-group mb-2">
-                                                <input type="text" class="form-control" id="group-search" placeholder="Search groups...">
-                                                <button class="btn btn-outline-secondary" type="button" id="clear-group-search">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                            <div class="border rounded p-2" style="height: 300px; overflow-y: auto;">
-                                                <div id="groups-list" class="list-group list-group-flush">
-                                                    <div class="text-center py-2">
-                                                        <div class="spinner-border spinner-border-sm" role="status"></div>
-                                                        <span class="ms-2">Loading groups...</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Hidden input to store selected groups -->
-                                            <input type="hidden" id="id_subscriber_groups" name="subscriber_groups">
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Right side: Subscribers from Selected Groups -->
-                                    <div class="col-md-7">
-                                        <div class="mb-3">
-                                            <label class="form-label">Subscribers from Selected Groups</label>
-                                            <div class="input-group mb-2">
-                                                <input type="text" class="form-control" id="subscriber-search" placeholder="Search subscribers...">
-                                                <button class="btn btn-outline-secondary" type="button" id="clear-subscriber-search">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                            <div class="border rounded p-2" style="height: 300px; overflow-y: auto;">
-                                                <div id="subscribers-list" class="list-group list-group-flush">
-                                                    <div class="text-center py-2 text-muted">
-                                                        Select a group to see subscribers
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Hidden input to store excluded subscribers -->
-                                            <input type="hidden" id="id_excluded_subscribers" name="excluded_subscribers">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Additional email addresses -->
-                                <div class="mb-3">
-                                    <label for="additional-emails" class="form-label">Additional Email Addresses</label>
-                                    <textarea class="form-control" id="additional-emails" name="additional_emails" rows="3" 
-                                              placeholder="Enter email addresses (one per line or comma-separated)"></textarea>
-                                    <div class="form-text">These addresses will receive the newsletter even if they're not subscribers</div>
-                                </div>
-                            </div>
+                            <div class="form-text">Maximum 5 files, 10MB each. Allowed formats: PDF, DOC, DOCX, JPG, PNG</div>
+                            <div id="attachment-list" class="list-group mt-2"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary" disabled>Previous</button>
+                            <button type="button" class="btn btn-primary next-step" data-next="step2">Next: Recipients</button>
                         </div>
                     </div>
                     
-                    <!-- Delivery Options -->
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Delivery Options</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label d-block">When to send</label>
-                                    <div class="btn-group w-100" role="group">
-                                        <input type="radio" class="btn-check" name="delivery_option" id="send_now" value="now" checked autocomplete="off">
-                                        <label class="btn btn-outline-primary" for="send_now">Send Now</label>
-                                        
-                                        <input type="radio" class="btn-check" name="delivery_option" id="schedule" value="schedule" autocomplete="off">
-                                        <label class="btn btn-outline-primary" for="schedule">Schedule</label>
+                    <!-- Step 2: Recipients -->
+                    <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
+                        <h4 class="mb-4">Newsletter Recipients</h4>
+                        
+                        <div class="row">
+                            <!-- Left side: Groups list -->
+                            <div class="col-md-5">
+                                <div class="mb-4">
+                                    <label class="form-label">Subscriber Groups</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" id="group-search" placeholder="Search groups...">
+                                        <button class="btn btn-outline-secondary" type="button" id="clear-group-search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                     </div>
+                                    <div class="border rounded p-2" style="height: 300px; overflow-y: auto;">
+                                        <div id="groups-list" class="list-group list-group-flush">
+                                            <div class="text-center py-2">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                                <span class="ms-2">Loading groups...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden input to store selected groups -->
+                                    <input type="hidden" id="id_subscriber_groups" name="subscriber_groups">
                                 </div>
-                                
-                                <div id="schedule-date-container" class="mb-3 d-none">
-                                    <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">Scheduled Date and Time</label>
-                                    {{ form.scheduled_date }}
+                            </div>
+                            
+                            <!-- Right side: Subscribers from Selected Groups -->
+                            <div class="col-md-7">
+                                <div class="mb-4">
+                                    <label class="form-label">Subscribers from Selected Groups</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" id="subscriber-search" placeholder="Search subscribers...">
+                                        <button class="btn btn-outline-secondary" type="button" id="clear-subscriber-search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="border rounded p-2" style="height: 300px; overflow-y: auto;">
+                                        <div id="subscribers-list" class="list-group list-group-flush">
+                                            <div class="text-center py-2 text-muted">
+                                                Select a group to see subscribers
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden input to store excluded subscribers -->
+                                    <input type="hidden" id="id_excluded_subscribers" name="excluded_subscribers">
                                 </div>
-                                
-                                <!-- Hidden fields for form processing -->
-                                <input type="hidden" name="send_now" id="id_send_now" value="true">
-                                <input type="hidden" name="schedule_send" id="id_schedule_send" value="false">
-                                <input type="hidden" name="status" id="id_status" value="draft">
                             </div>
                         </div>
                         
+                        <!-- Additional email addresses -->
+                        <div class="mb-4">
+                            <label for="additional-emails" class="form-label">Additional Email Addresses</label>
+                            <textarea class="form-control" id="additional-emails" name="additional_emails" rows="3" 
+                                      placeholder="Enter email addresses (one per line or comma-separated)"></textarea>
+                            <div class="form-text">These addresses will receive the newsletter even if they're not subscribers</div>
+                        </div>
+                        
                         <!-- Recipients Summary -->
-                        <div class="card">
+                        <div class="card my-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Delivery Summary</h5>
+                                <h5 class="card-title mb-0">Recipients Summary</h5>
                                 <span class="badge bg-primary" id="total-recipients-badge">0 recipients</span>
                             </div>
                             <div class="card-body">
@@ -191,45 +201,281 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="d-flex justify-content-between">
-                    <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">Cancel</a>
-                    <div>
-                        <button type="submit" name="save_as_draft" class="btn btn-outline-primary me-2">Save as Draft</button>
-                        <button type="submit" name="save_and_preview" class="btn btn-primary">Save and Preview</button>
-                    </div>
-                </div>
-                
 
-                
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step1">Previous: Content</button>
+                            <button type="button" class="btn btn-primary next-step" data-next="step3">Next: Delivery</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Delivery -->
+                    <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
+                        <h4 class="mb-4">Delivery Options</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- When to send -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">When to send</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="btn-group w-100" role="group">
+                                                <input type="radio" class="btn-check" name="delivery_option" id="send_now" value="now" checked autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="send_now">Send Now</label>
+                                                
+                                                <input type="radio" class="btn-check" name="delivery_option" id="schedule" value="schedule" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="schedule">Schedule</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="schedule-date-container" class="mb-4 d-none">
+                                            <label for="schedule_datetime" class="form-label">Scheduled Date and Time</label>
+                                            <div class="input-group">
+                                                <input type="date" class="form-control" id="schedule_date" name="schedule_date" min="{{ today_date|date:'Y-m-d' }}">
+                                                <input type="time" class="form-control" id="schedule_time" name="schedule_time" value="12:00">
+                                            </div>
+                                            <div class="form-text">Select a future date and time when this newsletter should be sent</div>
+                                        </div>
+                                        
+                                        <!-- Attachments -->
+                                        <div class="mb-4">
+                                            <label class="form-label">Attachments</label>
+                                            <div class="input-group mb-2">
+                                                <input type="file" class="form-control" id="attachment" name="attachment" multiple>
+                                                <button class="btn btn-outline-secondary" type="button" id="clear-attachments">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="form-text">Maximum 5 files, 10MB each. Allowed formats: PDF, DOC, DOCX, JPG, PNG</div>
+                                            <div id="attachment-list" class="list-group mt-2"></div>
+                                        </div>
+                                        
+                                        <!-- Hidden fields for form processing -->
+                                        <input type="hidden" name="send_now" id="id_send_now" value="true">
+                                        <input type="hidden" name="schedule_send" id="id_schedule_send" value="false">
+                                        <input type="hidden" name="status" id="id_status" value="draft">
+                                    </div>
+                                </div>
+                                
+                                <!-- Delivery settings -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Delivery Settings</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="throttle_rate" class="form-label">Sending rate (emails per minute)</label>
+                                            <select class="form-select" id="throttle_rate" name="throttle_rate">
+                                                <option value="10">10 emails/minute (recommended)</option>
+                                                <option value="20">20 emails/minute</option>
+                                                <option value="50">50 emails/minute</option>
+                                                <option value="100">100 emails/minute (may trigger spam filters)</option>
+                                                <option value="0">No limit (not recommended)</option>
+                                            </select>
+                                            <div class="form-text">Lower rates improve deliverability</div>
+                                        </div>
+                                        
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="add_tracking" name="add_tracking" checked>
+                                            <label class="form-check-label" for="add_tracking">Add tracking codes to links</label>
+                                            <div class="form-text">Track clicks and opens in the newsletter</div>
+                                        </div>
+                                        
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="add_unsubscribe" name="add_unsubscribe" checked>
+                                            <label class="form-check-label" for="add_unsubscribe">Add unsubscribe link</label>
+                                            <div class="form-text">Required for compliance with anti-spam regulations</div>
+                                        </div>
+                                        
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="use_uuid" name="use_uuid" checked>
+                                            <label class="form-check-label" for="use_uuid">Add unique identifiers</label>
+                                            <div class="form-text">Helps prevent messages from being marked as spam</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <!-- Newsletter Summary -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Newsletter Summary</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="fw-bold">Subject:</label>
+                                            <p id="summary-subject">-</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold">Recipients:</label>
+                                            <p><span id="summary-recipients">0</span> recipients will receive this newsletter</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold">Delivery:</label>
+                                            <p id="summary-delivery">Send immediately</p>
+                                        </div>
+                                        <div class="mb-3 d-none" id="summary-schedule-container">
+                                            <label class="fw-bold">Scheduled for:</label>
+                                            <p id="summary-schedule-time">-</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold">Attachments:</label>
+                                            <p id="summary-attachments">None</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Anti-spam check -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Spam Check Results</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span>Spam score:</span>
+                                            <div class="progress flex-grow-1 mx-2" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 15%;" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" id="spam-score-bar">15%</div>
+                                            </div>
+                                            <span class="badge bg-success">Low risk</span>
+                                        </div>
+                                        
+                                        <ul class="list-group list-group-flush" id="spam-check-list">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>Subject line not spammy</span>
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>Content has good text/image ratio</span>
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>Has unsubscribe link</span>
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>No excessive capitalization</span>
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center text-warning">
+                                                <span>Content includes potentially spammy words</span>
+                                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                            </li>
+                                        </ul>
+                                        <button type="button" id="run-spam-check" class="btn btn-sm btn-outline-primary mt-3 w-100">
+                                            <i class="fas fa-sync-alt me-2"></i> Run spam check again
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step2">Previous: Recipients</button>
+                            <div>
+                                <button type="submit" name="save_as_draft" class="btn btn-outline-secondary me-1">Save as Draft</button>
+                                <button type="submit" name="send_test" class="btn btn-outline-primary me-1">Send Test Email</button>
+                                <button type="submit" name="save_and_preview" class="btn btn-outline-primary me-1">Preview</button>
+                                <button type="submit" name="save_and_send" class="btn btn-primary">Send Newsletter</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_css %}
+<style>
+/* Wizard navigation styling */
+.nav-wizard {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 1;
+}
 
+.nav-wizard .nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.nav-wizard .nav-link {
+    padding: 0;
+    margin-top: 0;
+    background-color: transparent !important;
+    color: #6c757d;
+}
+
+.nav-wizard .nav-link.active {
+    color: #0d6efd;
+}
+
+.wizard-step-icon {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.nav-wizard .nav-link.active .wizard-step-icon {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.wizard-step-text {
+    display: block;
+    font-size: 0.875rem;
+}
+
+/* Badge styling for consent */
+.badge-active {
+    background-color: #198754;
+    color: white;
+}
+
+.badge-inactive {
+    background-color: #dc3545;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
 <script>
 /**
- * Newsletter Form Handling - Improved Version
+ * Newsletter Form Wizard
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Newsletter form script loaded');
+    console.log('Newsletter wizard script loaded');
 
     // Element references
     const form = document.getElementById('newsletter-form');
+    const wizardTabs = document.querySelectorAll('#wizardSteps .nav-link');
+    const wizardSteps = document.querySelectorAll('.tab-pane');
+    const progressBar = document.getElementById('wizard-progress-bar');
+    const nextButtons = document.querySelectorAll('.next-step');
+    const prevButtons = document.querySelectorAll('.prev-step');
+    
+    // Form elements references
     const sendNowRadio = document.getElementById('send_now');
     const scheduleRadio = document.getElementById('schedule');
     const scheduleDateContainer = document.getElementById('schedule-date-container');
     const sendNowInput = document.getElementById('id_send_now');
     const scheduleInput = document.getElementById('id_schedule_send');
     const statusInput = document.getElementById('id_status');
-    
-    // Buttons references
-    const saveAsDraftBtn = document.querySelector('button[name="save_as_draft"]');
-    const saveAndPreviewBtn = document.querySelector('button[name="save_and_preview"]');
+    const subjectInput = document.getElementById('{{ form.subject.id_for_label }}');
     
     // Groups and subscribers elements
     const groupSearchInput = document.getElementById('group-search');
@@ -244,36 +490,237 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const additionalEmailsTextarea = document.getElementById('additional-emails');
     
+    // Summary elements
+    const summarySubject = document.getElementById('summary-subject');
+    const summaryRecipients = document.getElementById('summary-recipients');
+    const summaryDelivery = document.getElementById('summary-delivery');
+    const summaryScheduleContainer = document.getElementById('summary-schedule-container');
+    const summaryScheduleTime = document.getElementById('summary-schedule-time');
+    
     // Data storage
     let allGroups = [];
     let selectedGroups = [];
     let allSubscribers = [];
     let excludedSubscribers = [];
-
+    let currentStep = 0;
+    
+    /**
+     * Initialize wizard navigation
+     */
+    function initWizard() {
+        // Set up event listeners for wizard tabs
+        wizardTabs.forEach((tab, index) => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Only allow navigating to steps that have been seen
+                if (index <= currentStep) {
+                    activateStep(index);
+                }
+            });
+        });
+        
+        // Set up next buttons
+        nextButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const nextStep = this.getAttribute('data-next');
+                
+                // Validate current step before proceeding
+                if (validateCurrentStep()) {
+                    // Go to next step
+                    const nextIndex = Array.from(wizardSteps).findIndex(step => step.id === nextStep);
+                    if (nextIndex > currentStep) {
+                        currentStep = nextIndex;
+                    }
+                    activateStep(nextIndex);
+                    
+                    // Update summary if going to step 3
+                    if (nextStep === 'step3') {
+                        updateSummary();
+                    }
+                }
+            });
+        });
+        
+        // Set up previous buttons
+        prevButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const prevStep = this.getAttribute('data-prev');
+                const prevIndex = Array.from(wizardSteps).findIndex(step => step.id === prevStep);
+                activateStep(prevIndex);
+            });
+        });
+    }
+    
+    /**
+     * Activate a specific step
+     */
+    function activateStep(stepIndex) {
+        // Update tabs
+        wizardTabs.forEach((tab, index) => {
+            if (index === stepIndex) {
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+            } else {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            }
+        });
+        
+        // Update content panes
+        wizardSteps.forEach((step, index) => {
+            if (index === stepIndex) {
+                step.classList.add('show', 'active');
+            } else {
+                step.classList.remove('show', 'active');
+            }
+        });
+        
+        // Update progress bar
+        const progress = Math.floor((stepIndex / (wizardTabs.length - 1)) * 100);
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+    }
+    
+    /**
+     * Validate the current step
+     */
+    function validateCurrentStep() {
+        const activeStep = document.querySelector('.tab-pane.active');
+        
+        if (activeStep.id === 'step1') {
+            // Validate content step
+            const subject = subjectInput.value.trim();
+            const content = document.querySelector('textarea[name="content"]').value.trim();
+            
+            if (!subject) {
+                alert('Please enter a subject for the newsletter.');
+                subjectInput.focus();
+                return false;
+            }
+            
+            if (!content) {
+                alert('Please enter content for the newsletter.');
+                document.querySelector('textarea[name="content"]').focus();
+                return false;
+            }
+            
+            return true;
+        }
+        else if (activeStep.id === 'step2') {
+            // Validate recipients step
+            const hasGroups = selectedGroups.length > 0;
+            const hasEmails = additionalEmailsTextarea && additionalEmailsTextarea.value.trim().length > 0;
+            
+            if (!hasGroups && !hasEmails) {
+                alert('You must select at least one recipient group or provide additional email addresses.');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        return true;
+    }
+    
     /**
      * Properly handle form submission
      */
     if (form) {
         form.addEventListener('submit', function(e) {
-            // Check if this is "Save as Draft" - no validation needed
+            // Check which button was clicked
             const isDraft = e.submitter && e.submitter.name === 'save_as_draft';
+            const isPreview = e.submitter && e.submitter.name === 'save_and_preview';
+            const isTestEmail = e.submitter && e.submitter.name === 'send_test';
+            const isSend = e.submitter && e.submitter.name === 'save_and_send';
             
-            // Get all checked groups
-            const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
-            const hasGroups = checkedGroups.length > 0;
-            
-            // Check additional emails
-            const hasEmails = additionalEmailsTextarea && additionalEmailsTextarea.value.trim().length > 0;
-            
-            // For non-drafts, validate that we have recipients
-            if (!isDraft && !hasGroups && !hasEmails) {
+            // For test emails, prompt for the test email address
+            if (isTestEmail) {
                 e.preventDefault();
-                alert('You must select at least one recipient or group, or provide additional email addresses.');
+                
+                // Create a modal to get test email
+                const modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'testEmailModal';
+                modal.tabIndex = '-1';
+                modal.innerHTML = `
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Send Test Email</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="test_email" class="form-label">Send test to email address:</label>
+                                    <input type="email" class="form-control" id="test_email" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="send-test-btn">Send Test</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Show the modal
+                const testEmailModal = new bootstrap.Modal(document.getElementById('testEmailModal'));
+                testEmailModal.show();
+                
+                // Handle the test email submission
+                document.getElementById('send-test-btn').addEventListener('click', function() {
+                    const testEmail = document.getElementById('test_email').value.trim();
+                    
+                    if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+                    
+                    // Add the test email to the form
+                    const testEmailInput = document.createElement('input');
+                    testEmailInput.type = 'hidden';
+                    testEmailInput.name = 'test_email';
+                    testEmailInput.value = testEmail;
+                    form.appendChild(testEmailInput);
+                    
+                    // Add a flag to indicate this is a test email
+                    const isTestInput = document.createElement('input');
+                    isTestInput.type = 'hidden';
+                    isTestInput.name = 'is_test';
+                    isTestInput.value = 'true';
+                    form.appendChild(isTestInput);
+                    
+                    // Hide the modal
+                    testEmailModal.hide();
+                    
+                    // Submit the form
+                    form.submit();
+                });
+                
+                // Don't continue with the normal form submission
                 return false;
+            }
+            
+            // For non-drafts, validate all steps
+            if (!isDraft && !isPreview) {
+                for (let i = 0; i < wizardSteps.length; i++) {
+                    const stepIndex = i;
+                    activateStep(stepIndex);
+                    if (!validateCurrentStep()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
             }
             
             // Clean up existing fields to avoid duplicates
             form.querySelectorAll('input[name="subscriber_groups"]').forEach(field => field.remove());
+            
+            // Get all checked groups
+            const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
             
             // Add a hidden field for each selected group
             checkedGroups.forEach(checkbox => {
@@ -295,22 +742,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.appendChild(excludedField);
             }
             
-            // Add hidden field for save_and_preview if needed
-            if (e.submitter && e.submitter.name === 'save_and_preview') {
+            // Add appropriate flags based on button clicked
+            if (isPreview) {
                 const previewInput = document.createElement('input');
                 previewInput.type = 'hidden';
                 previewInput.name = 'save_and_preview';
                 previewInput.value = 'true';
                 form.appendChild(previewInput);
-            }
-            
-            // Add draft flag if needed
-            if (isDraft) {
+            } else if (isDraft) {
                 const draftInput = document.createElement('input');
                 draftInput.type = 'hidden';
                 draftInput.name = 'is_draft';
                 draftInput.value = 'true';
                 form.appendChild(draftInput);
+            } else if (isSend) {
+                const sendInput = document.createElement('input');
+                sendInput.type = 'hidden';
+                sendInput.name = 'send_newsletter';
+                sendInput.value = 'true';
+                form.appendChild(sendInput);
+                
+                // Confirm before sending to real recipients
+                if (!confirm(`Are you sure you want to send this newsletter to ${document.getElementById('summary-recipients').textContent} recipients?`)) {
+                    e.preventDefault();
+                    return false;
+                }
             }
             
             return true;
@@ -673,12 +1129,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDeliveryOptions() {
         if (sendNowRadio.checked) {
             scheduleDateContainer.classList.add('d-none');
+            summaryScheduleContainer.classList.add('d-none');
             sendNowInput.value = 'true';
             scheduleInput.value = 'false';
+            summaryDelivery.textContent = 'Send immediately';
         } else {
             scheduleDateContainer.classList.remove('d-none');
+            summaryScheduleContainer.classList.remove('d-none');
             sendNowInput.value = 'false';
             scheduleInput.value = 'true';
+            summaryDelivery.textContent = 'Scheduled delivery';
+            
+            // Update schedule time in summary
+            const scheduleDateInput = document.getElementById('schedule_date');
+            const scheduleTimeInput = document.getElementById('schedule_time');
+            
+            if (scheduleDateInput && scheduleTimeInput && scheduleDateInput.value && scheduleTimeInput.value) {
+                summaryScheduleTime.textContent = `${scheduleDateInput.value} at ${scheduleTimeInput.value}`;
+            } else {
+                summaryScheduleTime.textContent = 'No date selected';
+            }
         }
         
         // Always set status to draft initially
@@ -730,6 +1200,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update display with the counts
                 updateCountDisplay(rawSubscribersTotal, netTotalCount, groupCount, additionalCount, excludedCount);
+                
+                // Update summary
+                summaryRecipients.textContent = netTotalCount;
             })
             .catch(error => {
                 console.error('Error calculating recipients:', error);
@@ -747,6 +1220,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const netTotal = Math.max(0, uniqueEstimate - excludedCount) + additionalCount;
                 
                 updateCountDisplay(rawSubscribersTotal, netTotal, selectedGroups.length, additionalCount, excludedCount);
+                
+                // Update summary
+                summaryRecipients.textContent = netTotal;
             });
     }
     
@@ -764,6 +1240,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update the badge with net total (actual recipients with consent)
         document.getElementById('total-recipients-badge').textContent = `${netTotal} unique recipients with consent`;
+    }
+    
+    /**
+     * Update summary for final step
+     */
+    function updateSummary() {
+        // Subject
+        const subject = subjectInput.value.trim();
+        summarySubject.textContent = subject || '-';
+        
+        // Delivery options already updated by updateDeliveryOptions()
+        
+        // Recipients count is updated by updateRecipientsSummary()
+        
+        // Make sure delivery options are updated
+        updateDeliveryOptions();
     }
     
     /**
@@ -807,6 +1299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize everything
+    initWizard();
     loadGroups();
     updateDeliveryOptions();
     updateRecipientsSummary();
@@ -820,6 +1313,171 @@ document.addEventListener('DOMContentLoaded', function() {
     additionalEmailsTextarea.addEventListener('input', debounce(function() {
         updateRecipientsSummary();
     }, 500));
+    
+    // Set up event listeners for scheduled date and time
+    const scheduleDateInput = document.getElementById('schedule_date');
+    const scheduleTimeInput = document.getElementById('schedule_time');
+    
+    if (scheduleDateInput && scheduleTimeInput) {
+        const updateScheduledDateTime = function() {
+            if (scheduleRadio.checked) {
+                const dateValue = scheduleDateInput.value;
+                const timeValue = scheduleTimeInput.value;
+                
+                if (dateValue && timeValue) {
+                    summaryScheduleTime.textContent = `${dateValue} at ${timeValue}`;
+                } else {
+                    summaryScheduleTime.textContent = 'No date selected';
+                }
+            }
+        };
+        
+        scheduleDateInput.addEventListener('change', updateScheduledDateTime);
+        scheduleTimeInput.addEventListener('change', updateScheduledDateTime);
+        
+        // Initialize with current date
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        scheduleDateInput.setAttribute('min', formattedDate);
+        scheduleDateInput.value = formattedDate;
+    }
+    
+    // Set up event listeners for attachments
+    const attachmentInput = document.getElementById('attachment');
+    const clearAttachmentsBtn = document.getElementById('clear-attachments');
+    const attachmentList = document.getElementById('attachment-list');
+    const summaryAttachments = document.getElementById('summary-attachments');
+    
+    if (attachmentInput && clearAttachmentsBtn && attachmentList) {
+        attachmentInput.addEventListener('change', function() {
+            // Clear the list
+            attachmentList.innerHTML = '';
+            
+            if (this.files.length > 0) {
+                // Check file count
+                if (this.files.length > 5) {
+                    alert('You can upload a maximum of 5 files.');
+                    this.value = '';
+                    summaryAttachments.textContent = 'None';
+                    return;
+                }
+                
+                // Check file sizes and types
+                let validFiles = true;
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+                const fileNames = [];
+                
+                for (let i = 0; i < this.files.length; i++) {
+                    const file = this.files[i];
+                    fileNames.push(file.name);
+                    
+                    // Check file size (10MB limit)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`File ${file.name} exceeds the 10MB size limit.`);
+                        validFiles = false;
+                        break;
+                    }
+                    
+                    // Check file type
+                    if (!allowedTypes.includes(file.type)) {
+                        alert(`File ${file.name} has an unsupported type. Only PDF, DOC, DOCX, JPG, and PNG are allowed.`);
+                        validFiles = false;
+                        break;
+                    }
+                    
+                    // Add to the list
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item d-flex justify-content-between align-items-center py-2';
+                    
+                    // Icon based on file type
+                    let icon = 'fa-file';
+                    if (file.type === 'application/pdf') icon = 'fa-file-pdf';
+                    else if (file.type.includes('word')) icon = 'fa-file-word';
+                    else if (file.type.includes('image')) icon = 'fa-file-image';
+                    
+                    // File info with icon
+                    const fileInfo = document.createElement('div');
+                    fileInfo.innerHTML = `<i class="fas ${icon} me-2"></i>${file.name} <span class="text-muted">(${formatFileSize(file.size)})</span>`;
+                    
+                    item.appendChild(fileInfo);
+                    attachmentList.appendChild(item);
+                }
+                
+                if (!validFiles) {
+                    this.value = '';
+                    attachmentList.innerHTML = '';
+                    summaryAttachments.textContent = 'None';
+                } else {
+                    summaryAttachments.textContent = fileNames.join(', ');
+                }
+            } else {
+                summaryAttachments.textContent = 'None';
+            }
+        });
+        
+        // Clear attachments button
+        clearAttachmentsBtn.addEventListener('click', function() {
+            attachmentInput.value = '';
+            attachmentList.innerHTML = '';
+            summaryAttachments.textContent = 'None';
+        });
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+    
+    // Set up spam check runner
+    const runSpamCheckBtn = document.getElementById('run-spam-check');
+    if (runSpamCheckBtn) {
+        runSpamCheckBtn.addEventListener('click', function() {
+            // Show loading indicator
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running spam check...';
+            this.disabled = true;
+            
+            // Simulate spam check (in a real app, this would be an API call)
+            setTimeout(() => {
+                const spamScoreBar = document.getElementById('spam-score-bar');
+                const spamCheckList = document.getElementById('spam-check-list');
+                
+                // Random score between 5% and 35%
+                const score = Math.floor(Math.random() * 30) + 5;
+                
+                // Update score bar
+                spamScoreBar.style.width = `${score}%`;
+                spamScoreBar.textContent = `${score}%`;
+                
+                // Set color based on score
+                if (score < 20) {
+                    spamScoreBar.className = 'progress-bar bg-success';
+                    document.querySelector('.badge').className = 'badge bg-success';
+                    document.querySelector('.badge').textContent = 'Low risk';
+                } else if (score < 50) {
+                    spamScoreBar.className = 'progress-bar bg-warning';
+                    document.querySelector('.badge').className = 'badge bg-warning';
+                    document.querySelector('.badge').textContent = 'Medium risk';
+                } else {
+                    spamScoreBar.className = 'progress-bar bg-danger';
+                    document.querySelector('.badge').className = 'badge bg-danger';
+                    document.querySelector('.badge').textContent = 'High risk';
+                }
+                
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Run spam check again';
+                this.disabled = false;
+            }, 1500);
+        });
+    }
+    
+    // Set up event listener for subject changes
+    if (subjectInput) {
+        subjectInput.addEventListener('input', debounce(function() {
+            summarySubject.textContent = this.value.trim() || '-';
+        }, 300));
+    }
     
     // Additional debugging info
     console.log('Initial form state:');

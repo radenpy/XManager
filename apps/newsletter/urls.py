@@ -1,5 +1,5 @@
 from . import api
-from . import views
+from .import views
 from django.urls import path
 
 app_name = 'newsletter'
@@ -23,15 +23,15 @@ urlpatterns = [
     path('newsletters/<slug:slug>/send/',
          views.NewsletterSendView.as_view(), name='newsletter_send'),
 
+
+
+
+
     # Newsletter detail views - These should come AFTER more specific patterns
-    path('<slug:slug>/', views.NewsletterDetailView.as_view(),
-         name='newsletter_detail'),
-    path('<slug:slug>/update/', views.NewsletterUpdateView.as_view(),
-         name='newsletter_update'),
+
     path('<slug:slug>/delete/', views.NewsletterDeleteView.as_view(),
          name='newsletter_delete'),
-    path('<slug:slug>/preview/', views.NewsletterPreviewView.as_view(),
-         name='newsletter_preview'),
+
     path('<slug:slug>/send-test/', views.NewsletterSendTestView.as_view(),
          name='newsletter_send_test'),
 

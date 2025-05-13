@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
 django-countries = "*"
@@ -14,6 +13,7 @@ pandas = "*"
 openpyxl = "*"
 zeep = "*"
 requests = "*"
+django = "*"
 
 [dev-packages]
 

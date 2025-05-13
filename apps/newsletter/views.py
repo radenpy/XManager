@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,10 +8,10 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.template import Template, Context
+from django.template import Context
 from django.conf import settings
 
-from .models import Newsletter, NewsletterTemplate, NewsletterTracking
+from .models import Newsletter, NewsletterTemplate, NewsletterTracking, SubscriberGroup
 from .forms import NewsletterForm, NewsletterTemplateForm, NewsletterSendTestForm, NewsletterFilterForm
 from apps.subscriber.models import Subscriber, SubscriberGroup
 
@@ -72,53 +72,10 @@ class NewsletterListView(LoginRequiredMixin, ListView):
         return context
 
 
-class NewsletterDetailView(LoginRequiredMixin, DetailView):
-    """
-    View for displaying newsletter details
-    """
-    model = Newsletter
-    template_name = 'newsletter/newsletter_detail.html'
-    context_object_name = 'newsletter'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Add test form
-        context['test_form'] = NewsletterSendTestForm()
-
-        # Calculate recipient stats
-        newsletter = self.get_object()
-
-        # Direct subscribers
-        direct_subscribers_count = newsletter.subscribers.count()
-
-        # Group subscribers (with potential duplicates)
-        group_subscribers = set()
-        for group in newsletter.subscriber_groups.all():
-            group_subscribers.update(
-                group.subscriber.values_list('id', flat=True))
-
-        # Total unique recipients
-        all_recipients = set(
-            newsletter.subscribers.values_list('id', flat=True))
-        all_recipients.update(group_subscribers)
-        total_unique = len(all_recipients)
-
-        # Add stats to context
-        context['stats'] = {
-            'direct_subscribers': direct_subscribers_count,
-            'group_subscribers': len(group_subscribers),
-            'total_unique': total_unique,
-            'open_rate': (newsletter.open_count / total_unique * 100) if total_unique > 0 else 0,
-            'click_rate': (newsletter.click_count / total_unique * 100) if total_unique > 0 else 0,
-        }
-
-        return context
-
-
 class NewsletterCreateView(LoginRequiredMixin, CreateView):
     """
     View for creating newsletters
+    Also handles editing when edit param is provided in URL
     """
     model = Newsletter
     form_class = NewsletterForm
@@ -128,7 +85,34 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['templates'] = NewsletterTemplate.objects.all()
+
+        # Check if we're in edit mode
+        edit_slug = self.request.GET.get('edit')
+        if edit_slug:
+            context['edit_mode'] = True
+            try:
+                newsletter = Newsletter.objects.get(slug=edit_slug)
+                context['newsletter'] = newsletter
+            except Newsletter.DoesNotExist:
+                pass
+
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        # Check if we're in edit mode
+        edit_slug = self.request.GET.get('edit')
+        if edit_slug:
+            try:
+                newsletter = Newsletter.objects.get(slug=edit_slug)
+                # If not POST request, provide instance for form to edit
+                if not self.request.method == 'POST':
+                    kwargs['instance'] = newsletter
+            except Newsletter.DoesNotExist:
+                pass
+
+        return kwargs
 
     def form_valid(self, form):
         """Process the form data after validation"""
@@ -185,11 +169,11 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
         # Update the recipient count
         newsletter.update_recipient_count()
 
-        # Check if save_and_preview button was clicked (NEW CODE)
+        # Check if save_and_preview button was clicked (UPDATED CODE)
         if 'save_and_preview' in self.request.POST:
-            messages.success(self.request, _(
-                'Newsletter saved. Here is the preview.'))
-            return redirect('newsletter:newsletter_preview', slug=newsletter.slug)
+            messages.success(self.request, _('Newsletter saved.'))
+            # Redirect to list instead of preview
+            return redirect(self.get_success_url())
 
         # Process sending if needed
         if send_now:
@@ -204,163 +188,45 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.get_success_url())
 
 
-class NewsletterUpdateView(LoginRequiredMixin, UpdateView):
+class NewsletterDeleteView(LoginRequiredMixin, View):
     """
-    View for updating newsletters
+    Widok do usuwania newsletterów bez dodatkowego potwierdzenia
+    Obsługuje zarówno GET (przekierowanie) jak i POST (usuwanie)
     """
-    model = Newsletter
-    form_class = NewsletterForm
-    template_name = 'newsletter/newsletter_update.html'
 
-    def get_success_url(self):
-        return reverse('newsletter:newsletter_detail', kwargs={'slug': self.object.slug})
+    def get(self, request, *args, **kwargs):
+        """
+        Obsługa żądania GET - przekierowanie do listy newsletterów
+        """
+        messages.warning(request, _(
+            'Use the delete button from the newsletter list.'))
+        return redirect('newsletter:newsletter_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['templates'] = NewsletterTemplate.objects.all()
-        return context
+    def post(self, request, *args, **kwargs):
+        """
+        Obsługa żądania POST - usunięcie newslettera
+        """
+        # Pobierz newsletter do usunięcia
+        newsletter = get_object_or_404(Newsletter, slug=kwargs['slug'])
 
-    def form_valid(self, form):
-        """Process the form data after validation"""
-        # Set the updated_by field
-        form.instance.updated_by = self.request.user
-
-        # Get the newsletter object
-        newsletter = form.save(commit=False)
-
-        # Handle 'send to all subscribers' option
-        if form.cleaned_data.get('all_subscribers'):
-            all_subs = Subscriber.objects.filter(newsletter_consent=True)
-            newsletter.subscribers.set(all_subs)
-
-        # Check if we should send immediately
-        send_now = form.cleaned_data.get('send_now')
-        if send_now:
-            newsletter.status = 'sending'
-
-        # Check if we should schedule
-        schedule_send = form.cleaned_data.get('schedule_send')
-        if schedule_send and form.cleaned_data.get('scheduled_date'):
-            newsletter.status = 'scheduled'
-
-        # Save the newsletter
-        newsletter.save()
-
-        # Save the many-to-many fields
-        form.save_m2m()
-
-        # Update the recipient count
-        newsletter.update_recipient_count()
-
-        # Process sending if needed
-        if send_now:
-            # In a real application, this would use Celery or another task queue
-            # Here we'll just simulate it with a simple flag
-            # send_newsletter.delay(newsletter.id)  # This would be a Celery task
-            messages.success(self.request, _('Newsletter queued for sending.'))
-
-        messages.success(self.request, _('Newsletter updated successfully.'))
-        return redirect(self.get_success_url())
-
-
-class NewsletterDeleteView(LoginRequiredMixin, DeleteView):
-    """
-    View for deleting newsletters
-    """
-    model = Newsletter
-    template_name = 'newsletter/newsletter_delete_confirm.html'
-    success_url = reverse_lazy('newsletter:newsletter_list')
-
-    def delete(self, request, *args, **kwargs):
-        """Delete the newsletter and show a success message"""
-        newsletter = self.get_object()
-
-        # Check if newsletter has been sent
+        # Sprawdź, czy newsletter może być usunięty
         if newsletter.status in ['sent', 'sending']:
             messages.error(request, _(
                 'Cannot delete a newsletter that has been sent or is being sent.'))
-            return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
+            return redirect('newsletter:newsletter_list')
 
-        # Delete the newsletter
+        # Zapisz dane przed usunięciem (dla komunikatu)
+        subject = newsletter.subject
+
+        # Usuń newsletter
         newsletter.delete()
 
-        messages.success(request, _('Newsletter deleted successfully.'))
-        return redirect(self.success_url)
+        # Pokaż komunikat o sukcesie
+        messages.success(request, _(
+            f'Newsletter "{subject}" has been deleted successfully.'))
 
-
-class NewsletterPreviewView(LoginRequiredMixin, DetailView):
-    """
-    View for previewing newsletters with confirmation options
-    """
-    model = Newsletter
-    template_name = 'newsletter/newsletter_preview_confirm.html'
-    context_object_name = 'newsletter'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        newsletter = self.get_object()
-
-        # Calculate recipient stats
-        direct_subscribers_count = newsletter.subscribers.count()
-
-        # Group subscribers (with potential duplicates)
-        group_subscribers = set()
-        for group in newsletter.subscriber_groups.all():
-            group_subscribers.update(
-                group.subscriber.values_list('id', flat=True))
-
-        # Total unique recipients
-        all_recipients = set(
-            newsletter.subscribers.values_list('id', flat=True))
-        all_recipients.update(group_subscribers)
-        total_unique = len(all_recipients)
-
-        # Add stats to context
-        context['stats'] = {
-            'direct_subscribers': direct_subscribers_count,
-            'group_subscribers': len(group_subscribers),
-            'total_unique': total_unique,
-        }
-
-        # Get the HTML content - Fix the syntax here
-        template_html = self._get_template_html(newsletter)
-        html_content = template_html.replace('{{content}}', newsletter.content)
-        html_content = html_content.replace('{{subject}}', newsletter.subject)
-        context['newsletter_content'] = html_content
-
-        return context
-
-    def _get_template_html(self, newsletter):
-        """Get the HTML template for the newsletter"""
-        if newsletter.template and newsletter.template.html_content:
-            return newsletter.template.html_content
-        else:
-            # Use default template
-            return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>{{subject}}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                    h1, h2, h3 { color: #2c3e50; }
-                    a { color: #3498db; }
-                    .preview-notice { background: #e74c3c; color: white; padding: 10px; text-align: center; }
-                </style>
-            </head>
-            <body>
-                <h1>{{subject}}</h1>
-                <div class="content">
-                    {{content}}
-                </div>
-                <p style="color: #7f8c8d; font-size: 12px; margin-top: 30px;">
-                    You're receiving this email because you subscribed to our newsletter. 
-                    <a href="{{unsubscribe_url}}">Unsubscribe</a>
-                </p>
-            </body>
-            </html>
-            """
+        # Przekieruj z powrotem do listy
+        return redirect('newsletter:newsletter_list')
 
 
 class NewsletterSendTestView(LoginRequiredMixin, View):
@@ -401,7 +267,8 @@ class NewsletterSendTestView(LoginRequiredMixin, View):
         else:
             messages.error(request, _('Please enter a valid email address.'))
 
-        return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
+        # Redirect to list instead of detail
+        return redirect('newsletter:newsletter_list')
 
     def _send_newsletter_email(self, newsletter, subscriber, is_test=False):
         """Send the newsletter to a specific subscriber"""
@@ -471,7 +338,8 @@ class NewsletterSendView(LoginRequiredMixin, View):
         if newsletter.status in ['sent', 'sending']:
             messages.error(request, _(
                 'This newsletter has already been sent or is in the process of sending.'))
-            return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
+            # Redirect to list instead of detail
+            return redirect('newsletter:newsletter_list')
 
         # Update status based on scheduled vs. immediate
         if newsletter.scheduled_date and newsletter.scheduled_date > timezone.now():
@@ -487,7 +355,8 @@ class NewsletterSendView(LoginRequiredMixin, View):
         newsletter.save()
 
         messages.success(request, message)
-        return redirect('newsletter:newsletter_detail', slug=newsletter.slug)
+        # Redirect to list instead of detail
+        return redirect('newsletter:newsletter_list')
 
 
 # Newsletter Template views

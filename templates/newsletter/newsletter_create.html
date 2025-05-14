@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Create Newsletter | XManager{% endblock %}
+{% block title %}Utwórz Newsletter | XManager{% endblock %}
 
-{% block page_title %}Create Newsletter{% endblock %}
+{% block page_title %}Utwórz Newsletter{% endblock %}
 
 {% block page_actions %}
     <a href="{% url 'newsletter:newsletter_list' %}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Back to Newsletters
+        <i class="fas fa-arrow-left me-1"></i> Powrót do Newsletterów
     </a>
 {% endblock %}
 
@@ -17,7 +17,7 @@
 {% endif %}
     <div class="card">
         <div class="card-body">
-            <!-- Wizard Steps Navigation -->
+            <!-- Nawigacja kroków kreatora -->
             <div class="wizard-navigation mb-4">
                 <div class="progress" style="height: 3px;">
                     <div class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100" id="wizard-progress-bar"></div>
@@ -26,19 +26,19 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="step1-tab" data-bs-toggle="pill" data-bs-target="#step1" type="button" role="tab" aria-controls="step1" aria-selected="true">
                             <span class="wizard-step-icon">1</span>
-                            <span class="wizard-step-text">Content</span>
+                            <span class="wizard-step-text">Treść</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="step2-tab" data-bs-toggle="pill" data-bs-target="#step2" type="button" role="tab" aria-controls="step2" aria-selected="false">
                             <span class="wizard-step-icon">2</span>
-                            <span class="wizard-step-text">Recipients</span>
+                            <span class="wizard-step-text">Odbiorcy</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="step3-tab" data-bs-toggle="pill" data-bs-target="#step3" type="button" role="tab" aria-controls="step3" aria-selected="false">
                             <span class="wizard-step-icon">3</span>
-                            <span class="wizard-step-text">Delivery</span>
+                            <span class="wizard-step-text">Wysyłka</span>
                         </button>
                     </li>
                 </ul>
@@ -56,24 +56,24 @@
                 {% endif %}
                 
                 <div class="tab-content" id="wizardTabContent">
-                    <!-- Step 1: Content -->
+                    <!-- Krok 1: Treść -->
                     <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
-                        <h4 class="mb-4">Newsletter Content</h4>
+                        <h4 class="mb-4">Treść Newslettera</h4>
                         
-                        <!-- Subject -->
+                        <!-- Temat -->
                         <div class="mb-4">
-                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject *</label>
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">Temat *</label>
                             {{ form.subject }}
                             {% if form.subject.errors %}
                                 <div class="invalid-feedback d-block">{{ form.subject.errors.0 }}</div>
                             {% endif %}
                         </div>
                         
-                        <!-- Template -->
+                        <!-- Szablon -->
                         <div class="mb-4">
-                            <label for="{{ form.template.id_for_label }}" class="form-label">Template</label>
+                            <label for="{{ form.template.id_for_label }}" class="form-label">Szablon</label>
                             <select id="{{ form.template.id_for_label }}" name="{{ form.template.html_name }}" class="form-select">
-                                <option value="">Default Template</option>
+                                <option value="">Domyślny Szablon</option>
                                 {% for template in templates %}
                                     <option value="{{ template.id }}">{{ template.name }}</option>
                                 {% endfor %}
@@ -83,46 +83,46 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Content -->
+                        <!-- Treść -->
                         <div class="mb-4">
-                            <label for="{{ form.content.id_for_label }}" class="form-label">Content *</label>
+                            <label for="{{ form.content.id_for_label }}" class="form-label">Treść *</label>
                             {{ form.content }}
                             {% if form.content.errors %}
                                 <div class="invalid-feedback d-block">{{ form.content.errors.0 }}</div>
                             {% endif %}
-                            <div class="form-text">You can use Markdown or HTML in the content.</div>
+                            <div class="form-text">Możesz użyć Markdown lub HTML w treści.</div>
                         </div>
                         
-                        <!-- Attachments -->
+                        <!-- Załączniki -->
                         <div class="mb-4">
-                            <label class="form-label">Attachments</label>
+                            <label class="form-label">Załączniki</label>
                             <div class="input-group mb-2">
                                 <input type="file" class="form-control" id="attachment" name="attachment" multiple>
                                 <button class="btn btn-outline-secondary" type="button" id="clear-attachments">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                            <div class="form-text">Maximum 5 files, 10MB each. Allowed formats: PDF, DOC, DOCX, JPG, PNG</div>
+                            <div class="form-text">Maksymalnie 5 plików, po 10MB każdy. Dozwolone formaty: PDF, DOC, DOCX, JPG, PNG</div>
                             <div id="attachment-list" class="list-group mt-2"></div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-outline-secondary" disabled>Previous</button>
-                            <button type="button" class="btn btn-primary next-step" data-next="step2">Next: Recipients</button>
+                            <button type="button" class="btn btn-outline-secondary" disabled>Poprzedni</button>
+                            <button type="button" class="btn btn-primary next-step" data-next="step2">Dalej: Odbiorcy</button>
                         </div>
                     </div>
                     
-                    <!-- Step 2: Recipients -->
+                    <!-- Krok 2: Odbiorcy -->
                     <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
-                        <h4 class="mb-4">Newsletter Recipients</h4>
+                        <h4 class="mb-4">Odbiorcy Newslettera</h4>
                         
                         <div class="row">
-                            <!-- Left side: Groups list -->
+                            <!-- Lewa strona: Lista grup -->
                             <div class="col-md-5">
                                 <div class="mb-4">
-                                    <label class="form-label">Subscriber Groups</label>
+                                    <label class="form-label">Grupy Subskrybentów</label>
                                     <div class="input-group mb-2">
-                                        <input type="text" class="form-control" id="group-search" placeholder="Search groups...">
+                                        <input type="text" class="form-control" id="group-search" placeholder="Szukaj grup...">
                                         <button class="btn btn-outline-secondary" type="button" id="clear-group-search">
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -131,21 +131,21 @@
                                         <div id="groups-list" class="list-group list-group-flush">
                                             <div class="text-center py-2">
                                                 <div class="spinner-border spinner-border-sm" role="status"></div>
-                                                <span class="ms-2">Loading groups...</span>
+                                                <span class="ms-2">Ładowanie grup...</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Hidden input to store selected groups -->
+                                    <!-- Ukryte pole do przechowywania wybranych grup -->
                                     <input type="hidden" id="id_subscriber_groups" name="subscriber_groups">
                                 </div>
                             </div>
                             
-                            <!-- Right side: Subscribers from Selected Groups -->
+                            <!-- Prawa strona: Subskrybenci z wybranych grup -->
                             <div class="col-md-7">
                                 <div class="mb-4">
-                                    <label class="form-label">Subscribers from Selected Groups</label>
+                                    <label class="form-label">Subskrybenci z Wybranych Grup</label>
                                     <div class="input-group mb-2">
-                                        <input type="text" class="form-control" id="subscriber-search" placeholder="Search subscribers...">
+                                        <input type="text" class="form-control" id="subscriber-search" placeholder="Szukaj subskrybentów...">
                                         <button class="btn btn-outline-secondary" type="button" id="clear-subscriber-search">
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -153,49 +153,49 @@
                                     <div class="border rounded p-2" style="height: 300px; overflow-y: auto;">
                                         <div id="subscribers-list" class="list-group list-group-flush">
                                             <div class="text-center py-2 text-muted">
-                                                Select a group to see subscribers
+                                                Wybierz grupę, aby zobaczyć subskrybentów
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Hidden input to store excluded subscribers -->
+                                    <!-- Ukryte pole do przechowywania wykluczonych subskrybentów -->
                                     <input type="hidden" id="id_excluded_subscribers" name="excluded_subscribers">
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Additional email addresses -->
+                        <!-- Dodatkowe adresy email -->
                         <div class="mb-4">
-                            <label for="additional-emails" class="form-label">Additional Email Addresses</label>
+                            <label for="additional-emails" class="form-label">Dodatkowe Adresy Email</label>
                             <textarea class="form-control" id="additional-emails" name="additional_emails" rows="3" 
-                                      placeholder="Enter email addresses (one per line or comma-separated)"></textarea>
-                            <div class="form-text">These addresses will receive the newsletter even if they're not subscribers</div>
+                                      placeholder="Wprowadź adresy email (po jednym w linii lub oddzielone przecinkami)"></textarea>
+                            <div class="form-text">Te adresy otrzymają newsletter nawet jeśli nie są subskrybentami</div>
                         </div>
                         
-                        <!-- Recipients Summary -->
+                        <!-- Podsumowanie odbiorców -->
                         <div class="card my-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Recipients Summary</h5>
-                                <span class="badge bg-primary" id="total-recipients-badge">0 recipients</span>
+                                <h5 class="card-title mb-0">Podsumowanie Odbiorców</h5>
+                                <span class="badge bg-primary" id="total-recipients-badge">0 odbiorców</span>
                             </div>
                             <div class="card-body">
                                 <p class="text-muted small mb-3">
-                                    <i class="fas fa-info-circle me-1"></i> unique subscribers + additional emails - excluded subscribers
+                                    <i class="fas fa-info-circle me-1"></i> unikalni subskrybenci + dodatkowe emaile - wykluczeni subskrybenci
                                 </p>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Raw Subscriber Count:</span>
+                                        <span>Łączna Liczba Subskrybentów:</span>
                                         <span class="fw-bold" id="raw-subscriber-count">0</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Selected Groups:</span>
+                                        <span>Wybrane Grupy:</span>
                                         <span id="selected-groups-count">0</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Additional Emails:</span>
+                                        <span>Dodatkowe Emaile:</span>
                                         <span id="additional-emails-count">0</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Excluded Subscribers:</span>
+                                        <span>Wykluczeni Subskrybenci:</span>
                                         <span id="excluded-count">0</span>
                                     </li>
                                 </ul>
@@ -203,169 +203,156 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step1">Previous: Content</button>
-                            <button type="button" class="btn btn-primary next-step" data-next="step3">Next: Delivery</button>
+                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step1">Poprzedni: Treść</button>
+                            <button type="button" class="btn btn-primary next-step" data-next="step3">Dalej: Wysyłka</button>
                         </div>
                     </div>
                     
-                    <!-- Step 3: Delivery -->
+                    <!-- Krok 3: Wysyłka -->
                     <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
-                        <h4 class="mb-4">Delivery Options</h4>
+                        <h4 class="mb-4">Opcje Wysyłki</h4>
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- When to send -->
+                                <!-- Kiedy wysłać -->
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">When to send</h5>
+                                        <h5 class="card-title mb-0">Kiedy wysłać</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <div class="btn-group w-100" role="group">
                                                 <input type="radio" class="btn-check" name="delivery_option" id="send_now" value="now" checked autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="send_now">Send Now</label>
+                                                <label class="btn btn-outline-primary" for="send_now">Wyślij Teraz</label>
                                                 
                                                 <input type="radio" class="btn-check" name="delivery_option" id="schedule" value="schedule" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="schedule">Schedule</label>
+                                                <label class="btn btn-outline-primary" for="schedule">Zaplanuj</label>
                                             </div>
                                         </div>
                                         
                                         <div id="schedule-date-container" class="mb-4 d-none">
-                                            <label for="schedule_datetime" class="form-label">Scheduled Date and Time</label>
+                                            <label for="schedule_datetime" class="form-label">Zaplanowana Data i Godzina</label>
                                             <div class="input-group">
                                                 <input type="date" class="form-control" id="schedule_date" name="schedule_date" min="{{ today_date|date:'Y-m-d' }}">
                                                 <input type="time" class="form-control" id="schedule_time" name="schedule_time" value="12:00">
                                             </div>
-                                            <div class="form-text">Select a future date and time when this newsletter should be sent</div>
+                                            <div class="form-text">Wybierz przyszłą datę i godzinę, kiedy newsletter ma zostać wysłany</div>
                                         </div>
                                         
-                                        <!-- Attachments -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Attachments</label>
-                                            <div class="input-group mb-2">
-                                                <input type="file" class="form-control" id="attachment" name="attachment" multiple>
-                                                <button class="btn btn-outline-secondary" type="button" id="clear-attachments">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                            <div class="form-text">Maximum 5 files, 10MB each. Allowed formats: PDF, DOC, DOCX, JPG, PNG</div>
-                                            <div id="attachment-list" class="list-group mt-2"></div>
-                                        </div>
-                                        
-                                        <!-- Hidden fields for form processing -->
+                                        <!-- Ukryte pola do przetwarzania formularza -->
                                         <input type="hidden" name="send_now" id="id_send_now" value="true">
                                         <input type="hidden" name="schedule_send" id="id_schedule_send" value="false">
                                         <input type="hidden" name="status" id="id_status" value="draft">
                                     </div>
                                 </div>
                                 
-                                <!-- Delivery settings -->
+                                <!-- Ustawienia dostarczania -->
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">Delivery Settings</h5>
+                                        <h5 class="card-title mb-0">Ustawienia Dostarczania</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <label for="throttle_rate" class="form-label">Sending rate (emails per minute)</label>
+                                            <label for="throttle_rate" class="form-label">Tempo wysyłki (emaili na minutę)</label>
                                             <select class="form-select" id="throttle_rate" name="throttle_rate">
-                                                <option value="10">10 emails/minute (recommended)</option>
-                                                <option value="20">20 emails/minute</option>
-                                                <option value="50">50 emails/minute</option>
-                                                <option value="100">100 emails/minute (may trigger spam filters)</option>
-                                                <option value="0">No limit (not recommended)</option>
+                                                <option value="10">10 emaili/minutę (zalecane)</option>
+                                                <option value="20">20 emaili/minutę</option>
+                                                <option value="50">50 emaili/minutę</option>
+                                                <option value="100">100 emaili/minutę (może uruchomić filtry antyspamowe)</option>
+                                                <option value="0">Bez limitu (niezalecane)</option>
                                             </select>
-                                            <div class="form-text">Lower rates improve deliverability</div>
+                                            <div class="form-text">Niższe tempo poprawia dostarczalność</div>
                                         </div>
                                         
                                         <div class="mb-3 form-check">
                                             <input type="checkbox" class="form-check-input" id="add_tracking" name="add_tracking" checked>
-                                            <label class="form-check-label" for="add_tracking">Add tracking codes to links</label>
-                                            <div class="form-text">Track clicks and opens in the newsletter</div>
+                                            <label class="form-check-label" for="add_tracking">Dodaj kody śledzenia do linków</label>
+                                            <div class="form-text">Śledź kliknięcia i otwarcia w newsletterze</div>
                                         </div>
                                         
                                         <div class="mb-3 form-check">
                                             <input type="checkbox" class="form-check-input" id="add_unsubscribe" name="add_unsubscribe" checked>
-                                            <label class="form-check-label" for="add_unsubscribe">Add unsubscribe link</label>
-                                            <div class="form-text">Required for compliance with anti-spam regulations</div>
+                                            <label class="form-check-label" for="add_unsubscribe">Dodaj link do rezygnacji z subskrypcji</label>
+                                            <div class="form-text">Wymagane do zgodności z przepisami antyspamowymi</div>
                                         </div>
                                         
                                         <div class="mb-3 form-check">
                                             <input type="checkbox" class="form-check-input" id="use_uuid" name="use_uuid" checked>
-                                            <label class="form-check-label" for="use_uuid">Add unique identifiers</label>
-                                            <div class="form-text">Helps prevent messages from being marked as spam</div>
+                                            <label class="form-check-label" for="use_uuid">Dodaj unikalne identyfikatory</label>
+                                            <div class="form-text">Pomaga zapobiec oznaczaniu wiadomości jako spam</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
-                                <!-- Newsletter Summary -->
+                                <!-- Podsumowanie newslettera -->
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">Newsletter Summary</h5>
+                                        <h5 class="card-title mb-0">Podsumowanie Newslettera</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <label class="fw-bold">Subject:</label>
+                                            <label class="fw-bold">Temat:</label>
                                             <p id="summary-subject">-</p>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="fw-bold">Recipients:</label>
-                                            <p><span id="summary-recipients">0</span> recipients will receive this newsletter</p>
+                                            <label class="fw-bold">Odbiorcy:</label>
+                                            <p><span id="summary-recipients">0</span> odbiorców otrzyma ten newsletter</p>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="fw-bold">Delivery:</label>
-                                            <p id="summary-delivery">Send immediately</p>
+                                            <label class="fw-bold">Wysyłka:</label>
+                                            <p id="summary-delivery">Wyślij natychmiast</p>
                                         </div>
                                         <div class="mb-3 d-none" id="summary-schedule-container">
-                                            <label class="fw-bold">Scheduled for:</label>
+                                            <label class="fw-bold">Zaplanowano na:</label>
                                             <p id="summary-schedule-time">-</p>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="fw-bold">Attachments:</label>
-                                            <p id="summary-attachments">None</p>
+                                            <label class="fw-bold">Załączniki:</label>
+                                            <p id="summary-attachments">Brak</p>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Anti-spam check -->
+                                <!-- Kontrola antyspamowa -->
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">Spam Check Results</h5>
+                                        <h5 class="card-title mb-0">Wyniki Kontroli Spamu</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between mb-3">
-                                            <span>Spam score:</span>
+                                            <span>Ocena spamu:</span>
                                             <div class="progress flex-grow-1 mx-2" style="height: 20px;">
                                                 <div class="progress-bar bg-success" role="progressbar" style="width: 15%;" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" id="spam-score-bar">15%</div>
                                             </div>
-                                            <span class="badge bg-success">Low risk</span>
+                                            <span class="badge bg-success">Niskie ryzyko</span>
                                         </div>
                                         
                                         <ul class="list-group list-group-flush" id="spam-check-list">
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>Subject line not spammy</span>
+                                                <span>Temat nie wygląda jak spam</span>
                                                 <i class="fas fa-check-circle text-success"></i>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>Content has good text/image ratio</span>
+                                                <span>Treść ma dobry stosunek tekstu do obrazów</span>
                                                 <i class="fas fa-check-circle text-success"></i>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>Has unsubscribe link</span>
+                                                <span>Zawiera link do rezygnacji z subskrypcji</span>
                                                 <i class="fas fa-check-circle text-success"></i>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>No excessive capitalization</span>
+                                                <span>Brak nadmiernego użycia wielkich liter</span>
                                                 <i class="fas fa-check-circle text-success"></i>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center text-warning">
-                                                <span>Content includes potentially spammy words</span>
+                                                <span>Treść zawiera potencjalnie spamowe słowa</span>
                                                 <i class="fas fa-exclamation-triangle text-warning"></i>
                                             </li>
                                         </ul>
                                         <button type="button" id="run-spam-check" class="btn btn-sm btn-outline-primary mt-3 w-100">
-                                            <i class="fas fa-sync-alt me-2"></i> Run spam check again
+                                            <i class="fas fa-sync-alt me-2"></i> Uruchom kontrolę spamu ponownie
                                         </button>
                                     </div>
                                 </div>
@@ -373,12 +360,12 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step2">Previous: Recipients</button>
+                            <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step2">Poprzedni: Odbiorcy</button>
                             <div>
-                                <button type="submit" name="save_as_draft" class="btn btn-outline-secondary me-1">Save as Draft</button>
-                                <button type="submit" name="send_test" class="btn btn-outline-primary me-1">Send Test Email</button>
-                                <button type="submit" name="save_and_preview" class="btn btn-outline-primary me-1">Preview</button>
-                                <button type="submit" name="save_and_send" class="btn btn-primary">Send Newsletter</button>
+                                <button type="submit" name="save_as_draft" class="btn btn-outline-secondary me-1">Zapisz jako Szkic</button>
+                                <button type="submit" name="send_test" class="btn btn-outline-primary me-1">Wyślij Testowy Email</button>
+                                <button type="submit" name="save_and_preview" class="btn btn-outline-primary me-1">Podgląd</button>
+                                <button type="submit" name="save_and_send" class="btn btn-primary">Wyślij Newsletter</button>
                             </div>
                         </div>
                     </div>
@@ -390,7 +377,7 @@
 
 {% block extra_css %}
 <style>
-/* Wizard navigation styling */
+/* Stylizacja nawigacji kreatora */
 .nav-wizard {
     display: flex;
     justify-content: space-between;
@@ -439,7 +426,7 @@
     font-size: 0.875rem;
 }
 
-/* Badge styling for consent */
+/* Stylizacja znacznika dla zgody */
 .badge-active {
     background-color: #198754;
     color: white;
@@ -455,12 +442,12 @@
 {% block extra_js %}
 <script>
 /**
- * Newsletter Form Wizard
+ * Kreator Formularza Newslettera
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Newsletter wizard script loaded');
+    console.log('Skrypt kreatora newslettera załadowany');
 
-    // Element references
+    // Referencje do elementów
     const form = document.getElementById('newsletter-form');
     const wizardTabs = document.querySelectorAll('#wizardSteps .nav-link');
     const wizardSteps = document.querySelectorAll('.tab-pane');
@@ -468,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextButtons = document.querySelectorAll('.next-step');
     const prevButtons = document.querySelectorAll('.prev-step');
     
-    // Form elements references
+    // Referencje do elementów formularza
     const sendNowRadio = document.getElementById('send_now');
     const scheduleRadio = document.getElementById('schedule');
     const scheduleDateContainer = document.getElementById('schedule-date-container');
@@ -477,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusInput = document.getElementById('id_status');
     const subjectInput = document.getElementById('{{ form.subject.id_for_label }}');
     
-    // Groups and subscribers elements
+    // Elementy grup i subskrybentów
     const groupSearchInput = document.getElementById('group-search');
     const clearGroupSearchBtn = document.getElementById('clear-group-search');
     const groupsList = document.getElementById('groups-list');
@@ -490,14 +477,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const additionalEmailsTextarea = document.getElementById('additional-emails');
     
-    // Summary elements
+    // Elementy podsumowania
     const summarySubject = document.getElementById('summary-subject');
     const summaryRecipients = document.getElementById('summary-recipients');
     const summaryDelivery = document.getElementById('summary-delivery');
     const summaryScheduleContainer = document.getElementById('summary-schedule-container');
     const summaryScheduleTime = document.getElementById('summary-schedule-time');
     
-    // Data storage
+    // Przechowywanie danych
     let allGroups = [];
     let selectedGroups = [];
     let allSubscribers = [];
@@ -505,36 +492,36 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 0;
     
     /**
-     * Initialize wizard navigation
+     * Inicjalizacja nawigacji kreatora
      */
     function initWizard() {
-        // Set up event listeners for wizard tabs
+        // Konfiguracja nasłuchiwania zdarzeń dla zakładek kreatora
         wizardTabs.forEach((tab, index) => {
             tab.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Only allow navigating to steps that have been seen
+                // Zezwalaj na nawigację tylko do kroków, które zostały już obejrzane
                 if (index <= currentStep) {
                     activateStep(index);
                 }
             });
         });
         
-        // Set up next buttons
+        // Konfiguracja przycisków "Dalej"
         nextButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const nextStep = this.getAttribute('data-next');
                 
-                // Validate current step before proceeding
+                // Sprawdź bieżący krok przed przejściem dalej
                 if (validateCurrentStep()) {
-                    // Go to next step
+                    // Przejdź do następnego kroku
                     const nextIndex = Array.from(wizardSteps).findIndex(step => step.id === nextStep);
                     if (nextIndex > currentStep) {
                         currentStep = nextIndex;
                     }
                     activateStep(nextIndex);
                     
-                    // Update summary if going to step 3
+                    // Aktualizuj podsumowanie przy przejściu do kroku 3
                     if (nextStep === 'step3') {
                         updateSummary();
                     }
@@ -542,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Set up previous buttons
+        // Konfiguracja przycisków "Poprzedni"
         prevButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const prevStep = this.getAttribute('data-prev');
@@ -553,10 +540,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Activate a specific step
+     * Aktywacja określonego kroku
      */
     function activateStep(stepIndex) {
-        // Update tabs
+        // Aktualizacja zakładek
         wizardTabs.forEach((tab, index) => {
             if (index === stepIndex) {
                 tab.classList.add('active');
@@ -567,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Update content panes
+        // Aktualizacja paneli treści
         wizardSteps.forEach((step, index) => {
             if (index === stepIndex) {
                 step.classList.add('show', 'active');
@@ -576,31 +563,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Update progress bar
+        // Aktualizacja paska postępu
         const progress = Math.floor((stepIndex / (wizardTabs.length - 1)) * 100);
         progressBar.style.width = `${progress}%`;
         progressBar.setAttribute('aria-valuenow', progress);
     }
     
     /**
-     * Validate the current step
+     * Walidacja bieżącego kroku
      */
     function validateCurrentStep() {
         const activeStep = document.querySelector('.tab-pane.active');
         
         if (activeStep.id === 'step1') {
-            // Validate content step
+            // Walidacja kroku zawartości
             const subject = subjectInput.value.trim();
             const content = document.querySelector('textarea[name="content"]').value.trim();
             
             if (!subject) {
-                alert('Please enter a subject for the newsletter.');
+                alert('Proszę wprowadzić temat newslettera.');
                 subjectInput.focus();
                 return false;
             }
             
             if (!content) {
-                alert('Please enter content for the newsletter.');
+                alert('Proszę wprowadzić treść newslettera.');
                 document.querySelector('textarea[name="content"]').focus();
                 return false;
             }
@@ -608,12 +595,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return true;
         }
         else if (activeStep.id === 'step2') {
-            // Validate recipients step
+            // Walidacja kroku odbiorców
             const hasGroups = selectedGroups.length > 0;
             const hasEmails = additionalEmailsTextarea && additionalEmailsTextarea.value.trim().length > 0;
             
             if (!hasGroups && !hasEmails) {
-                alert('You must select at least one recipient group or provide additional email addresses.');
+                alert('Musisz wybrać co najmniej jedną grupę odbiorców lub podać dodatkowe adresy email.');
                 return false;
             }
             
@@ -624,21 +611,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Properly handle form submission
+     * Prawidłowa obsługa przesyłania formularza
      */
     if (form) {
         form.addEventListener('submit', function(e) {
-            // Check which button was clicked
+            // Sprawdź, który przycisk został kliknięty
             const isDraft = e.submitter && e.submitter.name === 'save_as_draft';
             const isPreview = e.submitter && e.submitter.name === 'save_and_preview';
             const isTestEmail = e.submitter && e.submitter.name === 'send_test';
             const isSend = e.submitter && e.submitter.name === 'save_and_send';
             
-            // For test emails, prompt for the test email address
+            // Dla testowych emaili, zapytaj o adres email testowy
             if (isTestEmail) {
                 e.preventDefault();
                 
-                // Create a modal to get test email
+                // Utwórz modal do pobrania adresu testowego
                 const modal = document.createElement('div');
                 modal.className = 'modal fade';
                 modal.id = 'testEmailModal';
@@ -647,18 +634,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Send Test Email</h5>
+                                <h5 class="modal-title">Wyślij Testowy Email</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
-                                    <label for="test_email" class="form-label">Send test to email address:</label>
+                                    <label for="test_email" class="form-label">Wyślij test na adres email:</label>
                                     <input type="email" class="form-control" id="test_email" required>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" id="send-test-btn">Send Test</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                                <button type="button" class="btn btn-primary" id="send-test-btn">Wyślij Test</button>
                             </div>
                         </div>
                     </div>
@@ -666,45 +653,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 document.body.appendChild(modal);
                 
-                // Show the modal
+                // Pokaż modal
                 const testEmailModal = new bootstrap.Modal(document.getElementById('testEmailModal'));
                 testEmailModal.show();
                 
-                // Handle the test email submission
+                // Obsługa przesłania testowego emaila
                 document.getElementById('send-test-btn').addEventListener('click', function() {
                     const testEmail = document.getElementById('test_email').value.trim();
                     
                     if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) {
-                        alert('Please enter a valid email address.');
+                        alert('Proszę wprowadzić poprawny adres email.');
                         return;
                     }
                     
-                    // Add the test email to the form
+                    // Dodaj testowy email do formularza
                     const testEmailInput = document.createElement('input');
                     testEmailInput.type = 'hidden';
                     testEmailInput.name = 'test_email';
                     testEmailInput.value = testEmail;
                     form.appendChild(testEmailInput);
                     
-                    // Add a flag to indicate this is a test email
+                    // Dodaj flagę wskazującą, że to testowy email
                     const isTestInput = document.createElement('input');
                     isTestInput.type = 'hidden';
                     isTestInput.name = 'is_test';
                     isTestInput.value = 'true';
                     form.appendChild(isTestInput);
                     
-                    // Hide the modal
+                    // Ukryj modal
                     testEmailModal.hide();
                     
-                    // Submit the form
+                    // Prześlij formularz
                     form.submit();
                 });
                 
-                // Don't continue with the normal form submission
+                // Nie kontynuuj normalnego przesyłania formularza
                 return false;
             }
             
-            // For non-drafts, validate all steps
+            // Dla opcji innych niż szkic, zwaliduj wszystkie kroki
             if (!isDraft && !isPreview) {
                 for (let i = 0; i < wizardSteps.length; i++) {
                     const stepIndex = i;
@@ -716,23 +703,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Clean up existing fields to avoid duplicates
+            // Wyczyść istniejące pola, aby uniknąć duplikatów
             form.querySelectorAll('input[name="subscriber_groups"]').forEach(field => field.remove());
             
-            // Get all checked groups
+            // Pobierz wszystkie zaznaczone grupy
             const checkedGroups = document.querySelectorAll('.group-checkbox:checked');
             
-            // Add a hidden field for each selected group
+            // Dodaj ukryte pole dla każdej wybranej grupy
             checkedGroups.forEach(checkbox => {
                 const field = document.createElement('input');
                 field.type = 'hidden';
                 field.name = 'subscriber_groups';
                 field.value = checkbox.value;
                 form.appendChild(field);
-                console.log('Added group ID to form:', checkbox.value);
+                console.log('Dodano ID grupy do formularza:', checkbox.value);
             });
             
-            // Add hidden field for excluded subscribers
+            // Dodaj ukryte pole dla wykluczonych subskrybentów
             if (excludedSubscribers.length > 0) {
                 form.querySelectorAll('input[name="excluded_subscribers"]').forEach(field => field.remove());
                 const excludedField = document.createElement('input');
@@ -742,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.appendChild(excludedField);
             }
             
-            // Add appropriate flags based on button clicked
+            // Dodaj odpowiednie flagi w zależności od klikniętego przycisku
             if (isPreview) {
                 const previewInput = document.createElement('input');
                 previewInput.type = 'hidden';
@@ -762,8 +749,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 sendInput.value = 'true';
                 form.appendChild(sendInput);
                 
-                // Confirm before sending to real recipients
-                if (!confirm(`Are you sure you want to send this newsletter to ${document.getElementById('summary-recipients').textContent} recipients?`)) {
+                // Potwierdź przed wysłaniem do rzeczywistych odbiorców
+                if (!confirm(`Czy na pewno chcesz wysłać ten newsletter do ${document.getElementById('summary-recipients').textContent} odbiorców?`)) {
                     e.preventDefault();
                     return false;
                 }
@@ -774,67 +761,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Load all subscriber groups from API
+     * Załaduj wszystkie grupy subskrybentów z API
      */
     function loadGroups() {
-        console.log('Loading groups...');
-        groupsList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Loading groups...</span></div>';
+        console.log('Ładowanie grup...');
+        groupsList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Ładowanie grup...</span></div>';
         
         fetch('/newsletter/api/subscriber-groups/')
             .then(response => response.json())
             .then(data => {
-                console.log('Groups loaded:', data);
+                console.log('Grupy załadowane:', data);
                 allGroups = data;
                 renderGroupsList();
             })
             .catch(error => {
-                console.error('Error loading groups:', error);
-                groupsList.innerHTML = '<div class="text-center py-2 text-danger">Error loading groups</div>';
+                console.error('Błąd ładowania grup:', error);
+                groupsList.innerHTML = '<div class="text-center py-2 text-danger">Błąd ładowania grup</div>';
             });
     }
     
     /**
-     * Render groups list with checkboxes
+     * Renderuj listę grup z polami wyboru
      */
     function renderGroupsList(searchTerm = '') {
-        console.log('Rendering groups list. Search term:', searchTerm);
-        console.log('Selected groups before rendering:', selectedGroups);
+        console.log('Renderowanie listy grup. Wyszukiwany termin:', searchTerm);
+        console.log('Wybrane grupy przed renderowaniem:', selectedGroups);
         
-        // Save current checked state
+        // Zapisz aktualny stan zaznaczenia
         const checkedGroupIds = [];
         document.querySelectorAll('.group-checkbox:checked').forEach(cb => {
             checkedGroupIds.push(parseInt(cb.value));
         });
-        console.log('Currently checked group IDs:', checkedGroupIds);
+        console.log('Aktualnie zaznaczone ID grup:', checkedGroupIds);
         
-        // Merge with selectedGroups to maintain selections
+        // Połącz z selectedGroups, aby zachować wybory
         selectedGroups = [...new Set([...selectedGroups, ...checkedGroupIds])];
-        console.log('Updated selected groups:', selectedGroups);
+        console.log('Zaktualizowane wybrane grupy:', selectedGroups);
         
-        // Clear and rebuild the list
+        // Wyczyść i odbuduj listę
         groupsList.innerHTML = '';
         
         if (allGroups.length === 0) {
-            groupsList.innerHTML = '<div class="text-center py-2 text-muted">No groups available</div>';
+            groupsList.innerHTML = '<div class="text-center py-2 text-muted">Brak dostępnych grup</div>';
             return;
         }
         
-        // Filter by search term if provided
+        // Filtruj według wyszukiwanego terminu, jeśli podano
         const filteredGroups = searchTerm 
             ? allGroups.filter(group => group.group_name.toLowerCase().includes(searchTerm.toLowerCase()))
             : allGroups;
         
         if (filteredGroups.length === 0) {
-            groupsList.innerHTML = '<div class="text-center py-2 text-muted">No groups match your search</div>';
+            groupsList.innerHTML = '<div class="text-center py-2 text-muted">Żadna grupa nie pasuje do wyszukiwania</div>';
             return;
         }
         
-        // Create group items with checkboxes
+        // Utwórz elementy grup z polami wyboru
         filteredGroups.forEach(group => {
             const item = document.createElement('div');
             item.className = 'list-group-item d-flex justify-content-between align-items-center p-2';
             
-            // Checkbox
+            // Pole wyboru
             const checkboxDiv = document.createElement('div');
             checkboxDiv.className = 'form-check';
             
@@ -844,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.id = `group-${group.id}`;
             checkbox.value = group.id;
             
-            // Check if this group is selected
+            // Sprawdź, czy ta grupa jest wybrana
             checkbox.checked = selectedGroups.includes(parseInt(group.id)) || selectedGroups.includes(group.id);
             
             checkbox.addEventListener('change', function() {
@@ -859,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
             checkboxDiv.appendChild(checkbox);
             checkboxDiv.appendChild(label);
             
-            // Subscriber count badge
+            // Znacznik z liczbą subskrybentów
             const badge = document.createElement('span');
             badge.className = 'badge bg-primary rounded-pill';
             badge.textContent = group.subscriber_count || 0;
@@ -869,33 +856,33 @@ document.addEventListener('DOMContentLoaded', function() {
             groupsList.appendChild(item);
         });
         
-        // Also update subscriber lists if needed
+        // Zaktualizuj również listy subskrybentów, jeśli to potrzebne
         if (selectedGroups.length > 0) {
             loadGroupSubscribers();
         }
     }
     
     /**
-     * Update all hidden inputs with current values
+     * Aktualizuj wszystkie ukryte pola z bieżącymi wartościami
      */
     function updateHiddenInputs() {
-        // Always convert to strings before joining
+        // Zawsze konwertuj na ciągi znaków przed łączeniem
         const groupIdStrings = selectedGroups.map(id => String(id));
         groupsInput.value = groupIdStrings.join(',');
         
         const excludedIdStrings = excludedSubscribers.map(id => String(id));
         excludedSubscribersInput.value = excludedIdStrings.join(',');
         
-        console.log('Updated hidden inputs:');
-        console.log('- Groups input value:', groupsInput.value);
-        console.log('- Excluded subscribers input value:', excludedSubscribersInput.value);
+        console.log('Zaktualizowano ukryte pola:');
+        console.log('- Wartość pola grup:', groupsInput.value);
+        console.log('- Wartość pola wykluczonych subskrybentów:', excludedSubscribersInput.value);
     }
     
     /**
-     * Handle group selection/deselection
+     * Obsługa wyboru/odznaczenia grupy
      */
     function handleGroupSelection(groupId, isSelected) {
-        console.log(`Group ${groupId} ${isSelected ? 'selected' : 'deselected'}`);
+        console.log(`Grupa ${groupId} ${isSelected ? 'wybrana' : 'odznaczona'}`);
         
         if (isSelected) {
             if (!selectedGroups.includes(groupId)) {
@@ -905,66 +892,66 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             selectedGroups = selectedGroups.filter(id => id !== groupId);
             
-            // If this group was deselected, we need to refresh subscribers list
-            // for the remaining selected groups
+            // Jeśli ta grupa została odznaczona, musimy odświeżyć listę subskrybentów
+            // dla pozostałych wybranych grup
             if (selectedGroups.length > 0) {
                 loadGroupSubscribers();
             } else {
-                // If no groups selected, clear subscribers list
-                subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Select a group to see subscribers</div>';
+                // Jeśli nie wybrano żadnej grupy, wyczyść listę subskrybentów
+                subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Wybierz grupę, aby zobaczyć subskrybentów</div>';
                 allSubscribers = [];
             }
         }
         
-        // Update hidden input
+        // Aktualizuj ukryte pole
         updateHiddenInputs();
         
         updateRecipientsSummary();
     }
     
     /**
-     * Load subscribers for selected groups
+     * Załaduj subskrybentów dla wybranych grup
      */
     function loadGroupSubscribers(newGroupId = null) {
-        // If no groups selected, show message
+        // Jeśli nie wybrano żadnej grupy, pokaż komunikat
         if (selectedGroups.length === 0) {
-            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Select a group to see subscribers</div>';
+            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Wybierz grupę, aby zobaczyć subskrybentów</div>';
             allSubscribers = [];
             return;
         }
         
-        // Show loading
-        subscribersList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Loading subscribers...</span></div>';
+        // Pokaż ładowanie
+        subscribersList.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Ładowanie subskrybentów...</span></div>';
         
-        // Track promises for all group subscriber requests
+        // Śledź obietnice dla wszystkich żądań grup subskrybentów
         const fetchPromises = [];
         const allGroupSubscribers = [];
         
-        // Fetch subscribers for each selected group
+        // Pobierz subskrybentów dla każdej wybranej grupy
         selectedGroups.forEach(groupId => {
             const promise = fetch(`/newsletter/api/subscriber-groups/${groupId}/subscribers/`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`Error fetching subscribers for group ${groupId}`);
+                        throw new Error(`Błąd pobierania subskrybentów dla grupy ${groupId}`);
                     }
                     return response.json();
                 })
                 .then(subscribers => {
-                    // Add these subscribers to our collection
+                    // Dodaj tych subskrybentów do naszej kolekcji
                     allGroupSubscribers.push(...subscribers);
                 })
                 .catch(error => {
                     console.error(error);
-                    // Continue with other groups even if one fails
+                    // Kontynuuj z innymi grupami, nawet jeśli jedna zawiedzie
                 });
             
             fetchPromises.push(promise);
         });
         
-        // Wait for all fetch operations to complete
+        // Poczekaj na zakończenie wszystkich operacji pobierania
         Promise.all(fetchPromises)
             .then(() => {
-                // Remove duplicates (a subscriber might be in multiple groups)
+                // Usuń duplikaty (subskrybent może być w wielu grupach)
                 const uniqueIds = new Set();
                 allSubscribers = allGroupSubscribers.filter(subscriber => {
                     if (uniqueIds.has(subscriber.id)) {
@@ -977,23 +964,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderSubscribersList();
             })
             .catch(error => {
-                console.error('Error loading group subscribers:', error);
-                subscribersList.innerHTML = '<div class="text-center py-2 text-danger">Error loading subscribers</div>';
+                console.error('Błąd ładowania subskrybentów grup:', error);
+                subscribersList.innerHTML = '<div class="text-center py-2 text-danger">Błąd ładowania subskrybentów</div>';
             });
     }
     
     /**
-     * Render subscribers list with exclude checkboxes and consent status
+     * Renderuj listę subskrybentów z polami wykluczającymi i statusem zgody
      */
     function renderSubscribersList(searchTerm = '') {
         subscribersList.innerHTML = '';
         
         if (allSubscribers.length === 0) {
-            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">No subscribers in selected groups</div>';
+            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Brak subskrybentów w wybranych grupach</div>';
             return;
         }
         
-        // Filter by search term if provided
+        // Filtruj według wyszukiwanego terminu, jeśli podano
         const filteredSubscribers = searchTerm 
             ? allSubscribers.filter(sub => 
                 sub.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -1002,26 +989,26 @@ document.addEventListener('DOMContentLoaded', function() {
             : allSubscribers;
         
         if (filteredSubscribers.length === 0) {
-            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">No subscribers match your search</div>';
+            subscribersList.innerHTML = '<div class="text-center py-2 text-muted">Żaden subskrybent nie pasuje do wyszukiwania</div>';
             return;
         }
         
-        // Optional: Add header for columns
+        // Opcjonalnie: Dodaj nagłówek dla kolumn
         const header = document.createElement('div');
         header.className = 'list-group-item d-flex justify-content-between align-items-center p-2 bg-light';
         header.innerHTML = `
-            <div style="width: 60%;" class="small text-muted">Subscriber</div>
-            <div style="width: 20%;" class="small text-muted text-center">Consent</div>
-            <div style="width: 20%;" class="small text-muted text-end">Include</div>
+            <div style="width: 60%;" class="small text-muted">Subskrybent</div>
+            <div style="width: 20%;" class="small text-muted text-center">Zgoda</div>
+            <div style="width: 20%;" class="small text-muted text-end">Dołącz</div>
         `;
         subscribersList.appendChild(header);
         
-        // Create subscriber items with exclude checkboxes and consent status
+        // Utwórz elementy subskrybentów z polami wykluczającymi i statusem zgody
         filteredSubscribers.forEach(subscriber => {
             const item = document.createElement('div');
             item.className = 'list-group-item d-flex justify-content-between align-items-center p-2';
             
-            // Subscriber info
+            // Informacje o subskrybencie
             const infoDiv = document.createElement('div');
             infoDiv.style.width = '60%';
             
@@ -1037,7 +1024,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 infoDiv.appendChild(name);
             }
             
-            // Consent status
+            // Status zgody
             const consentDiv = document.createElement('div');
             consentDiv.style.width = '20%';
             consentDiv.className = 'text-center';
@@ -1047,22 +1034,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (hasConsent) {
                 consentBadge.className = 'badge badge-active';
-                consentBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Yes';
+                consentBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Tak';
             } else {
                 consentBadge.className = 'badge badge-inactive';
-                consentBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>No';
+                consentBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Nie';
             }
             
             consentDiv.appendChild(consentBadge);
             
-            // Exclude checkbox in its own div
+            // Pole wykluczenia w osobnym div
             const excludeDiv = document.createElement('div');
             excludeDiv.style.width = '20%';
             excludeDiv.className = 'text-end';
             
             const formCheck = document.createElement('div');
             formCheck.className = 'form-check form-switch';
-            formCheck.style.display = 'inline-block'; // Better alignment
+            formCheck.style.display = 'inline-block'; // Lepsze wyrównanie
             
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -1077,13 +1064,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const label = document.createElement('label');
             label.className = 'form-check-label';
             label.htmlFor = `exclude-${subscriber.id}`;
-            label.textContent = 'Include';
+            label.textContent = 'Dołącz';
             
             formCheck.appendChild(checkbox);
             // formCheck.appendChild(label);
             excludeDiv.appendChild(formCheck);
             
-            // Add all elements to the item
+            // Dodaj wszystkie elementy do elementu
             item.appendChild(infoDiv);
             item.appendChild(consentDiv);
             item.appendChild(excludeDiv);
@@ -1092,7 +1079,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Handle subscriber exclusion/inclusion
+     * Obsługa wykluczenia/włączenia subskrybenta
      */
     function handleSubscriberExclusion(subscriberId, isExcluded) {
         if (isExcluded) {
@@ -1103,28 +1090,28 @@ document.addEventListener('DOMContentLoaded', function() {
             excludedSubscribers = excludedSubscribers.filter(id => id !== subscriberId);
         }
         
-        // Update hidden input
+        // Aktualizuj ukryte pole
         updateHiddenInputs();
         
         updateRecipientsSummary();
     }
     
     /**
-     * Parse additional emails from textarea
+     * Parsuj dodatkowe emaile z pola tekstowego
      */
     function parseAdditionalEmails() {
         const text = additionalEmailsTextarea.value.trim();
         if (!text) return [];
         
-        // Split by commas or newlines
+        // Podziel według przecinków lub nowych linii
         const emails = text.split(/[\n,]+/).map(email => email.trim()).filter(email => email);
         
-        // Validate emails (basic validation)
+        // Zweryfikuj emaile (podstawowa walidacja)
         return emails.filter(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
     }
     
     /**
-     * Update delivery options based on radio selection
+     * Aktualizuj opcje dostarczania na podstawie wyboru radio
      */
     function updateDeliveryOptions() {
         if (sendNowRadio.checked) {
@@ -1132,38 +1119,38 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryScheduleContainer.classList.add('d-none');
             sendNowInput.value = 'true';
             scheduleInput.value = 'false';
-            summaryDelivery.textContent = 'Send immediately';
+            summaryDelivery.textContent = 'Wyślij natychmiast';
         } else {
             scheduleDateContainer.classList.remove('d-none');
             summaryScheduleContainer.classList.remove('d-none');
             sendNowInput.value = 'false';
             scheduleInput.value = 'true';
-            summaryDelivery.textContent = 'Scheduled delivery';
+            summaryDelivery.textContent = 'Zaplanowana wysyłka';
             
-            // Update schedule time in summary
+            // Aktualizuj czas wysyłki w podsumowaniu
             const scheduleDateInput = document.getElementById('schedule_date');
             const scheduleTimeInput = document.getElementById('schedule_time');
             
             if (scheduleDateInput && scheduleTimeInput && scheduleDateInput.value && scheduleTimeInput.value) {
-                summaryScheduleTime.textContent = `${scheduleDateInput.value} at ${scheduleTimeInput.value}`;
+                summaryScheduleTime.textContent = `${scheduleDateInput.value} o ${scheduleTimeInput.value}`;
             } else {
-                summaryScheduleTime.textContent = 'No date selected';
+                summaryScheduleTime.textContent = 'Nie wybrano daty';
             }
         }
         
-        // Always set status to draft initially
+        // Zawsze ustaw status jako szkic początkowo
         statusInput.value = 'draft';
     }
     
     /**
-     * Update recipients summary
+     * Aktualizuj podsumowanie odbiorców
      */
     function updateRecipientsSummary() {
-        // Get count of additional emails
+        // Pobierz liczbę dodatkowych emaili
         const additionalEmails = parseAdditionalEmails();
         const additionalCount = additionalEmails.length;
         
-        // Calculate raw total of subscribers in all selected groups (without deduplication)
+        // Oblicz surową sumę subskrybentów we wszystkich wybranych grupach (bez deduplikacji)
         let rawSubscribersTotal = 0;
         selectedGroups.forEach(groupId => {
             const group = allGroups.find(g => g.id == groupId);
@@ -1172,102 +1159,102 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Show loading state
-        document.getElementById('total-recipients-badge').textContent = 'Calculating unique recipients with consent...';
+        // Pokaż stan ładowania
+        document.getElementById('total-recipients-badge').textContent = 'Obliczanie unikalnych odbiorców ze zgodą...';
         
-        // Build query parameters
+        // Zbuduj parametry zapytania
         const params = new URLSearchParams();
         
-        // Add selected group IDs - convert to strings
+        // Dodaj wybrane ID grup - konwertuj na ciągi znaków
         selectedGroups.forEach(id => params.append('group_ids', String(id)));
         
-        // Log query parameters
-        console.log('Query parameters for count API:', params.toString());
+        // Zaloguj parametry zapytania
+        console.log('Parametry zapytania do API liczenia:', params.toString());
         
-        // Make API request to get deduplicated count
+        // Wykonaj żądanie API, aby uzyskać zdeduplikowaną liczbę
         fetch(`/newsletter/api/recipients/count/?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
-                console.log('Recipients count API response:', data);
+                console.log('Odpowiedź API liczenia odbiorców:', data);
                 const groupCount = selectedGroups.length;
                 const excludedCount = excludedSubscribers.length;
                 
-                // Get unique subscriber count from API (which should NOT include exclusions yet)
+                // Pobierz liczbę unikalnych subskrybentów z API (które NIE powinno jeszcze uwzględniać wykluczeń)
                 const uniqueSubscribers = data.total_unique || 0;
                 
-                // Calculate final recipient count: unique subscribers + additional - excluded
+                // Oblicz końcową liczbę odbiorców: unikalni subskrybenci + dodatkowi - wykluczeni
                 const netTotalCount = uniqueSubscribers + additionalCount - excludedCount;
                 
-                // Update display with the counts
+                // Aktualizuj wyświetlanie z liczbami
                 updateCountDisplay(rawSubscribersTotal, netTotalCount, groupCount, additionalCount, excludedCount);
                 
-                // Update summary
+                // Aktualizuj podsumowanie
                 summaryRecipients.textContent = netTotalCount;
             })
             .catch(error => {
-                console.error('Error calculating recipients:', error);
+                console.error('Błąd podczas obliczania odbiorców:', error);
                 
-                // Fallback calculation if API fails:
-                // Calculate approximate unique count by estimating deduplication
+                // Rezerwowe obliczenie, jeśli API zawiedzie:
+                // Oblicz przybliżoną unikalną liczbę, szacując deduplikację
                 let uniqueEstimate = rawSubscribersTotal;
                 
-                // Reduce by a reasonable factor if multiple groups (to account for possible duplicates)
+                // Zmniejsz o rozsądny współczynnik, jeśli jest wiele grup (aby uwzględnić możliwe duplikaty)
                 if (selectedGroups.length > 1) {
-                    uniqueEstimate = Math.floor(rawSubscribersTotal * 0.9); // Estimate 10% overlap
+                    uniqueEstimate = Math.floor(rawSubscribersTotal * 0.9); // Oszacuj 10% nakładania się
                 }
                 
-                // Calculate net total as: estimated unique subscribers + additional emails - excluded
+                // Oblicz sumę netto jako: szacowane unikalne subskrybenci + dodatkowe emaile - wykluczeni
                 const netTotal = Math.max(0, uniqueEstimate - excludedCount) + additionalCount;
                 
                 updateCountDisplay(rawSubscribersTotal, netTotal, selectedGroups.length, additionalCount, excludedCount);
                 
-                // Update summary
+                // Aktualizuj podsumowanie
                 summaryRecipients.textContent = netTotal;
             });
     }
     
     /**
-     * Update count display elements
+     * Aktualizuj elementy wyświetlania liczb
      */
     function updateCountDisplay(rawTotal, netTotal, groupCount, additionalCount, excludedCount) {
-        // Set the raw total count (simple sum of all subscribers in all groups)
+        // Ustaw surową łączną liczbę (prosta suma wszystkich subskrybentów we wszystkich grupach)
         document.getElementById('raw-subscriber-count').textContent = rawTotal;
         
-        // Set other counts
+        // Ustaw inne liczby
         document.getElementById('selected-groups-count').textContent = groupCount;
         document.getElementById('additional-emails-count').textContent = additionalCount;
         document.getElementById('excluded-count').textContent = excludedCount;
         
-        // Update the badge with net total (actual recipients with consent)
-        document.getElementById('total-recipients-badge').textContent = `${netTotal} unique recipients with consent`;
+        // Aktualizuj znacznik z sumą netto (rzeczywiści odbiorcy ze zgodą)
+        document.getElementById('total-recipients-badge').textContent = `${netTotal} unikalnych odbiorców ze zgodą`;
     }
     
     /**
-     * Update summary for final step
+     * Aktualizuj podsumowanie dla ostatniego kroku
      */
     function updateSummary() {
-        // Subject
+        // Temat
         const subject = subjectInput.value.trim();
         summarySubject.textContent = subject || '-';
         
-        // Delivery options already updated by updateDeliveryOptions()
+        // Opcje dostarczania już zaktualizowane przez updateDeliveryOptions()
         
-        // Recipients count is updated by updateRecipientsSummary()
+        // Liczba odbiorców jest aktualizowana przez updateRecipientsSummary()
         
-        // Make sure delivery options are updated
+        // Upewnij się, że opcje dostarczania są zaktualizowane
         updateDeliveryOptions();
     }
     
     /**
-     * Initialize the search functionality
+     * Inicjalizacja funkcji wyszukiwania
      */
     function initializeSearch() {
-        console.log('Initializing search functionality');
+        console.log('Inicjalizacja funkcji wyszukiwania');
         
-        // Group search
+        // Wyszukiwanie grup
         groupSearchInput.addEventListener('input', debounce(function() {
             const searchTerm = this.value.trim();
-            console.log('Searching groups:', searchTerm);
+            console.log('Wyszukiwanie grup:', searchTerm);
             renderGroupsList(searchTerm);
         }, 300));
         
@@ -1276,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderGroupsList();
         });
         
-        // Subscriber search
+        // Wyszukiwanie subskrybentów
         subscriberSearchInput.addEventListener('input', debounce(function() {
             const searchTerm = this.value.trim();
             renderSubscribersList(searchTerm);
@@ -1288,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Utility function for debouncing
+    // Funkcja narzędziowa do debounce
     function debounce(func, wait) {
         let timeout;
         return function(...args) {
@@ -1298,23 +1285,23 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    // Initialize everything
+    // Inicjalizacja wszystkiego
     initWizard();
     loadGroups();
     updateDeliveryOptions();
     updateRecipientsSummary();
     initializeSearch();
     
-    // Set up event listeners for radio buttons
+    // Skonfiguruj nasłuchiwacze zdarzeń dla przycisków radio
     sendNowRadio.addEventListener('change', updateDeliveryOptions);
     scheduleRadio.addEventListener('change', updateDeliveryOptions);
     
-    // Set up event listener for additional emails textarea
+    // Skonfiguruj nasłuchiwacz zdarzeń dla pola tekstowego dodatkowych emaili
     additionalEmailsTextarea.addEventListener('input', debounce(function() {
         updateRecipientsSummary();
     }, 500));
     
-    // Set up event listeners for scheduled date and time
+    // Skonfiguruj nasłuchiwacze zdarzeń dla zaplanowanej daty i godziny
     const scheduleDateInput = document.getElementById('schedule_date');
     const scheduleTimeInput = document.getElementById('schedule_time');
     
@@ -1325,9 +1312,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const timeValue = scheduleTimeInput.value;
                 
                 if (dateValue && timeValue) {
-                    summaryScheduleTime.textContent = `${dateValue} at ${timeValue}`;
+                    summaryScheduleTime.textContent = `${dateValue} o ${timeValue}`;
                 } else {
-                    summaryScheduleTime.textContent = 'No date selected';
+                    summaryScheduleTime.textContent = 'Nie wybrano daty';
                 }
             }
         };
@@ -1335,14 +1322,14 @@ document.addEventListener('DOMContentLoaded', function() {
         scheduleDateInput.addEventListener('change', updateScheduledDateTime);
         scheduleTimeInput.addEventListener('change', updateScheduledDateTime);
         
-        // Initialize with current date
+        // Inicjalizuj bieżącą datą
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0];
         scheduleDateInput.setAttribute('min', formattedDate);
         scheduleDateInput.value = formattedDate;
     }
     
-    // Set up event listeners for attachments
+    // Skonfiguruj nasłuchiwacze zdarzeń dla załączników
     const attachmentInput = document.getElementById('attachment');
     const clearAttachmentsBtn = document.getElementById('clear-attachments');
     const attachmentList = document.getElementById('attachment-list');
@@ -1350,19 +1337,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (attachmentInput && clearAttachmentsBtn && attachmentList) {
         attachmentInput.addEventListener('change', function() {
-            // Clear the list
+            // Wyczyść listę
             attachmentList.innerHTML = '';
             
             if (this.files.length > 0) {
-                // Check file count
+                // Sprawdź liczbę plików
                 if (this.files.length > 5) {
-                    alert('You can upload a maximum of 5 files.');
+                    alert('Możesz przesłać maksymalnie 5 plików.');
                     this.value = '';
-                    summaryAttachments.textContent = 'None';
+                    summaryAttachments.textContent = 'Brak';
                     return;
                 }
                 
-                // Check file sizes and types
+                // Sprawdź rozmiary i typy plików
                 let validFiles = true;
                 const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
                 const fileNames = [];
@@ -1371,31 +1358,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     const file = this.files[i];
                     fileNames.push(file.name);
                     
-                    // Check file size (10MB limit)
+                    // Sprawdź rozmiar pliku (limit 10MB)
                     if (file.size > 10 * 1024 * 1024) {
-                        alert(`File ${file.name} exceeds the 10MB size limit.`);
+                        alert(`Plik ${file.name} przekracza limit rozmiaru 10MB.`);
                         validFiles = false;
                         break;
                     }
                     
-                    // Check file type
+                    // Sprawdź typ pliku
                     if (!allowedTypes.includes(file.type)) {
-                        alert(`File ${file.name} has an unsupported type. Only PDF, DOC, DOCX, JPG, and PNG are allowed.`);
+                        alert(`Plik ${file.name} ma nieobsługiwany typ. Dozwolone są tylko PDF, DOC, DOCX, JPG i PNG.`);
                         validFiles = false;
                         break;
                     }
                     
-                    // Add to the list
+                    // Dodaj do listy
                     const item = document.createElement('div');
                     item.className = 'list-group-item d-flex justify-content-between align-items-center py-2';
                     
-                    // Icon based on file type
+                    // Ikona oparta na typie pliku
                     let icon = 'fa-file';
                     if (file.type === 'application/pdf') icon = 'fa-file-pdf';
                     else if (file.type.includes('word')) icon = 'fa-file-word';
                     else if (file.type.includes('image')) icon = 'fa-file-image';
                     
-                    // File info with icon
+                    // Informacje o pliku z ikoną
                     const fileInfo = document.createElement('div');
                     fileInfo.innerHTML = `<i class="fas ${icon} me-2"></i>${file.name} <span class="text-muted">(${formatFileSize(file.size)})</span>`;
                     
@@ -1406,89 +1393,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!validFiles) {
                     this.value = '';
                     attachmentList.innerHTML = '';
-                    summaryAttachments.textContent = 'None';
+                    summaryAttachments.textContent = 'Brak';
                 } else {
                     summaryAttachments.textContent = fileNames.join(', ');
                 }
             } else {
-                summaryAttachments.textContent = 'None';
+                summaryAttachments.textContent = 'Brak';
             }
         });
         
-        // Clear attachments button
+        // Przycisk czyszczenia załączników
         clearAttachmentsBtn.addEventListener('click', function() {
             attachmentInput.value = '';
             attachmentList.innerHTML = '';
-            summaryAttachments.textContent = 'None';
+            summaryAttachments.textContent = 'Brak';
         });
     }
     
-    // Format file size
+    // Formatuj rozmiar pliku
     function formatFileSize(bytes) {
-        if (bytes < 1024) return bytes + ' bytes';
+        if (bytes < 1024) return bytes + ' bajtów';
         else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
         else return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
     
-    // Set up spam check runner
+    // Skonfiguruj uruchamianie kontroli spamu
     const runSpamCheckBtn = document.getElementById('run-spam-check');
     if (runSpamCheckBtn) {
         runSpamCheckBtn.addEventListener('click', function() {
-            // Show loading indicator
-            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running spam check...';
+            // Pokaż wskaźnik ładowania
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uruchamianie kontroli spamu...';
             this.disabled = true;
             
-            // Simulate spam check (in a real app, this would be an API call)
+            // Symulacja kontroli spamu (w prawdziwej aplikacji, to byłoby wywołanie API)
             setTimeout(() => {
                 const spamScoreBar = document.getElementById('spam-score-bar');
                 const spamCheckList = document.getElementById('spam-check-list');
                 
-                // Random score between 5% and 35%
+                // Losowy wynik między 5% i 35%
                 const score = Math.floor(Math.random() * 30) + 5;
                 
-                // Update score bar
+                // Aktualizuj pasek wyniku
                 spamScoreBar.style.width = `${score}%`;
                 spamScoreBar.textContent = `${score}%`;
                 
-                // Set color based on score
+                // Ustaw kolor na podstawie wyniku
                 if (score < 20) {
                     spamScoreBar.className = 'progress-bar bg-success';
                     document.querySelector('.badge').className = 'badge bg-success';
-                    document.querySelector('.badge').textContent = 'Low risk';
+                    document.querySelector('.badge').textContent = 'Niskie ryzyko';
                 } else if (score < 50) {
                     spamScoreBar.className = 'progress-bar bg-warning';
                     document.querySelector('.badge').className = 'badge bg-warning';
-                    document.querySelector('.badge').textContent = 'Medium risk';
+                    document.querySelector('.badge').textContent = 'Średnie ryzyko';
                 } else {
                     spamScoreBar.className = 'progress-bar bg-danger';
                     document.querySelector('.badge').className = 'badge bg-danger';
-                    document.querySelector('.badge').textContent = 'High risk';
+                    document.querySelector('.badge').textContent = 'Wysokie ryzyko';
                 }
                 
-                // Reset button
-                this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Run spam check again';
+                // Zresetuj przycisk
+                this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Uruchom kontrolę spamu ponownie';
                 this.disabled = false;
             }, 1500);
         });
     }
     
-    // Set up event listener for subject changes
+    // Skonfiguruj nasłuchiwacz zdarzeń dla zmian tematu
     if (subjectInput) {
         subjectInput.addEventListener('input', debounce(function() {
             summarySubject.textContent = this.value.trim() || '-';
         }, 300));
     }
     
-    // Additional debugging info
-    console.log('Initial form state:');
-    console.log('- Form element:', form);
-    console.log('- Groups input element:', groupsInput);
-    console.log('- Excluded subscribers input element:', excludedSubscribersInput);
+    // Dodatkowe informacje do debugowania
+    console.log('Początkowy stan formularza:');
+    console.log('- Element formularza:', form);
+    console.log('- Element pola grup:', groupsInput);
+    console.log('- Element pola wykluczonych subskrybentów:', excludedSubscribersInput);
     
-    // Direct DOM check for form elements
-    if (!form) console.error('Form element not found!');
-    if (!groupsInput) console.error('Groups input not found!');
-    if (!excludedSubscribersInput) console.error('Excluded subscribers input not found!');
+    // Bezpośrednie sprawdzenie DOM dla elementów formularza
+    if (!form) console.error('Element formularza nie znaleziony!');
+    if (!groupsInput) console.error('Pole grup nie znalezione!');
+    if (!excludedSubscribersInput) console.error('Pole wykluczonych subskrybentów nie znalezione!');
 });
 </script>
 {% endblock %}

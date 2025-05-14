@@ -132,3 +132,12 @@ WARNING 2025-05-14 13:08:35,792 basehttp "GET /track/open/f77cfd43-2f39-4cd2-a88
 WARNING 2025-05-14 13:08:44,262 log Not Found: /unsubscribe/1/
 WARNING 2025-05-14 13:08:44,262 basehttp "GET /unsubscribe/1/ HTTP/1.1" 404 4595
 INFO 2025-05-14 13:09:44,772 basehttp "GET /newsletter/test13/report/ HTTP/1.1" 200 32214
+INFO 2025-05-14 13:11:01,522 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-14 13:12:33,602 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 13:15:54,673 basehttp "GET /newsletter/test13/report/ HTTP/1.1" 200 32214
+INFO 2025-05-14 13:17:16,872 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 13:17:18,683 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-14 13:17:19,294 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 13:17:21,153 basehttp "GET /newsletter/create/ HTTP/1.1" 200 77645
+INFO 2025-05-14 13:17:21,330 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 13:17:21,335 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405

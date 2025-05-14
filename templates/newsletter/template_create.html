@@ -1,371 +1,1176 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Utwórz Szablon | XManager{% endblock %}
+{% block title %}Create Newsletter Template{% endblock %}
 
-{% block page_title %}Utwórz Szablon Newslettera{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/monokai.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.css">
+<style>
+  .CodeMirror {
+    height: 500px;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .editor-wrapper {
+    position: relative;
+  }
+  .template-preview {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #fff;
+    overflow: auto;
+    height: 500px;
+  }
+  .placeholder-tag {
+    background-color: #ffc107;
+    color: #000;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+  }
+  .template-snippet {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .template-snippet:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .nav-tabs .nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+  }
+  .action-buttons {
+    position: sticky;
+    bottom: 0;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    z-index: 100;
+  }
+  .template-info-panel {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  .required-indicator {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  /* Add form control styling directly */
+  #templateForm input[type="text"],
+  #templateForm input[type="email"],
+  #templateForm textarea,
+  #templateForm select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  #templateForm textarea {
+    min-height: 100px;
+  }
+  #templateForm input[type="text"]:focus,
+  #templateForm input[type="email"]:focus,
+  #templateForm textarea:focus,
+  #templateForm select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+</style>
+{% endblock %}
+
+{% block page_title %}
+{% if form.instance.pk %}Edit Template: {{ form.instance.name }}{% else %}Create New Newsletter Template{% endif %}
+{% endblock %}
 
 {% block page_actions %}
-    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Powrót do Szablonów
-    </a>
+<a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">
+  <i class="fas fa-arrow-left me-1"></i> Back to Templates
+</a>
+{% if form.instance.pk %}
+<a href="{% url 'newsletter:template_preview' form.instance.pk %}" class="btn btn-info" target="_blank">
+  <i class="fas fa-eye me-1"></i> Preview
+</a>
+<a href="{% url 'newsletter:template_duplicate' form.instance.pk %}" class="btn btn-outline-primary">
+  <i class="fas fa-copy me-1"></i> Duplicate
+</a>
+{% endif %}
 {% endblock %}
 
 {% block content %}
-    <div class="card">
-        <div class="card-body">
-            <form method="post" id="template-form">
-                {% csrf_token %}
-                
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="template-info-panel">
+      <h5>Template Info</h5>
+      <p class="mb-0">Templates are reusable HTML designs for newsletters. Use <span class="placeholder-tag">{{content}}</span> and <span class="placeholder-tag">{{subject}}</span> placeholders to allow dynamic content insertion.</p>
+    </div>
+
+    <form method="post" id="templateForm">
+      {% csrf_token %}
+      
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Template Name <span class="required-indicator">*</span></label>
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
+            {% endif %}
+            <small class="form-text text-muted">A descriptive name to identify this template</small>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+              <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+            {% endif %}
+            <small class="form-text text-muted">Brief description of this template's purpose</small>
+          </div>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs mb-3" id="editorTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="visual-tab" data-bs-toggle="tab" data-bs-target="#visual" type="button" role="tab" aria-controls="visual" aria-selected="true">
+            <i class="fas fa-palette me-1"></i> Visual Editor
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="code-tab" data-bs-toggle="tab" data-bs-target="#code" type="button" role="tab" aria-controls="code" aria-selected="false">
+            <i class="fas fa-code me-1"></i> HTML Editor
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview" type="button" role="tab" aria-controls="preview" aria-selected="false">
+            <i class="fas fa-eye me-1"></i> Preview
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab" aria-controls="help" aria-selected="false">
+            <i class="fas fa-question-circle me-1"></i> Help
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="editorTabsContent">
+        <!-- Visual Editor Tab -->
+        <div class="tab-pane fade show active" id="visual" role="tabpanel" aria-labelledby="visual-tab">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0"><i class="fas fa-edit me-1"></i> Template Structure</h5>
+                </div>
+                <div class="card-body p-0">
+                  <!-- Template Builder Interface -->
+                  <div id="templateBuilder" class="p-3">
+                    <div class="alert alert-info">
+                      <strong>Tip:</strong> Add template sections from the panel on the right. All changes are reflected in the HTML Editor tab.
                     </div>
-                {% endif %}
-                
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <!-- Template Info -->
-                        <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Nazwa Szablonu *</label>
-                            {{ form.name }}
-                            {% if form.name.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.name.errors %}
-                                        {{ error }}
-                                    {% endfor %}
+                    <div id="builderContent" class="border rounded p-2 mb-3" style="min-height: 400px;">
+                      <!-- Content will be dynamically generated here -->
+                      <div class="text-center text-muted p-5">
+                        <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+                        <p>Start building your template by adding components from the right panel</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card sticky-top" style="top: 100px;">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0"><i class="fas fa-th me-1"></i> Components</h5>
+                </div>
+                <div class="card-body">
+                  <div class="accordion" id="componentAccordion">
+                    <!-- Layout Components -->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="layoutHeading">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#layoutComponents" aria-expanded="true" aria-controls="layoutComponents">
+                          Layout Components
+                        </button>
+                      </h2>
+                      <div id="layoutComponents" class="accordion-collapse collapse show" aria-labelledby="layoutHeading">
+                        <div class="accordion-body">
+                          <div class="row">
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="header">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-heading mb-2"></i>
+                                  <p class="small mb-0">Header</p>
                                 </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Opis</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.description.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <h6>Wymagania dla Szablonu</h6>
-                            <p class="mb-1">Twój szablon musi zawierać następujący element zastępczy:</p>
-                            <ul class="mb-1">
-                                <li><code>{{content}}</code> - Miejsce, gdzie zostanie wstawiona treść newslettera</li>
-                            </ul>
-                            <p class="mb-0">Możesz również użyć opcjonalnych elementów zastępczych:</p>
-                            <ul class="mb-0">
-                                <li><code>{{subject}}</code> - Temat newslettera</li>
-                                <li><code>{{unsubscribe_url}}</code> - Link do rezygnacji z subskrypcji</li>
-                                <li><code>{{recipient_name}}</code> - Imię odbiorcy</li>
-                                <li><code>{{recipient_email}}</code> - Email odbiorcy</li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Template Samples Section -->
-                        <div class="mt-4">
-                            <h6>Przykładowe Szablony</h6>
-                            <div class="list-group">
-                                <button type="button" class="list-group-item list-group-item-action" id="sample-basic">
-                                    <i class="fas fa-file-alt me-2"></i> Podstawowy Szablon
-                                </button>
-                                <button type="button" class="list-group-item list-group-item-action" id="sample-promo">
-                                    <i class="fas fa-tag me-2"></i> Szablon Promocyjny
-                                </button>
-                                <button type="button" class="list-group-item list-group-item-action" id="sample-newsletter">
-                                    <i class="fas fa-newspaper me-2"></i> Szablon Newslettera
-                                </button>
+                              </div>
                             </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="divider">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-minus mb-2"></i>
+                                  <p class="small mb-0">Divider</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="one-column">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-square mb-2"></i>
+                                  <p class="small mb-0">1 Column</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="two-columns">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-columns mb-2"></i>
+                                  <p class="small mb-0">2 Columns</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                      </div>
                     </div>
                     
-                    <div class="col-md-8">
-                        <!-- Editor Type Selection -->
-                        <div class="mb-3">
-                            <label class="form-label">Typ Edytora</label>
-                            <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="editor-type" id="editor-html" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="editor-html">
-                                    <i class="fas fa-code me-1"></i> Edytor HTML
-                                </label>
-                                
-                                <input type="radio" class="btn-check" name="editor-type" id="editor-wysiwyg" autocomplete="off">
-                                <label class="btn btn-outline-primary" for="editor-wysiwyg">
-                                    <i class="fas fa-edit me-1"></i> Edytor Wizualny
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- HTML Editor -->
-                        <div id="html-editor-container" class="mb-3">
-                            <label for="{{ form.html_content.id_for_label }}" class="form-label">Zawartość HTML *</label>
-                            {{ form.html_content }}
-                            {% if form.html_content.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.html_content.errors %}
-                                        {{ error }}
-                                    {% endfor %}
+                    <!-- Content Components -->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="contentHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contentComponents" aria-expanded="false" aria-controls="contentComponents">
+                          Content Components
+                        </button>
+                      </h2>
+                      <div id="contentComponents" class="accordion-collapse collapse" aria-labelledby="contentHeading">
+                        <div class="accordion-body">
+                          <div class="row">
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="text">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-font mb-2"></i>
+                                  <p class="small mb-0">Text Block</p>
                                 </div>
-                            {% endif %}
-                            <div class="form-text">
-                                Użyj HTML do utworzenia szablonu. Element <code>{{content}}</code> jest wymagany.
+                              </div>
                             </div>
-                        </div>
-                        
-                        <!-- WYSIWYG Editor (initially hidden) -->
-                        <div id="wysiwyg-editor-container" class="mb-3 d-none">
-                            <label for="wysiwyg-editor" class="form-label">Edytor Wizualny *</label>
-                            <div id="wysiwyg-editor" class="form-control" style="min-height: 300px;"></div>
-                            <div class="form-text">
-                                Użyj edytora wizualnego do utworzenia szablonu. Dodaj element <code>{{content}}</code> w miejscu, gdzie powinna być wstawiona treść newslettera.
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="image">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-image mb-2"></i>
+                                  <p class="small mb-0">Image</p>
+                                </div>
+                              </div>
                             </div>
-                            <input type="hidden" id="wysiwyg-content" name="wysiwyg_content">
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="button">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-mouse-pointer mb-2"></i>
+                                  <p class="small mb-0">Button</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="spacer">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-arrows-alt-v mb-2"></i>
+                                  <p class="small mb-0">Spacer</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        
-                        <!-- Preview Button -->
-                        <div class="mb-3 text-end">
-                            <button type="button" class="btn btn-outline-secondary" id="preview-btn">
-                                <i class="fas fa-eye me-1"></i> Podgląd Szablonu
+                      </div>
+                    </div>
+                    
+                    <!-- Dynamic Content -->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="dynamicHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dynamicComponents" aria-expanded="false" aria-controls="dynamicComponents">
+                          Dynamic Content
+                        </button>
+                      </h2>
+                      <div id="dynamicComponents" class="accordion-collapse collapse" aria-labelledby="dynamicHeading">
+                        <div class="accordion-body">
+                          <div class="alert alert-warning small">
+                            <i class="fas fa-info-circle me-1"></i> These placeholders will be replaced with actual content when sending newsletters.
+                          </div>
+                          <div class="row">
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="content-placeholder">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-newspaper mb-2"></i>
+                                  <p class="small mb-0">Content</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="subject-placeholder">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-heading mb-2"></i>
+                                  <p class="small mb-0">Subject</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <div class="card template-snippet" data-component="unsubscribe">
+                                <div class="card-body p-2 text-center">
+                                  <i class="fas fa-ban mb-2"></i>
+                                  <p class="small mb-0">Unsubscribe</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Templates -->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="templateHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#templateOptions" aria-expanded="false" aria-controls="templateOptions">
+                          Pre-built Templates
+                        </button>
+                      </h2>
+                      <div id="templateOptions" class="accordion-collapse collapse" aria-labelledby="templateHeading">
+                        <div class="accordion-body">
+                          <div class="alert alert-info small">
+                            <i class="fas fa-info-circle me-1"></i> Using a pre-built template will replace current design.
+                          </div>
+                          <div class="list-group">
+                            <button type="button" class="list-group-item list-group-item-action template-preset" data-template="basic">
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Basic Template</h6>
+                                <small>Simple</small>
+                              </div>
+                              <small>Clean, minimalist layout</small>
                             </button>
+                            <button type="button" class="list-group-item list-group-item-action template-preset" data-template="modern">
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Modern Template</h6>
+                                <small>Bold</small>
+                              </div>
+                              <small>Contemporary design with strong visuals</small>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action template-preset" data-template="corporate">
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Corporate Template</h6>
+                                <small>Professional</small>
+                              </div>
+                              <small>Professional layout for business communications</small>
+                            </button>
+                          </div>
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                
-                <div class="d-flex justify-content-between">
-                    <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">Anuluj</a>
-                    <div>
-                        <button type="button" class="btn btn-outline-primary me-2" id="save-draft-btn">Zapisz jako Wersję Roboczą</button>
-                        <button type="submit" class="btn btn-primary">Zapisz Szablon</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Template Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="previewModalLabel">Podgląd Szablonu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <iframe id="preview-frame" style="width: 100%; height: 500px; border: 1px solid #ddd;"></iframe>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
+        
+        <!-- HTML Editor Tab -->
+        <div class="tab-pane fade" id="code" role="tabpanel" aria-labelledby="code-tab">
+          <div class="editor-wrapper">
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-1"></i> <strong>Warning:</strong> Changes made here will override the visual editor structure.
+            </div>
+            <textarea id="htmlEditor" name="{{ form.html_content.name }}">{{ form.html_content.value|default:"" }}</textarea>
+            {% if form.html_content.errors %}
+              <div class="invalid-feedback d-block">{{ form.html_content.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Preview Tab -->
+        <div class="tab-pane fade" id="preview" role="tabpanel" aria-labelledby="preview-tab">
+          <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+              <h5 class="mb-0"><i class="fas fa-eye me-1"></i> Live Preview</h5>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="previewDesktop">
+                  <i class="fas fa-desktop"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="previewTablet">
+                  <i class="fas fa-tablet-alt"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="previewMobile">
+                  <i class="fas fa-mobile-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="template-preview">
+                <iframe id="previewFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Help Tab -->
+        <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="help-tab">
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="mb-0"><i class="fas fa-question-circle me-1"></i> Template Creation Help</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5>Required Placeholders</h5>
+                  <ul class="list-group mb-4">
+                    <li class="list-group-item">
+                      <h6><span class="placeholder-tag">{{content}}</span></h6>
+                      <p class="small mb-0">This placeholder will be replaced with newsletter content when sending.</p>
+                    </li>
+                    <li class="list-group-item">
+                      <h6><span class="placeholder-tag">{{subject}}</span></h6>
+                      <p class="small mb-0">This placeholder will be replaced with the newsletter subject.</p>
+                    </li>
+                    <li class="list-group-item">
+                      <h6><span class="placeholder-tag">{{unsubscribe_url}}</span></h6>
+                      <p class="small mb-0">Link for recipients to unsubscribe from newsletters.</p>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h5>Tips & Best Practices</h5>
+                  <div class="accordion" id="helpAccordion">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#compatibilityHelp">
+                          Email Compatibility
+                        </button>
+                      </h2>
+                      <div id="compatibilityHelp" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                          <ul class="mb-0">
+                            <li>Use HTML tables for layout (email clients have limited CSS support)</li>
+                            <li>Avoid complex CSS that might not render in all email clients</li>
+                            <li>Test your template in multiple email clients before wide distribution</li>
+                            <li>Keep image sizes small and always include alt text</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#designHelp">
+                          Design Guidelines
+                        </button>
+                      </h2>
+                      <div id="designHelp" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                          <ul class="mb-0">
+                            <li>Use a maximum width of 600px for best compatibility</li>
+                            <li>Use web-safe fonts (Arial, Verdana, Georgia, Times New Roman)</li>
+                            <li>Maintain a clear hierarchy with headlines and subheadings</li>
+                            <li>Include adequate white space for readability</li>
+                            <li>Use a clear call-to-action button with contrasting colors</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contentHelp">
+                          Content Best Practices
+                        </button>
+                      </h2>
+                      <div id="contentHelp" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                          <ul class="mb-0">
+                            <li>Keep your content concise and scannable</li>
+                            <li>Use a responsive design that works on mobile devices</li>
+                            <li>Always include a text version for accessibility</li>
+                            <li>Avoid spam trigger words in subjects and content</li>
+                            <li>Always include your company name and address</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons mt-4">
+        <div class="row">
+          <div class="col-md-6">
+            <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-1"></i> Cancel
+            </a>
+          </div>
+          <div class="col-md-6 text-end">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i> {% if form.instance.pk %}Update{% else %}Create{% endif %} Template
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Component Edit Modal -->
+<div class="modal fade" id="componentEditModal" tabindex="-1" aria-labelledby="componentEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="componentEditModalLabel">Edit Component</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="componentEditForm">
+          <!-- Form fields will be dynamically generated based on component type -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" id="deleteComponentBtn">
+          <i class="fas fa-trash me-1"></i> Delete Component
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveComponentChanges">Save Changes</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="confirmationMessage">
+        Are you sure you want to continue?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmAction">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/xml/xml.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/javascript/javascript.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/css/css.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/edit/closetag.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/edit/closebrackets.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/hint/show-hint.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/addon/hint/html-hint.min.js"></script>
-
-<!-- Include TinyMCE for WYSIWYG editing -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/html-hint.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicjalizacja CodeMirror dla edytora HTML
-        const htmlTextArea = document.getElementById('{{ form.html_content.id_for_label }}');
-        const htmlEditor = CodeMirror.fromTextArea(htmlTextArea, {
-            mode: 'htmlmixed',
-            lineNumbers: true,
-            lineWrapping: true,
-            autoCloseTags: true,
-            autoCloseBrackets: true,
-            matchBrackets: true,
-            extraKeys: {"Ctrl-Space": "autocomplete"},
-            theme: 'default',
-            height: '400px'
-        });
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CodeMirror
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
+      mode: 'htmlmixed',
+      theme: 'monokai',
+      lineNumbers: true,
+      autoCloseTags: true,
+      autoCloseBrackets: true,
+      extraKeys: {"Ctrl-Space": "autocomplete"},
+      lineWrapping: true
+    });
+
+    // Keep track of components in the builder
+    let builderComponents = [];
+    let currentEditingComponentId = null;
+    
+    // Random ID generator for components
+    function generateComponentId() {
+      return 'component-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Initialize visual builder if HTML content exists
+    const initialHtml = htmlEditor.getValue();
+    if (initialHtml) {
+      // For simplicity, we'll just show code editor by default when editing existing templates
+      // A more complex implementation would parse the HTML and populate the visual builder
+      document.getElementById('code-tab').click();
+    } else {
+      // Set default template for new templates
+      htmlEditor.setValue(getPrebuiltTemplate('basic'));
+      updatePreview();
+    }
+    
+    // Function to update preview
+    function updatePreview() {
+      const previewFrame = document.getElementById('previewFrame');
+      const content = htmlEditor.getValue();
+      
+      const previewDocument = previewFrame.contentDocument || previewFrame.contentWindow.document;
+      previewDocument.open();
+      previewDocument.write(content);
+      previewDocument.close();
+      
+      // Highlight content placeholders in preview
+      // Find elements containing placeholders the standard way (without :contains pseudo-selector)
+      function highlightPlaceholders() {
+        // Function to check if element contains a placeholder text
+        function containsPlaceholder(element, placeholder) {
+          return element.innerHTML && element.innerHTML.includes(placeholder);
+        }
         
-        // Ustawienie elastycznego rozmiaru dla edytora CodeMirror
-        htmlEditor.setSize(null, 400);
+        // Get all elements in the body
+        const allElements = previewDocument.querySelectorAll('body *');
         
-        // Inicjalizacja TinyMCE dla edytora wizualnego (WYSIWYG)
-        tinymce.init({
-            selector: '#wysiwyg-editor',
-            height: 400,
-            menubar: true,
-            plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-            ],
-            toolbar: 'undo redo | formatselect | bold italic backcolor | \
-                     alignleft aligncenter alignright alignjustify | \
-                     bullist numlist outdent indent | removeformat | help | code',
-            setup: function(editor) {
-                // Dodanie przycisku dla elementu zastępczego treści
-                editor.ui.registry.addButton('contentplaceholder', {
-                    text: '{{content}}',
-                    tooltip: 'Wstaw element zastępczy treści',
-                    onAction: function() {
-                        editor.insertContent('{{content}}');
-                    }
-                });
-                
-                // Dodanie menu dla elementów zastępczych
-                editor.ui.registry.addMenuButton('placeholders', {
-                    text: 'Wstaw Element',
-                    tooltip: 'Wstaw element zastępczy szablonu',
-                    fetch: function(callback) {
-                        const items = [
-                            {
-                                type: 'menuitem',
-                                text: 'Treść',
-                                onAction: function() {
-                                    editor.insertContent('{{content}}');
-                                }
-                            },
-                            {
-                                type: 'menuitem',
-                                text: 'Temat',
-                                onAction: function() {
-                                    editor.insertContent('{{subject}}');
-                                }
-                            },
-                            {
-                                type: 'menuitem',
-                                text: 'URL Rezygnacji',
-                                onAction: function() {
-                                    editor.insertContent('{{unsubscribe_url}}');
-                                }
-                            },
-                            {
-                                type: 'menuitem',
-                                text: 'Imię Odbiorcy',
-                                onAction: function() {
-                                    editor.insertContent('{{recipient_name}}');
-                                }
-                            },
-                            {
-                                type: 'menuitem',
-                                text: 'Email Odbiorcy',
-                                onAction: function() {
-                                    editor.insertContent('{{recipient_email}}');
-                                }
-                            }
-                        ];
-                        callback(items);
-                    }
-                });
-                
-                // Dodanie niestandardowych przycisków do paska narzędzi
-                editor.ui.registry.addButton('placeholders', {
-                    icon: 'template',
-                    tooltip: 'Wstaw element zastępczy',
-                    onAction: function() {
-                        editor.execCommand('mceInsertContent', false, '{{content}}');
-                    }
-                });
-            },
-            toolbar_mode: 'sliding',
-            content_css: [
-                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-                '//www.tiny.cloud/css/codepen.min.css'
-            ]
-        });
-        
-        // Przełączanie między edytorami
-        document.getElementById('editor-html').addEventListener('change', function() {
-            document.getElementById('html-editor-container').classList.remove('d-none');
-            document.getElementById('wysiwyg-editor-container').classList.add('d-none');
-            htmlEditor.refresh(); // Odświeżenie CodeMirror, aby naprawić problemy z renderowaniem
-        });
-        
-        document.getElementById('editor-wysiwyg').addEventListener('change', function() {
-            document.getElementById('html-editor-container').classList.add('d-none');
-            document.getElementById('wysiwyg-editor-container').classList.remove('d-none');
+        // For each element, check if it contains placeholders and highlight them
+        allElements.forEach(element => {
+          if (containsPlaceholder(element, '{{content}}') || 
+              containsPlaceholder(element, '{{subject}}') || 
+              containsPlaceholder(element, '{{unsubscribe_url}}')) {
             
-            // Podczas przełączania do edytora WYSIWYG, zaktualizuj zawartość TinyMCE z edytora HTML
-            const htmlContent = htmlEditor.getValue();
-            tinymce.get('wysiwyg-editor').setContent(htmlContent);
+            // Replace with highlighted version if text contains the placeholder
+            element.innerHTML = element.innerHTML
+              .replace(/{{content}}/g, '<span class="placeholder-tag">{{content}}</span>')
+              .replace(/{{subject}}/g, '<span class="placeholder-tag">{{subject}}</span>')
+              .replace(/{{unsubscribe_url}}/g, '<span class="placeholder-tag">{{unsubscribe_url}}</span>');
+          }
         });
-        
-        // Funkcjonalność przycisku podglądu
-        document.getElementById('preview-btn').addEventListener('click', function() {
-            let htmlContent;
-            
-            if (document.getElementById('editor-html').checked) {
-                htmlContent = htmlEditor.getValue();
-            } else {
-                htmlContent = tinymce.get('wysiwyg-editor').getContent();
-            }
-            
-            // Zastąp elementy zastępcze przykładową treścią do podglądu
-            htmlContent = htmlContent
-                .replace(/{{content}}/g, '<p>To jest przykładowa treść, która zostanie wstawiona podczas wysyłania newslettera.</p>')
-                .replace(/{{subject}}/g, 'Przykładowy Temat Newslettera')
-                .replace(/{{unsubscribe_url}}/g, '#link-do-rezygnacji')
-                .replace(/{{recipient_name}}/g, 'Jan Kowalski')
-                .replace(/{{recipient_email}}/g, 'jan.kowalski@przyklad.pl');
-            
-            // Ustaw zawartość w iframe
-            const previewFrame = document.getElementById('preview-frame');
-            const previewWin = previewFrame.contentWindow || previewFrame.contentDocument.document || previewFrame.contentDocument;
-            previewWin.document.open();
-            previewWin.document.write(htmlContent);
-            previewWin.document.close();
-            
-            // Pokaż modal
-            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-            previewModal.show();
+      }
+      
+      // Run the highlighting function with a small delay to ensure the iframe is loaded
+      setTimeout(highlightPlaceholders, 100);
+    }
+    
+    // Tab switching
+    document.getElementById('preview-tab').addEventListener('click', function() {
+      updatePreview();
+    });
+    
+    // Handle component adding from the visual editor
+    document.querySelectorAll('.template-snippet').forEach(snippet => {
+      snippet.addEventListener('click', function() {
+        const componentType = this.getAttribute('data-component');
+        addComponent(componentType);
+      });
+    });
+    
+    // Add component to the visual builder
+    function addComponent(componentType) {
+      const componentId = generateComponentId();
+      const componentHtml = getComponentHtml(componentType, componentId);
+      
+      // Add to internal tracking
+      builderComponents.push({
+        id: componentId,
+        type: componentType,
+        html: componentHtml
+      });
+      
+      // Update visual builder
+      const builderContent = document.getElementById('builderContent');
+      
+      // Clear placeholder if this is the first component
+      if (builderComponents.length === 1) {
+        builderContent.innerHTML = '';
+      }
+      
+      // Add component to builder
+      const componentElement = document.createElement('div');
+      componentElement.className = 'builder-component mb-3 position-relative';
+      componentElement.setAttribute('data-component-id', componentId);
+      componentElement.innerHTML = `
+        <div class="component-toolbar bg-light p-1 border d-flex justify-content-end">
+          <button type="button" class="btn btn-sm btn-outline-secondary me-1 edit-component" data-component-id="${componentId}">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-danger delete-component" data-component-id="${componentId}">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="component-content border p-2">${componentHtml}</div>
+      `;
+      
+      builderContent.appendChild(componentElement);
+      
+      // Update HTML in code editor
+      updateCodeFromBuilder();
+      
+      // Add event listeners to the new component
+      componentElement.querySelector('.edit-component').addEventListener('click', function() {
+        const componentId = this.getAttribute('data-component-id');
+        openComponentEditor(componentId);
+      });
+      
+      componentElement.querySelector('.delete-component').addEventListener('click', function() {
+        const componentId = this.getAttribute('data-component-id');
+        deleteComponent(componentId);
+      });
+    }
+    
+    // Get HTML for different component types
+    function getComponentHtml(componentType, componentId) {
+      switch(componentType) {
+        case 'header':
+          return `<h1 style="color: #333; font-family: Arial, sans-serif;">Your Newsletter Header</h1>`;
+          
+        case 'divider':
+          return `<hr style="border: 1px solid #eee; margin: 20px 0;">`;
+          
+        case 'one-column':
+          return `<div style="padding: 10px; background-color: #f8f9fa;">
+            <p style="font-family: Arial, sans-serif; font-size: 14px;">Your content goes here. Add text, images, or other components.</p>
+          </div>`;
+          
+        case 'two-columns':
+          return `<table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="50%" style="padding: 10px; vertical-align: top; background-color: #f8f9fa;">
+                <p style="font-family: Arial, sans-serif; font-size: 14px;">Left column content</p>
+              </td>
+              <td width="50%" style="padding: 10px; vertical-align: top; background-color: #f0f0f0;">
+                <p style="font-family: Arial, sans-serif; font-size: 14px;">Right column content</p>
+              </td>
+            </tr>
+          </table>`;
+          
+        case 'text':
+          return `<p style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae aliquam nisl nunc vitae nisl.
+          </p>`;
+          
+        case 'image':
+          return `<div style="text-align: center;">
+            <img src="https://via.placeholder.com/600x200" alt="Image description" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+          </div>`;
+          
+        case 'button':
+          return `<div style="text-align: center; margin: 20px 0;">
+            <a href="#" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">Click Here</a>
+          </div>`;
+          
+        case 'spacer':
+          return `<div style="height: 30px;"></div>`;
+          
+        case 'content-placeholder':
+          return `<div style="padding: 15px; background-color: #ffc10726; border: 1px dashed #ffc107; margin: 10px 0;">
+            {{content}}
+          </div>`;
+          
+        case 'subject-placeholder':
+          return `<div style="padding: 10px; background-color: #ffc10726; border: 1px dashed #ffc107; margin: 10px 0;">
+            <h2 style="margin: 0; font-family: Arial, sans-serif;">{{subject}}</h2>
+          </div>`;
+          
+        case 'unsubscribe':
+          return `<div style="text-align: center; font-size: 12px; color: #777; margin-top: 20px; font-family: Arial, sans-serif;">
+            <p>If you don't want to receive these emails in the future, you can <a href="{{unsubscribe_url}}" style="color: #777;">unsubscribe</a>.</p>
+          </div>`;
+          
+        default:
+          return `<p>Unknown component type: ${componentType}</p>`;
+      }
+    }
+    
+    // Delete component
+    function deleteComponent(componentId) {
+      // Remove from builder UI
+      const componentElement = document.querySelector(`.builder-component[data-component-id="${componentId}"]`);
+      if (componentElement) {
+        componentElement.remove();
+      }
+      
+      // Remove from internal tracking
+      builderComponents = builderComponents.filter(comp => comp.id !== componentId);
+      
+      // Update code editor
+      updateCodeFromBuilder();
+      
+      // Show placeholder if no components left
+      if (builderComponents.length === 0) {
+        document.getElementById('builderContent').innerHTML = `
+          <div class="text-center text-muted p-5">
+            <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+            <p>Start building your template by adding components from the right panel</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Open component editor
+    function openComponentEditor(componentId) {
+      currentEditingComponentId = componentId;
+      const component = builderComponents.find(comp => comp.id === componentId);
+      
+      if (!component) return;
+      
+      // Populate edit form based on component type
+      let formHtml = '';
+      
+      switch(component.type) {
+        case 'header':
+          formHtml = `
+            <div class="form-group mb-3">
+              <label for="header-text">Header Text</label>
+              <input type="text" class="form-control" id="header-text" value="Your Newsletter Header">
+            </div>
+            <div class="form-group mb-3">
+              <label for="header-color">Text Color</label>
+              <input type="color" class="form-control" id="header-color" value="#333333">
+            </div>
+            <div class="form-group mb-3">
+              <label for="header-align">Alignment</label>
+              <select class="form-select" id="header-align">
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'text':
+          formHtml = `
+            <div class="form-group mb-3">
+              <label for="text-content">Text Content</label>
+              <textarea class="form-control" id="text-content" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae aliquam nisl nunc vitae nisl.</textarea>
+            </div>
+            <div class="form-group mb-3">
+              <label for="text-color">Text Color</label>
+              <input type="color" class="form-control" id="text-color" value="#333333">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="text-size">Font Size (px)</label>
+                  <input type="number" class="form-control" id="text-size" value="14" min="8" max="36">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="text-align">Alignment</label>
+                  <select class="form-select" id="text-align">
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                    <option value="justify">Justify</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'button':
+          formHtml = `
+            <div class="form-group mb-3">
+              <label for="button-text">Button Text</label>
+              <input type="text" class="form-control" id="button-text" value="Click Here">
+            </div>
+            <div class="form-group mb-3">
+              <label for="button-url">Button URL</label>
+              <input type="url" class="form-control" id="button-url" value="#" placeholder="https://example.com">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="button-bg-color">Background Color</label>
+                  <input type="color" class="form-control" id="button-bg-color" value="#007bff">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="button-text-color">Text Color</label>
+                  <input type="color" class="form-control" id="button-text-color" value="#ffffff">
+                </div>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label for="button-align">Alignment</label>
+              <select class="form-select" id="button-align">
+                <option value="left">Left</option>
+                <option value="center" selected>Center</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'image':
+          formHtml = `
+            <div class="form-group mb-3">
+              <label for="image-url">Image URL</label>
+              <input type="url" class="form-control" id="image-url" value="https://via.placeholder.com/600x200" placeholder="https://example.com/image.jpg">
+              <small class="form-text text-muted">Enter the URL of the image you want to display</small>
+            </div>
+            <div class="form-group mb-3">
+              <label for="image-alt">Alt Text</label>
+              <input type="text" class="form-control" id="image-alt" value="Image description" placeholder="Description of the image">
+              <small class="form-text text-muted">Important for accessibility and when images don't load</small>
+            </div>
+            <div class="form-group mb-3">
+              <label for="image-align">Alignment</label>
+              <select class="form-select" id="image-align">
+                <option value="left">Left</option>
+                <option value="center" selected>Center</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="image-width">Width (%)</label>
+              <input type="range" class="form-range" id="image-width" min="10" max="100" value="100">
+              <div class="d-flex justify-content-between">
+                <small>10%</small>
+                <small id="image-width-value">100%</small>
+                <small>100%</small>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'spacer':
+          formHtml = `
+            <div class="form-group mb-3">
+              <label for="spacer-height">Height (px)</label>
+              <input type="range" class="form-range" id="spacer-height" min="5" max="100" value="30">
+              <div class="d-flex justify-content-between">
+                <small>5px</small>
+                <small id="spacer-height-value">30px</small>
+                <small>100px</small>
+              </div>
+            </div>
+          `;
+          break;
+          
+        default:
+          formHtml = `<p class="alert alert-info">This component type (${component.type}) doesn't have editable properties.</p>`;
+      }
+      
+      // Set form HTML
+      document.getElementById('componentEditForm').innerHTML = formHtml;
+      
+      // Add event listeners for range inputs
+      if (component.type === 'image') {
+        document.getElementById('image-width').addEventListener('input', function() {
+          document.getElementById('image-width-value').textContent = this.value + '%';
         });
-        
-        // Wysłanie formularza
-        document.getElementById('template-form').addEventListener('submit', function(e) {
-            // Jeśli używamy edytora WYSIWYG, synchronizuj zawartość z ukrytym polem
-            if (document.getElementById('editor-wysiwyg').checked) {
-                const wysiwygContent = tinymce.get('wysiwyg-editor').getContent();
-                htmlEditor.setValue(wysiwygContent); // Zaktualizuj również edytor CodeMirror
-            }
+      }
+      
+      if (component.type === 'spacer') {
+        document.getElementById('spacer-height').addEventListener('input', function() {
+          document.getElementById('spacer-height-value').textContent = this.value + 'px';
         });
+      }
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('componentEditModal'));
+      modal.show();
+      
+      // Add event listener for save button
+      document.getElementById('saveComponentChanges').onclick = function() {
+        saveComponentChanges(componentId, component.type);
+        modal.hide();
+      };
+      
+      // Add event listener for delete button
+      document.getElementById('deleteComponentBtn').onclick = function() {
+        deleteComponent(componentId);
+        modal.hide();
+      };
+    }
+    
+    // Save component changes
+    function saveComponentChanges(componentId, componentType) {
+      // Get values from form
+      let newHtml = '';
+      
+      switch(componentType) {
+        case 'header':
+          const headerText = document.getElementById('header-text').value;
+          const headerColor = document.getElementById('header-color').value;
+          const headerAlign = document.getElementById('header-align').value;
+          
+          newHtml = `<h1 style="color: ${headerColor}; font-family: Arial, sans-serif; text-align: ${headerAlign};">${headerText}</h1>`;
+          break;
+          
+        case 'text':
+          const textContent = document.getElementById('text-content').value;
+          const textColor = document.getElementById('text-color').value;
+          const textSize = document.getElementById('text-size').value;
+          const textAlign = document.getElementById('text-align').value;
+          
+          newHtml = `<p style="font-family: Arial, sans-serif; font-size: ${textSize}px; line-height: 1.6; color: ${textColor}; text-align: ${textAlign};">
+            ${textContent}
+          </p>`;
+          break;
+          
+        case 'button':
+          const buttonText = document.getElementById('button-text').value;
+          const buttonUrl = document.getElementById('button-url').value;
+          const buttonBgColor = document.getElementById('button-bg-color').value;
+          const buttonTextColor = document.getElementById('button-text-color').value;
+          const buttonAlign = document.getElementById('button-align').value;
+          
+          newHtml = `<div style="text-align: ${buttonAlign}; margin: 20px 0;">
+            <a href="${buttonUrl}" style="background-color: ${buttonBgColor}; color: ${buttonTextColor}; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">${buttonText}</a>
+          </div>`;
+          break;
+          
+        case 'image':
+          const imageUrl = document.getElementById('image-url').value;
+          const imageAlt = document.getElementById('image-alt').value;
+          const imageAlign = document.getElementById('image-align').value;
+          const imageWidth = document.getElementById('image-width').value;
+          
+          newHtml = `<div style="text-align: ${imageAlign};">
+            <img src="${imageUrl}" alt="${imageAlt}" style="max-width: 100%; width: ${imageWidth}%; height: auto; display: block; margin: 0 auto;">
+          </div>`;
+          break;
+          
+        case 'spacer':
+          const spacerHeight = document.getElementById('spacer-height').value;
+          
+          newHtml = `<div style="height: ${spacerHeight}px;"></div>`;
+          break;
+          
+        default:
+          // If not editable, keep existing HTML
+          const component = builderComponents.find(comp => comp.id === componentId);
+          newHtml = component ? component.html : '';
+      }
+      
+      // Update component in builder
+      const componentIndex = builderComponents.findIndex(comp => comp.id === componentId);
+      if (componentIndex !== -1) {
+        builderComponents[componentIndex].html = newHtml;
         
-        // Przycisk zapisywania jako wersja robocza
-        document.getElementById('save-draft-btn').addEventListener('click', function() {
-            // Dodaj ukryte pole wskazujące, że to wersja robocza
-            const draftInput = document.createElement('input');
-            draftInput.type = 'hidden';
-            draftInput.name = 'is_draft';
-            draftInput.value = 'true';
-            document.getElementById('template-form').appendChild(draftInput);
-            
-            // Wyślij formularz
-            document.getElementById('template-form').submit();
-        });
+        // Update UI
+        const componentContent = document.querySelector(`.builder-component[data-component-id="${componentId}"] .component-content`);
+        if (componentContent) {
+          componentContent.innerHTML = newHtml;
+        }
         
-        // Przykładowe szablony
-        const samples = {
-            'basic': `<!DOCTYPE html>
+        // Update code editor
+        updateCodeFromBuilder();
+      }
+    }
+    
+    // Update code editor from builder components
+    function updateCodeFromBuilder() {
+      // If no components, use default template
+      if (builderComponents.length === 0) {
+        return;
+      }
+      
+      // Start with basic template structure
+      let html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        a { color: #3498db; }
+        @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; }
+            .content { padding: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <div class="content" style="padding: 20px;">
+`;
+      
+      // Add components
+      builderComponents.forEach(component => {
+        html += `            ${component.html}\n`;
+      });
+      
+      // Close template
+      html += `        </div>
+    </div>
+</body>
+</html>`;
+      
+      // Update code editor
+      htmlEditor.setValue(html);
+    }
+    
+    // Get prebuilt template HTML
+    function getPrebuiltTemplate(templateName) {
+      switch(templateName) {
+        case 'basic':
+          return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{subject}}</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; padding: 20px 0; }
-        .content { padding: 20px; background-color: #f9f9f9; }
-        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        a { color: #3498db; }
+        .container { background-color: #ffffff; max-width: 600px; margin: 0 auto; }
+        .content { padding: 20px; }
+        .footer { font-size: 12px; color: #7f8c8d; text-align: center; margin-top: 20px; }
+        @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; }
+            .content { padding: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>{{subject}}</h1>
+            <div>
+                {{content}}
+            </div>
+            <div class="footer">
+                <p>You're receiving this email because you subscribed to our newsletter.</p>
+                <p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+        
+        case 'modern':
+          return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f5f5f5; }
+        h1, h2, h3 { color: #333; font-weight: bold; }
+        h1 { font-size: 24px; }
+        a { color: #0066cc; text-decoration: none; }
+        .container { background-color: #ffffff; max-width: 600px; margin: 0 auto; border-radius: 8px; overflow: hidden; margin-top: 20px; margin-bottom: 20px; }
+        .header { background-color: #0066cc; color: white; padding: 20px; text-align: center; }
+        .content { padding: 30px; background-color: white; }
+        .button { background-color: #0066cc; color: white !important; padding: 12px 20px; border-radius: 4px; display: inline-block; font-weight: bold; margin: 20px 0; }
+        .footer { font-size: 12px; color: #999; text-align: center; padding: 20px; background-color: #f5f5f5; }
+        @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; margin-top: 0; margin-bottom: 0; border-radius: 0; }
+            .content { padding: 15px !important; }
+        }
     </style>
 </head>
 <body>
@@ -377,125 +1182,125 @@
             {{content}}
         </div>
         <div class="footer">
-            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasz newsletter.</p>
-            <p><a href="{{unsubscribe_url}}">Kliknij tutaj, aby zrezygnować z subskrypcji</a></p>
+            <p>© 2025 Your Company. All rights reserved.</p>
+            <p>You're receiving this email because you subscribed to our newsletter.</p>
+            <p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>
         </div>
     </div>
 </body>
-</html>`,
-            'promo': `<!DOCTYPE html>
+</html>`;
+        
+        case 'corporate':
+          return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{subject}}</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .header { background-color: #ff6b6b; color: white; padding: 20px; text-align: center; }
-        .content { padding: 20px; background-color: white; }
-        .cta-button { display: inline-block; background-color: #ff6b6b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; }
-        .promo-code { background-color: #f9f9f9; padding: 10px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0; }
-        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; background-color: #f9f9f9; }
+        body { font-family: Georgia, 'Times New Roman', Times, serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f9f9f9; }
+        h1, h2, h3 { font-family: Arial, sans-serif; }
+        h1 { font-size: 22px; color: #444; margin-top: 0; }
+        h2 { font-size: 19px; color: #444; margin-top: 30px; }
+        a { color: #1a5276; }
+        p { margin-bottom: 16px; }
+        .container { background-color: #ffffff; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; }
+        .logo { text-align: center; padding: 20px; border-bottom: 1px solid #e0e0e0; }
+        .content { padding: 30px; color: #444; }
+        .cta { background-color: #1a5276; color: white !important; padding: 10px 20px; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 3px; display: inline-block; }
+        .footer { font-size: 11px; color: #777; text-align: center; padding: 15px; background-color: #f5f5f5; border-top: 1px solid #e0e0e0; }
+        @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; border: none; }
+            .content { padding: 20px !important; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Specjalna Oferta dla {{recipient_name}}</h1>
+        <div class="logo">
+            <img src="https://via.placeholder.com/200x60?text=Your+Logo" alt="Company Logo" style="max-width: 200px;">
         </div>
         <div class="content">
+            <h1>{{subject}}</h1>
             {{content}}
-            
-            <div class="promo-code">
-                RABAT20TERAZ
-            </div>
-            
-            <p style="text-align: center;">
-                <a href="#" class="cta-button">Kup Teraz</a>
-            </p>
         </div>
         <div class="footer">
-            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasze promocje.</p>
-            <p><a href="{{unsubscribe_url}}">Rezygnacja z subskrypcji</a> | <a href="#">Zobacz w przeglądarce</a></p>
+            <p>Company Name, Inc. | 123 Business Street, City, ST 12345</p>
+            <p>Tel: (123) 456-7890 | <a href="mailto:info@example.com">info@example.com</a></p>
+            <p>You're receiving this email because you subscribed to our newsletter. <a href="{{unsubscribe_url}}">Unsubscribe</a></p>
         </div>
     </div>
 </body>
-</html>`,
-            'newsletter': `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{subject}}</title>
-    <style>
-        body { font-family: Georgia, 'Times New Roman', Times, serif; line-height: 1.6; margin: 0; padding: 0; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .header { padding: 20px; border-bottom: 3px solid #4a90e2; }
-        .logo { text-align: center; }
-        .logo img { max-width: 150px; }
-        .newsletter-title { text-align: center; margin: 20px 0; }
-        .content { padding: 20px; background-color: white; }
-        .article { margin-bottom: 30px; }
-        .article-title { color: #4a90e2; }
-        .article-meta { font-size: 12px; color: #777; margin-bottom: 10px; }
-        .article-summary { margin-bottom: 10px; }
-        .read-more { color: #4a90e2; text-decoration: none; font-weight: bold; }
-        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; background-color: #f9f9f9; border-top: 1px solid #ddd; }
-        .social-links { text-align: center; margin: 20px 0; }
-        .social-links a { margin: 0 10px; text-decoration: none; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="https://via.placeholder.com/150x50?text=Twoje+Logo" alt="Logo firmy">
-            </div>
-            <div class="newsletter-title">
-                <h1>{{subject}}</h1>
-                <p>Newsletter dla {{recipient_name}} - Maj 2025</p>
-            </div>
-        </div>
+</html>`;
+          
+        default:
+          return getPrebuiltTemplate('basic');
+      }
+    }
+    
+    // Handle prebuilt template selection
+    document.querySelectorAll('.template-preset').forEach(preset => {
+      preset.addEventListener('click', function() {
+        const templateName = this.getAttribute('data-template');
         
-        <div class="content">
-            {{content}}
-        </div>
+        // Show confirmation modal
+        document.getElementById('confirmationMessage').textContent = 'Loading this template will replace your current design. Are you sure you want to continue?';
         
-        <div class="footer">
-            <div class="social-links">
-                <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">LinkedIn</a> | <a href="#">Instagram</a>
+        // Set action to handle when confirmed
+        document.getElementById('confirmAction').onclick = function() {
+          // Set template
+          htmlEditor.setValue(getPrebuiltTemplate(templateName));
+          
+          // Reset builder components
+          builderComponents = [];
+          document.getElementById('builderContent').innerHTML = `
+            <div class="text-center text-muted p-5">
+              <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+              <p>Start building your template by adding components from the right panel</p>
             </div>
-            <p>© 2025 Twoja Firma. Wszelkie prawa zastrzeżone.</p>
-            <p>Otrzymujesz ten email, ponieważ zapisałeś się na nasz newsletter.</p>
-            <p><a href="{{unsubscribe_url}}">Rezygnacja z subskrypcji</a> | <a href="#">Preferencje</a> | <a href="#">Zobacz w przeglądarce</a></p>
-        </div>
-    </div>
-</body>
-</html>`
+          `;
+          
+          // Hide modal
+          bootstrap.Modal.getInstance(document.getElementById('confirmationModal')).hide();
+          
+          // Show success message
+          // Use toasts or alerts here
         };
         
-        // Wczytaj przykładowe szablony
-        document.getElementById('sample-basic').addEventListener('click', function() {
-            htmlEditor.setValue(samples.basic);
-            if (document.getElementById('editor-wysiwyg').checked) {
-                tinymce.get('wysiwyg-editor').setContent(samples.basic);
-            }
-        });
-        
-        document.getElementById('sample-promo').addEventListener('click', function() {
-            htmlEditor.setValue(samples.promo);
-            if (document.getElementById('editor-wysiwyg').checked) {
-                tinymce.get('wysiwyg-editor').setContent(samples.promo);
-            }
-        });
-        
-        document.getElementById('sample-newsletter').addEventListener('click', function() {
-            htmlEditor.setValue(samples.newsletter);
-            if (document.getElementById('editor-wysiwyg').checked) {
-                tinymce.get('wysiwyg-editor').setContent(samples.newsletter);
-            }
-        });
+        // Show modal
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmModal.show();
+      });
     });
+    
+    // Preview device switching
+    document.getElementById('previewDesktop').addEventListener('click', function() {
+      document.getElementById('previewFrame').style.width = '100%';
+    });
+    
+    document.getElementById('previewTablet').addEventListener('click', function() {
+      document.getElementById('previewFrame').style.width = '768px';
+    });
+    
+    document.getElementById('previewMobile').addEventListener('click', function() {
+      document.getElementById('previewFrame').style.width = '375px';
+    });
+    
+    // Form submission - ensure HTML content is updated
+    document.querySelector('form').addEventListener('submit', function() {
+      // Update textarea value before submitting
+      document.getElementById('htmlEditor').value = htmlEditor.getValue();
+    });
+    
+    // Set up CodeMirror to update preview when content changes
+    htmlEditor.on('change', function() {
+      if (document.getElementById('preview-tab').classList.contains('active')) {
+        updatePreview();
+      }
+    });
+
+    // Update preview on page load
+    setTimeout(updatePreview, 500);
+  });
 </script>
 {% endblock %}

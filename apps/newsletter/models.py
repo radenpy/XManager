@@ -94,7 +94,18 @@ class Newsletter(CoreModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.subject)
+            # Generuj podstawowy slug z tytułu
+            base_slug = slugify(self.subject)
+            slug = base_slug
+            counter = 1
+
+            # Sprawdź czy slug jest unikalny, jeśli nie, dodaj licznik
+            while Newsletter.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

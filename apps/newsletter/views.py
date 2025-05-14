@@ -152,39 +152,58 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
             all_subs = Subscriber.objects.filter(newsletter_consent=True)
             newsletter.subscribers.set(all_subs)
 
-        # Check if we should send immediately
+        # Check if we're sending the newsletter directly
+        send_newsletter = 'send_newsletter' in self.request.POST
+
+        # Check if we should send immediately - WAŻNE: nie ustawiamy statusu 'sending' jeśli send_newsletter
         send_now = form.cleaned_data.get('send_now')
-        if send_now:
+        if send_now and not send_newsletter:
             newsletter.status = 'sending'
 
         # Check if we should schedule
         schedule_send = form.cleaned_data.get('schedule_send')
         if schedule_send and form.cleaned_data.get('scheduled_date'):
             newsletter.status = 'scheduled'
+            newsletter.scheduled_date = form.cleaned_data.get('scheduled_date')
 
         # Save the newsletter
-        newsletter.save()
-
-        # Save the many-to-many fields
-        form.save_m2m()
+        try:
+            newsletter.save()
+            # Save the many-to-many fields
+            form.save_m2m()
+        except Exception as e:
+            logger.error(f"Error saving newsletter: {str(e)}")
+            messages.error(self.request, _(
+                f'Error saving newsletter: {str(e)}'))
+            return self.form_invalid(form)
 
         # Set the object so the success_url can be generated
         self.object = newsletter
 
         # Update the recipient count
-        newsletter.update_recipient_count()
+        try:
+            newsletter.total_recipients = newsletter.get_recipient_count()
+            newsletter.save(update_fields=['total_recipients'])
+        except Exception as e:
+            logger.warning(f"Could not update recipient count: {str(e)}")
 
-        # Check if save_and_preview button was clicked (UPDATED CODE)
+        # Check if save_and_preview button was clicked
         if 'save_and_preview' in self.request.POST:
             messages.success(self.request, _('Newsletter saved.'))
-            # Redirect to list instead of preview
-            return redirect(self.get_success_url())
+            # Redirect to preview
+            return redirect(reverse('newsletter:newsletter_preview', kwargs={'slug': newsletter.slug}))
 
         # Process sending if needed
-        if send_now:
-            # In a real application, this would use Celery or another task queue
-            # Here we'll just simulate it with a simple flag
-            # send_newsletter.delay(newsletter.id)  # This would be a Celery task
+        if send_newsletter:
+            # WAŻNE: ustawiamy status na 'draft' przed przekierowaniem
+            newsletter.status = 'draft'
+            newsletter.save(update_fields=['status'])
+
+            # Przekieruj do widoku wysyłki
+            messages.success(self.request, _('Newsletter queued for sending.'))
+            return redirect(reverse('newsletter:newsletter_send', kwargs={'slug': newsletter.slug}))
+        elif send_now:
+            # W przypadku gdy send_now jest ustawione, ale nie przez przycisk send_newsletter
             messages.success(self.request, _('Newsletter queued for sending.'))
         else:
             messages.success(self.request, _(
@@ -275,7 +294,7 @@ class NewsletterSendTestView(LoginRequiredMixin, View):
         # Redirect to list instead of detail
         return redirect('newsletter:newsletter_list')
 
-    def _send_newsletter_email(self, newsletter, subscriber, is_test=False):
+    def _send_newsletter_email(self, newsletter, subscriber):
         """Send the newsletter to a specific subscriber"""
         # Get the template
         template_html = self._get_template_html(newsletter)
@@ -284,12 +303,40 @@ class NewsletterSendTestView(LoginRequiredMixin, View):
         html_content = template_html.replace('{{content}}', newsletter.content)
         html_content = html_content.replace('{{subject}}', newsletter.subject)
 
-        # Add test banner if needed
-        if is_test:
-            test_banner = '<div style="background: #e74c3c; color: white; padding: 10px; text-align: center;">TEST EMAIL - NOT A REAL NEWSLETTER</div>'
-            html_content = html_content.replace(
-                '<body>', f'<body>{test_banner}')
+        # Add subscriber-specific placeholders
+        full_name = f"{subscriber.first_name or ''} {subscriber.last_name or ''}".strip()
+        html_content = html_content.replace('{{recipient_name}}', full_name)
+        html_content = html_content.replace(
+            '{{recipient_email}}', subscriber.email)
 
+        # Add unsubscribe link - POPRAWIONA WERSJA
+        try:
+            site_url = getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')
+            unsubscribe_url = f"{site_url}/unsubscribe/{subscriber.id}/"
+        except Exception as e:
+            logger.warning(f"Error creating unsubscribe URL: {str(e)}")
+            unsubscribe_url = "#unsubscribe"  # Fallback
+
+        html_content = html_content.replace(
+            '{{unsubscribe_url}}', unsubscribe_url)
+
+        # Add tracking pixel if newsletter has tracking enabled - POPRAWIONA WERSJA
+        if getattr(newsletter, 'add_tracking', True):
+            tracking_id = str(uuid.uuid4())
+            try:
+                site_url = getattr(settings, 'SITE_URL',
+                                   'http://127.0.0.1:8000')
+                tracking_url = f"{site_url}/track/open/{tracking_id}/"
+            except Exception as e:
+                logger.warning(f"Error creating tracking URL: {str(e)}")
+                tracking_url = "/track/open/{tracking_id}/"  # Względny URL
+
+            tracking_pixel = f'<img src="{tracking_url}" style="width:1px;height:1px;display:none;" alt="" />'
+            html_content = html_content.replace(
+                '</body>', f'{tracking_pixel}</body>')
+
+        # Create the email
+        # Reszta metody bez zmian...
         # Create the email
         email = EmailMultiAlternatives(
             subject=newsletter.subject,
@@ -336,35 +383,327 @@ class NewsletterSendTestView(LoginRequiredMixin, View):
 class NewsletterSendView(LoginRequiredMixin, View):
     """View for finalizing and sending newsletters"""
 
-    def post(self, request, slug):
-        newsletter = get_object_or_404(Newsletter, slug=slug)
+    def get(self, request, slug):
+        """Handle GET requests for sending newsletters"""
+        return self._process_send_request(request, slug)
 
-        # Check if we can send this newsletter
-        if newsletter.status in ['sent', 'sending']:
-            messages.error(request, _(
-                'This newsletter has already been sent or is in the process of sending.'))
-            # Redirect to list instead of detail
+    def post(self, request, slug):
+        """Handle POST requests for sending newsletters"""
+        return self._process_send_request(request, slug)
+
+    def _process_send_request(self, request, slug):
+        """Common logic for processing both GET and POST requests"""
+        logger.info(f"Starting _process_send_request for newsletter {slug}")
+        try:
+            newsletter = get_object_or_404(Newsletter, slug=slug)
+            logger.info(
+                f"Found newsletter: {newsletter.id} - {newsletter.subject}")
+
+            # Check if we can send this newsletter
+            if newsletter.status in ['sent', 'sending']:
+                logger.warning(
+                    f"Newsletter {newsletter.id} already in status: {newsletter.status}")
+                messages.error(request, _(
+                    'This newsletter has already been sent or is in the process of sending.'))
+                return redirect('newsletter:newsletter_list')
+
+            # Update status based on scheduled vs. immediate
+            if newsletter.scheduled_date and newsletter.scheduled_date > timezone.now():
+                newsletter.status = 'scheduled'
+                message = _('Newsletter scheduled successfully.')
+                logger.info(
+                    f"Newsletter {newsletter.id} scheduled for {newsletter.scheduled_date}")
+            else:
+                newsletter.status = 'sending'
+                message = _('Newsletter sending has started.')
+                logger.info(
+                    f"Setting newsletter {newsletter.id} status to 'sending'")
+
+                try:
+                    logger.info(
+                        f"About to call send_newsletter for {newsletter.id}")
+                    recipients_count = self.send_newsletter(newsletter)
+                    logger.info(
+                        f"send_newsletter returned with {recipients_count} recipients")
+
+                    # DODANA LINIA - pobierz świeży status newslettera
+                    newsletter.refresh_from_db()
+                    logger.info(
+                        f"Newsletter status after sending: {newsletter.status}")
+
+                    # Zaktualizuj komunikat w zależności od statusu
+                    if newsletter.status == 'sent':
+                        message = _('Newsletter sent successfully.')
+                    elif newsletter.status == 'failed':
+                        message = _('Newsletter sending failed.')
+
+                except Exception as e:
+                    logger.critical(
+                        f"Exception during send_newsletter: {str(e)}", exc_info=True)
+                    newsletter.status = 'failed'
+                    message = _('Error sending newsletter: {}').format(str(e))
+
+                # Zapisz tylko jeśli newsletter nadal jest w statusie 'sending'
+                # (funkcja send_newsletter mogła już zaktualizować status)
+                if newsletter.status == 'sending':
+                    try:
+                        newsletter.save()
+                        logger.info(
+                            f"Saved newsletter with status {newsletter.status}")
+                    except Exception as e:
+                        logger.critical(
+                            f"Failed to save newsletter: {str(e)}", exc_info=True)
+                else:
+                    logger.info(
+                        f"Not saving newsletter status as it's already set to {newsletter.status}")
+
+            # Wyświetl odpowiedni komunikat
+            if newsletter.status == 'failed':
+                messages.error(request, message)
+            else:
+                messages.success(request, message)
+
+            logger.info(f"Redirecting to newsletter list")
             return redirect('newsletter:newsletter_list')
 
-        # Update status based on scheduled vs. immediate
-        if newsletter.scheduled_date and newsletter.scheduled_date > timezone.now():
-            newsletter.status = 'scheduled'
-            message = _('Newsletter scheduled successfully.')
+        except Exception as e:
+            logger.critical(
+                f"Uncaught exception in _process_send_request: {str(e)}", exc_info=True)
+            messages.error(request, _(
+                'An unexpected error occurred: {}').format(str(e)))
+            return redirect('newsletter:newsletter_list')
+
+    def send_newsletter(self, newsletter):
+        """Send the newsletter to all recipients with detailed error handling"""
+        logger.info(
+            f"Starting to send newsletter: {newsletter.subject} (ID: {newsletter.id})")
+
+        try:
+            # Pobierz wszystkich odbiorców
+            direct_subscribers = set(
+                newsletter.subscribers.filter(newsletter_consent=True))
+            logger.info(f"Direct subscribers: {len(direct_subscribers)}")
+
+            # Dodaj subskrybentów z grup
+            group_subscribers = set()
+            for group in newsletter.subscriber_groups.all():
+                try:
+                    subscribers = group.subscriber.filter(
+                        newsletter_consent=True)
+                    group_subscribers.update(subscribers)
+                    logger.info(
+                        f"Added {len(subscribers)} subscribers from group {group.id}")
+                except Exception as e:
+                    logger.error(
+                        f"Error getting subscribers from group {group.id}: {str(e)}")
+
+            # Połącz i usuń duplikaty
+            all_recipients = list(direct_subscribers.union(group_subscribers))
+
+            total_count = len(all_recipients)
+            logger.info(
+                f"Found {total_count} recipients for newsletter {newsletter.id}")
+
+            # Ustaw całkowitą liczbę odbiorców
+            newsletter.total_recipients = total_count
+            newsletter.save(update_fields=['total_recipients'])
+            logger.info(f"Updated total_recipients to {total_count}")
+
+            # Sprawdź, czy w ogóle są jacyś odbiorcy
+            if total_count == 0:
+                logger.warning(
+                    f"No recipients found for newsletter {newsletter.id}")
+                newsletter.status = 'failed'
+                newsletter.save(update_fields=['status'])
+                return 0
+
+            # Wyślij do każdego odbiorcy
+            success_count = 0
+            error_count = 0
+
+            for index, subscriber in enumerate(all_recipients):
+                logger.info(
+                    f"Sending to {subscriber.email} ({index+1}/{total_count})")
+                try:
+                    self._send_newsletter_email(newsletter, subscriber)
+                    success_count += 1
+                    logger.info(f"Successfully sent to {subscriber.email}")
+
+                    # Opcjonalnie: Zapisuj każdy sukces do bazy
+                    # NewsletterTracking.objects.create(
+                    #     newsletter=newsletter,
+                    #     subscriber=subscriber,
+                    #     action='sent',
+                    #     timestamp=timezone.now()
+                    # )
+
+                except Exception as e:
+                    error_count += 1
+                    logger.error(
+                        f"Error sending to {subscriber.email}: {str(e)}")
+
+                    # Zapisz błąd do trackingu
+                    try:
+                        NewsletterTracking.objects.create(
+                            newsletter=newsletter,
+                            subscriber=subscriber,
+                            action='error',
+                            details=str(e)[:255]
+                        )
+                    except:
+                        pass  # Ignoruj błędy zapisywania trackingu
+
+            logger.info(
+                f"Completed sending: {success_count} successful, {error_count} errors")
+
+            # Aktualizuj status newslettera - BARDZO WAŻNE!
+            try:
+                # Pobierz świeżą instancję newslettera z bazy
+                newsletter_fresh = Newsletter.objects.get(pk=newsletter.pk)
+
+                if success_count > 0:
+                    newsletter_fresh.status = 'sent'
+                    newsletter_fresh.sent_date = timezone.now()
+                    newsletter_fresh.save(
+                        update_fields=['status', 'sent_date'])
+                    logger.info(
+                        f"Newsletter {newsletter.id} status updated to 'sent'")
+                else:
+                    newsletter_fresh.status = 'failed'
+                    newsletter_fresh.save(update_fields=['status'])
+                    logger.info(
+                        f"Newsletter {newsletter.id} status updated to 'failed'")
+
+            except Exception as e:
+                logger.critical(
+                    f"CRITICAL: Could not update newsletter status: {str(e)}")
+                # Próbuj ponownie z pełnym zapisem
+                try:
+                    if success_count > 0:
+                        newsletter.status = 'sent'
+                        newsletter.sent_date = timezone.now()
+                    else:
+                        newsletter.status = 'failed'
+                    newsletter.save()
+                    logger.info(f"Newsletter status updated with full save")
+                except Exception as e2:
+                    logger.critical(
+                        f"CRITICAL: Second attempt to update status failed: {str(e2)}")
+
+            return success_count
+
+        except Exception as e:
+            logger.critical(f"Critical error in send_newsletter: {str(e)}")
+            try:
+                newsletter.status = 'failed'
+                newsletter.save(update_fields=['status'])
+            except:
+                logger.critical(
+                    "Could not update newsletter status to 'failed'")
+            return 0
+
+    def _send_newsletter_email(self, newsletter, subscriber):
+        """Send the newsletter to a specific subscriber"""
+        # Get the template
+        template_html = self._get_template_html(newsletter)
+
+        # Replace placeholders
+        html_content = template_html.replace('{{content}}', newsletter.content)
+        html_content = html_content.replace('{{subject}}', newsletter.subject)
+
+        # Add subscriber-specific placeholders
+        full_name = f"{subscriber.first_name or ''} {subscriber.last_name or ''}".strip()
+        html_content = html_content.replace('{{recipient_name}}', full_name)
+        html_content = html_content.replace(
+            '{{recipient_email}}', subscriber.email)
+
+        # Add unsubscribe link
+        unsubscribe_url = f"{settings.SITE_URL}/unsubscribe/{subscriber.id}/"
+        html_content = html_content.replace(
+            '{{unsubscribe_url}}', unsubscribe_url)
+
+        # Add tracking pixel if newsletter has tracking enabled
+        if getattr(newsletter, 'add_tracking', True):
+            tracking_id = str(uuid.uuid4())
+            tracking_pixel = f'<img src="{settings.SITE_URL}/track/open/{tracking_id}/" style="width:1px;height:1px;display:none;" alt="" />'
+            html_content = html_content.replace(
+                '</body>', f'{tracking_pixel}</body>')
+
+            # Create tracking record
+            try:
+                NewsletterTracking.objects.create(
+                    newsletter=newsletter,
+                    subscriber=subscriber,
+                    action='sent',
+                    tracking_id=tracking_id
+                )
+            except Exception as e:
+                logger.warning(f"Could not create tracking record: {str(e)}")
+
+        # Create the email
+        email = EmailMultiAlternatives(
+            subject=newsletter.subject,
+            body="Please view this email with an HTML-compatible email client.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[subscriber.email]
+        )
+
+        # Add any attachments if newsletter has them
+        if hasattr(newsletter, 'attachments') and newsletter.attachments.exists():
+            for attachment in newsletter.attachments.all():
+                email.attach(attachment.name, attachment.file.read(),
+                             attachment.content_type)
+
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+    def _get_template_html(self, newsletter):
+        """Get the HTML template for the newsletter"""
+        if newsletter.template and newsletter.template.html_content:
+            return newsletter.template.html_content
         else:
-            newsletter.status = 'sending'
-            message = _('Newsletter sending has started.')
-
-            # In a real application, this would trigger a background task
-            # For example: send_newsletter_task.delay(newsletter.id)
-
-        newsletter.save()
-
-        messages.success(request, message)
-        # Redirect to list instead of detail
-        return redirect('newsletter:newsletter_list')
+            # Use default template
+            return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>{{subject}}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                    h1, h2, h3 { color: #2c3e50; }
+                    a { color: #3498db; }
+                </style>
+            </head>
+            <body>
+                <h1>{{subject}}</h1>
+                <div class="content">
+                    {{content}}
+                </div>
+                <p style="color: #7f8c8d; font-size: 12px; margin-top: 30px;">
+                    You're receiving this email because you subscribed to our newsletter. 
+                    <a href="{{unsubscribe_url}}">Unsubscribe</a>
+                </p>
+            </body>
+            </html>
+            """
 
 
 # Newsletter Template views
+
+
+def template_duplicate(request, pk):
+    # Logika powielania szablonu
+    original_template = get_object_or_404(Template, pk=pk)
+    new_template = original_template
+    new_template.pk = None  # Usunięcie klucza podstawowego, aby stworzyć kopię
+    new_template.name = f"{original_template.name} (kopia)"
+    new_template.save()
+
+    messages.success(
+        request, f"Utworzono kopię szablonu: {new_template.name}")
+    return redirect('newsletter:template_list')
+
 
 class NewsletterTemplateListView(LoginRequiredMixin, ListView):
     """
@@ -784,3 +1123,22 @@ class NewsletterPreviewView(LoginRequiredMixin, View):
             </body>
             </html>
             """
+
+
+def reset_stuck_newsletters(request):
+    """Reset newsletters stuck in 'sending' status"""
+    if not request.user.is_staff:
+        messages.error(request, _('Admin privileges required.'))
+        return redirect('newsletter:newsletter_list')
+
+    stuck_newsletters = Newsletter.objects.filter(status='sending')
+    count = stuck_newsletters.count()
+
+    # Ustaw status na 'failed' dla wszystkich zawieszonych newsletterów
+    for newsletter in stuck_newsletters:
+        newsletter.status = 'failed'
+        newsletter.save(update_fields=['status'])
+
+    messages.success(request, _(
+        f'Reset {count} newsletters that were stuck in sending status.'))
+    return redirect('newsletter:newsletter_list')

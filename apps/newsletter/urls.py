@@ -22,6 +22,9 @@ urlpatterns = [
          views.NewsletterTemplatePreviewView.as_view(), name='template_preview'),
     path('newsletters/<slug:slug>/send/',
          views.NewsletterSendView.as_view(), name='newsletter_send'),
+    path('templates/<int:pk>/duplicate/',
+         views.template_duplicate, name='template_duplicate'),
+
 
 
     # Newsletter detail views - These should come AFTER more specific patterns
@@ -52,6 +55,8 @@ urlpatterns = [
     # Podgląd newslettera
     path('<slug:slug>/preview/', views.NewsletterPreviewView.as_view(),
          name='newsletter_preview'),
+    path('reset-stuck-newsletters/', views.reset_stuck_newsletters,
+         name='reset_stuck_newsletters'),
 
 
 ]

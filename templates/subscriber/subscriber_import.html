@@ -53,16 +53,32 @@
                 </div>
             </div>
             
-            <!-- Newsletter Consent -->
+            <!-- Newsletter Consent - Dropdown zamiast Checkbox -->
             <div class="mb-4">
-                <div class="form-check">
-                    {{ form.newsletter_consent }}
-                    <label class="form-check-label fw-bold" for="{{ form.newsletter_consent.id_for_label }}">
-                        {{ form.newsletter_consent.label }}
-                    </label>
-                </div>
+                <label for="{{ form.newsletter_consent.id_for_label }}" class="form-label fw-bold">{{ form.newsletter_consent.label }}</label>
+                {{ form.newsletter_consent }}
+                <div class="form-text">Domyślna wartość zgody dla nowych subskrybentów</div>
                 {% if form.newsletter_consent.errors %}
                     <div class="text-danger small">{{ form.newsletter_consent.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Opcja dla duplikatów - nowe pole -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">{{ form.duplicate_action.label }}</label>
+                <div class="d-flex gap-4">
+                    {% for radio in form.duplicate_action %}
+                        <div class="form-check">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                {{ radio.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="form-text">Określa co zrobić z subskrybentami, którzy już istnieją w bazie danych</div>
+                {% if form.duplicate_action.errors %}
+                    <div class="text-danger small">{{ form.duplicate_action.errors }}</div>
                 {% endif %}
             </div>
             

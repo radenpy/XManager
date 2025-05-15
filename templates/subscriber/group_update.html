@@ -59,7 +59,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="input-group">
-                                <input type="text" name="group_search" class="form-control" placeholder="Szukaj po email, imieniu lub nazwisku..." value="{{ group_search_query|default:'' }}">
+                                <input type="text" name="group_search" class="form-control" placeholder="Szukaj po email, nazwie, imieniu lub nazwisku..." value="{{ group_search_query|default:'' }}">
                                 <button type="submit" class="btn btn-outline-primary">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -83,6 +83,7 @@
                                     <input type="checkbox" id="select-all-group" class="form-check-input">
                                 </th>
                                 <th>Email</th>
+                                <th>Nazwa</th>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
                                 <th>Akcje</th>
@@ -95,16 +96,22 @@
                                     <input type="checkbox" name="group_subscriber_ids" value="{{ subscriber.id }}" form="bulk-remove-form" class="form-check-input group-subscriber-check">
                                 </td>
                                 <td>{{ subscriber.email }}</td>
+                                <td>{{ subscriber.common_name|default:"-" }}</td>
                                 <td>{{ subscriber.first_name|default:"-" }}</td>
                                 <td>{{ subscriber.last_name|default:"-" }}</td>
                                 <td>
-                                    <form method="post" action="" class="d-inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="group_subscriber_ids" value="{{ subscriber.id }}">
-                                        <button type="submit" name="remove_subscribers" class="btn btn-sm btn-outline-danger" title="Usuń z grupy">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
+                                    <div class="btn-group">
+                                        <a href="{% url 'subscribers:subscriber_update' subscriber.id %}" class="btn btn-sm btn-outline-secondary" title="Edytuj">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="group_subscriber_ids" value="{{ subscriber.id }}">
+                                            <button type="submit" name="remove_subscribers" class="btn btn-sm btn-outline-danger" title="Usuń z grupy">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -135,7 +142,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Szukaj po email, imieniu lub nazwisku..." value="{{ search_query|default:'' }}">
+                                <input type="text" name="search" class="form-control" placeholder="Szukaj po email, nazwie, imieniu lub nazwisku..." value="{{ search_query|default:'' }}">
                                 <button type="submit" class="btn btn-outline-primary">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -160,6 +167,7 @@
                                     <input type="checkbox" id="select-all-available" class="form-check-input">
                                 </th>
                                 <th>Email</th>
+                                <th>Nazwa</th>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
                                 <th>Akcje</th>
@@ -172,16 +180,22 @@
                                     <input type="checkbox" name="subscriber_ids" value="{{ subscriber.id }}" form="bulk-add-form" class="form-check-input available-subscriber-check">
                                 </td>
                                 <td>{{ subscriber.email }}</td>
+                                <td>{{ subscriber.common_name|default:"-" }}</td>
                                 <td>{{ subscriber.first_name|default:"-" }}</td>
                                 <td>{{ subscriber.last_name|default:"-" }}</td>
                                 <td>
-                                    <form method="post" action="" class="d-inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="subscriber_ids" value="{{ subscriber.id }}">
-                                        <button type="submit" name="add_subscribers" class="btn btn-sm btn-outline-success" title="Dodaj do grupy">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </form>
+                                    <div class="btn-group">
+                                        <a href="{% url 'subscribers:subscriber_update' subscriber.id %}" class="btn btn-sm btn-outline-secondary" title="Edytuj">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="subscriber_ids" value="{{ subscriber.id }}">
+                                            <button type="submit" name="add_subscribers" class="btn btn-sm btn-outline-success" title="Dodaj do grupy">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -205,4 +219,34 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all checkboxes functionality for group subscribers
+    const selectAllGroup = document.getElementById('select-all-group');
+    const groupSubscriberChecks = document.querySelectorAll('.group-subscriber-check');
+    
+    if (selectAllGroup) {
+        selectAllGroup.addEventListener('change', function() {
+            groupSubscriberChecks.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
+    
+    // Select all checkboxes functionality for available subscribers
+    const selectAllAvailable = document.getElementById('select-all-available');
+    const availableSubscriberChecks = document.querySelectorAll('.available-subscriber-check');
+    
+    if (selectAllAvailable) {
+        selectAllAvailable.addEventListener('change', function() {
+            availableSubscriberChecks.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

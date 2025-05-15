@@ -45,6 +45,8 @@ urlpatterns = [
          name='api_subscribers_count'),
     path('api/recipients/count/', api.get_recipients_count,
          name='api_recipients_count'),
+    path('api/analyze-spam/', api.analyze_spam, name='analyze_spam'),
+
 
     # Nowe URL-e
     path('<slug:slug>/clone/', views.NewsletterCloneView.as_view(),

@@ -141,3 +141,636 @@ INFO 2025-05-14 13:17:19,294 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
 INFO 2025-05-14 13:17:21,153 basehttp "GET /newsletter/create/ HTTP/1.1" 200 77645
 INFO 2025-05-14 13:17:21,330 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
 INFO 2025-05-14 13:17:21,335 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+WARNING 2025-05-14 13:18:34,648 log Not Found: /track/open/e46b54f1-eb54-48ee-bcea-fd466c023fa3/
+WARNING 2025-05-14 13:18:34,649 basehttp "GET /track/open/e46b54f1-eb54-48ee-bcea-fd466c023fa3/ HTTP/1.1" 404 4697
+INFO 2025-05-14 15:59:09,928 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 15:59:09,928 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 15:59:17,956 basehttp "GET /partner/ HTTP/1.1" 200 168030
+INFO 2025-05-14 15:59:18,744 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 15:59:19,743 basehttp "GET /newsletter/create/ HTTP/1.1" 200 77645
+INFO 2025-05-14 15:59:19,907 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 15:59:19,911 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 15:59:28,166 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 15:59:28,169 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:03:57,117 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/api.py changed, reloading.
+INFO 2025-05-14 16:03:57,485 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:04:07,999 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/api.py changed, reloading.
+INFO 2025-05-14 16:04:08,319 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:05:00,548 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/views.py changed, reloading.
+INFO 2025-05-14 16:05:00,864 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:05:54,182 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/api.py changed, reloading.
+INFO 2025-05-14 16:05:54,462 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:06:32,421 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/api.py changed, reloading.
+INFO 2025-05-14 16:06:32,683 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:06:41,033 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/urls.py changed, reloading.
+INFO 2025-05-14 16:06:41,270 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:08:40,285 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-14 16:08:40,803 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 16:08:41,957 basehttp "GET /newsletter/create/ HTTP/1.1" 200 79851
+INFO 2025-05-14 16:08:42,139 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:08:42,144 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:08:50,956 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:08:50,956 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+WARNING 2025-05-14 16:09:01,260 log Not Found: /newsletter/api/analyze-spam/
+WARNING 2025-05-14 16:09:01,260 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 404 10667
+INFO 2025-05-14 16:11:14,881 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/api.py changed, reloading.
+INFO 2025-05-14 16:11:15,196 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:12:55,513 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/urls.py changed, reloading.
+INFO 2025-05-14 16:12:55,733 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 16:12:57,224 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 16:12:58,500 basehttp "GET /newsletter/create/ HTTP/1.1" 200 79851
+INFO 2025-05-14 16:12:58,676 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:12:58,681 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:13:05,943 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:13:05,943 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 16:13:12,435 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:13:19,252 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:14:00,701 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 156
+INFO 2025-05-14 16:14:13,853 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 16:14:17,610 basehttp "GET /newsletter/create/ HTTP/1.1" 200 79851
+INFO 2025-05-14 16:14:17,776 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:14:17,780 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:14:24,077 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 16:14:24,077 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:17:41,810 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 16:17:43,034 basehttp "GET /newsletter/create/ HTTP/1.1" 200 80011
+INFO 2025-05-14 16:17:43,198 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:17:43,202 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:17:55,844 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:17:55,844 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 16:17:57,385 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:19:48,342 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:19:50,071 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:19:50,884 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:39:02,094 basehttp "GET /dashboard/ HTTP/1.1" 200 11876
+INFO 2025-05-14 16:39:03,340 basehttp "GET /newsletter/ HTTP/1.1" 200 43910
+INFO 2025-05-14 16:39:04,350 basehttp "GET /newsletter/create/ HTTP/1.1" 200 82962
+INFO 2025-05-14 16:39:04,521 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:39:04,526 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:39:15,802 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 16:39:15,803 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:39:17,330 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 16:39:46,114 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 16:39:46,117 views Starting _process_send_request for newsletter new-new-new
+INFO 2025-05-14 16:39:46,117 views Found newsletter: 49 - new new new
+INFO 2025-05-14 16:39:46,117 views Setting newsletter 49 status to 'sending'
+INFO 2025-05-14 16:39:46,117 views About to call send_newsletter for 49
+INFO 2025-05-14 16:39:46,117 views Starting to send newsletter: new new new (ID: 49)
+INFO 2025-05-14 16:39:46,118 views Direct subscribers: 0
+INFO 2025-05-14 16:39:46,119 views Added 3 subscribers from group 6
+INFO 2025-05-14 16:39:46,119 views Found 3 recipients for newsletter 49
+INFO 2025-05-14 16:39:46,119 views Updated total_recipients to 3
+INFO 2025-05-14 16:39:46,119 views Sending to rrafal889@gmail.com (1/3)
+WARNING 2025-05-14 16:39:46,120 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 16:39:47,978 views Successfully sent to rrafal889@gmail.com
+INFO 2025-05-14 16:39:47,978 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 16:39:47,979 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 16:39:49,581 views Successfully sent to roach7777@gmail.com
+INFO 2025-05-14 16:39:49,581 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+WARNING 2025-05-14 16:39:49,582 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 16:39:51,196 views Successfully sent to rafal.denisiuk@xbrands.pl
+INFO 2025-05-14 16:39:51,197 views Completed sending: 3 successful, 0 errors
+INFO 2025-05-14 16:39:51,199 views Newsletter 49 status updated to 'sent'
+INFO 2025-05-14 16:39:51,200 views send_newsletter returned with 3 recipients
+INFO 2025-05-14 16:39:51,200 views Newsletter status after sending: sent
+INFO 2025-05-14 16:39:51,201 views Not saving newsletter status as it's already set to sent
+INFO 2025-05-14 16:39:51,201 views Redirecting to newsletter list
+INFO 2025-05-14 16:39:51,202 basehttp "GET /newsletter/newsletters/new-new-new/send/ HTTP/1.1" 302 0
+INFO 2025-05-14 16:39:51,218 basehttp "GET /newsletter/ HTTP/1.1" 200 45425
+WARNING 2025-05-14 16:39:59,741 log Not Found: /track/open/9a8d835e-cad8-4b88-9297-c4c8fe8bb202/
+WARNING 2025-05-14 16:39:59,742 basehttp "GET /track/open/9a8d835e-cad8-4b88-9297-c4c8fe8bb202/ HTTP/1.1" 404 4697
+WARNING 2025-05-14 16:40:09,536 log Not Found: /track/open/493e077b-6c23-49b7-b6f2-425b6d545f54/
+WARNING 2025-05-14 16:40:09,536 basehttp "GET /track/open/493e077b-6c23-49b7-b6f2-425b6d545f54/ HTTP/1.1" 404 4697
+INFO 2025-05-14 16:41:22,591 basehttp "GET /newsletter/create/ HTTP/1.1" 200 83562
+INFO 2025-05-14 16:41:22,776 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 16:41:22,780 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 16:41:29,066 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 16:41:29,066 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 16:41:30,514 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 20:13:29,335 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/views.py changed, reloading.
+INFO 2025-05-14 20:13:30,227 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:16:03,240 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/views.py changed, reloading.
+INFO 2025-05-14 20:16:03,542 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:17:05,998 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/models.py changed, reloading.
+INFO 2025-05-14 20:17:06,289 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:17:54,372 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/forms.py changed, reloading.
+INFO 2025-05-14 20:17:54,618 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:19:45,937 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/settings.py changed, reloading.
+INFO 2025-05-14 20:19:46,176 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:22:19,500 basehttp "GET /dashboard/ HTTP/1.1" 200 11876
+ERROR 2025-05-14 20:22:20,248 log Internal Server Error: /newsletter/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: newsletter_newsletter.use_uuid
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 326, in render
+    if match:
+       ^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __bool__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 1945, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: newsletter_newsletter.use_uuid
+ERROR 2025-05-14 20:22:20,251 basehttp "GET /newsletter/ HTTP/1.1" 500 212333
+INFO 2025-05-14 20:23:32,694 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:23:35,053 basehttp "GET /newsletter/ HTTP/1.1" 200 44681
+INFO 2025-05-14 20:23:36,273 basehttp "GET /newsletter/ HTTP/1.1" 200 44681
+INFO 2025-05-14 20:23:36,720 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-14 20:23:37,196 basehttp "GET /newsletter/ HTTP/1.1" 200 44681
+INFO 2025-05-14 20:23:38,669 basehttp "GET /newsletter/create/ HTTP/1.1" 200 83562
+INFO 2025-05-14 20:23:38,843 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 20:23:38,846 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 20:23:49,542 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 20:23:49,543 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 20:23:52,217 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 20:24:06,842 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:24:06,845 views Starting _process_send_request for newsletter test15
+INFO 2025-05-14 20:24:06,846 views Found newsletter: 50 - Test15
+INFO 2025-05-14 20:24:06,846 views Setting newsletter 50 status to 'sending'
+INFO 2025-05-14 20:24:06,846 views About to call send_newsletter for 50
+INFO 2025-05-14 20:24:06,846 views Starting to send newsletter: Test15 (ID: 50)
+INFO 2025-05-14 20:24:06,847 views Direct subscribers: 0
+INFO 2025-05-14 20:24:06,848 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:24:06,848 views Found 3 recipients for newsletter 50
+INFO 2025-05-14 20:24:06,848 views Updated total_recipients to 3
+INFO 2025-05-14 20:24:06,848 views Sending to rrafal889@gmail.com (1/3)
+WARNING 2025-05-14 20:24:06,848 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:25:03,485 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:25:03,488 views Starting _process_send_request for newsletter test15-1
+INFO 2025-05-14 20:25:03,489 views Found newsletter: 51 - Test15
+INFO 2025-05-14 20:25:03,489 views Setting newsletter 51 status to 'sending'
+INFO 2025-05-14 20:25:03,489 views About to call send_newsletter for 51
+INFO 2025-05-14 20:25:03,489 views Starting to send newsletter: Test15 (ID: 51)
+INFO 2025-05-14 20:25:03,489 views Direct subscribers: 0
+INFO 2025-05-14 20:25:03,490 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:25:03,490 views Found 3 recipients for newsletter 51
+INFO 2025-05-14 20:25:03,491 views Updated total_recipients to 3
+INFO 2025-05-14 20:25:03,491 views Sending to rrafal889@gmail.com (1/3)
+WARNING 2025-05-14 20:25:03,491 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:25:12,012 basehttp "GET /dashboard/ HTTP/1.1" 200 12621
+INFO 2025-05-14 20:25:12,963 basehttp "GET /newsletter/ HTTP/1.1" 200 45145
+INFO 2025-05-14 20:25:16,579 basehttp "GET /newsletter/create/ HTTP/1.1" 200 83562
+INFO 2025-05-14 20:25:16,755 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 20:25:16,759 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+ERROR 2025-05-14 20:25:21,857 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:25:21,858 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 20:25:21,861 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:25:24,756 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 20:25:24,756 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 20:25:26,830 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 20:25:33,548 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:25:33,551 views Starting _process_send_request for newsletter test16
+INFO 2025-05-14 20:25:33,551 views Found newsletter: 52 - Test16
+INFO 2025-05-14 20:25:33,551 views Setting newsletter 52 status to 'sending'
+INFO 2025-05-14 20:25:33,551 views About to call send_newsletter for 52
+INFO 2025-05-14 20:25:33,551 views Starting to send newsletter: Test16 (ID: 52)
+INFO 2025-05-14 20:25:33,551 views Direct subscribers: 0
+INFO 2025-05-14 20:25:33,552 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:25:33,552 views Found 3 recipients for newsletter 52
+INFO 2025-05-14 20:25:33,552 views Updated total_recipients to 3
+INFO 2025-05-14 20:25:33,552 views Sending to rrafal889@gmail.com (1/3)
+WARNING 2025-05-14 20:25:33,552 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:26:18,493 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:26:18,495 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 20:26:18,495 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:26:25,321 basehttp "GET /newsletter/ HTTP/1.1" 200 45804
+INFO 2025-05-14 20:26:29,937 basehttp "POST /newsletter/test16/delete/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:26:29,947 basehttp "GET /newsletter/ HTTP/1.1" 200 45605
+INFO 2025-05-14 20:26:33,177 basehttp "POST /newsletter/test15-1/delete/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:26:33,187 basehttp "GET /newsletter/ HTTP/1.1" 200 45370
+INFO 2025-05-14 20:26:36,441 basehttp "POST /newsletter/test15/delete/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:26:36,452 basehttp "GET /newsletter/ HTTP/1.1" 200 45141
+ERROR 2025-05-14 20:26:36,865 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:26:36,865 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+WARNING 2025-05-14 20:26:36,866 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:26:48,555 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:26:48,556 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 20:26:48,556 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:27:00,307 basehttp "GET /newsletter/ HTTP/1.1" 200 44681
+INFO 2025-05-14 20:27:01,166 basehttp "GET /newsletter/create/ HTTP/1.1" 200 83562
+INFO 2025-05-14 20:27:01,335 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 20:27:01,343 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 20:27:10,150 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 20:27:10,152 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 20:27:11,963 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 20:27:19,947 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:27:19,953 views Starting _process_send_request for newsletter test17
+INFO 2025-05-14 20:27:19,954 views Found newsletter: 53 - Test17
+INFO 2025-05-14 20:27:19,954 views Setting newsletter 53 status to 'sending'
+INFO 2025-05-14 20:27:19,954 views About to call send_newsletter for 53
+INFO 2025-05-14 20:27:19,954 views Starting to send newsletter: Test17 (ID: 53)
+INFO 2025-05-14 20:27:19,955 views Direct subscribers: 0
+INFO 2025-05-14 20:27:19,955 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:27:19,955 views Found 3 recipients for newsletter 53
+INFO 2025-05-14 20:27:19,955 views Updated total_recipients to 3
+INFO 2025-05-14 20:27:19,955 views Sending to rrafal889@gmail.com (1/3)
+WARNING 2025-05-14 20:27:19,956 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:27:33,499 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:27:33,500 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+WARNING 2025-05-14 20:27:33,500 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+INFO 2025-05-14 20:27:41,417 autoreload Watching for file changes with StatReloader
+ERROR 2025-05-14 20:27:51,870 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:27:51,870 views Completed sending: 0 successful, 3 errors
+CRITICAL 2025-05-14 20:27:51,872 views CRITICAL: Could not update newsletter status: Newsletter matching query does not exist.
+INFO 2025-05-14 20:27:51,878 views Newsletter status updated with full save
+INFO 2025-05-14 20:27:51,878 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:27:51,879 views Newsletter status after sending: failed
+INFO 2025-05-14 20:27:51,879 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:27:51,880 views Redirecting to newsletter list
+INFO 2025-05-14 20:27:51,881 basehttp - Broken pipe from ('127.0.0.1', 58254)
+ERROR 2025-05-14 20:28:03,559 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:28:03,560 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+WARNING 2025-05-14 20:28:03,560 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:28:34,959 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:28:34,959 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 20:28:34,959 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:28:48,503 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:28:48,503 views Completed sending: 0 successful, 3 errors
+CRITICAL 2025-05-14 20:28:48,504 views CRITICAL: Could not update newsletter status: Newsletter matching query does not exist.
+INFO 2025-05-14 20:28:48,507 views Newsletter status updated with full save
+INFO 2025-05-14 20:28:48,507 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:28:48,508 views Newsletter status after sending: failed
+INFO 2025-05-14 20:28:48,508 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:28:48,508 views Redirecting to newsletter list
+INFO 2025-05-14 20:28:48,509 basehttp - Broken pipe from ('127.0.0.1', 58255)
+ERROR 2025-05-14 20:29:18,563 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:29:18,564 views Completed sending: 0 successful, 3 errors
+CRITICAL 2025-05-14 20:29:18,564 views CRITICAL: Could not update newsletter status: Newsletter matching query does not exist.
+INFO 2025-05-14 20:29:18,567 views Newsletter status updated with full save
+INFO 2025-05-14 20:29:18,567 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:29:18,567 views Newsletter status after sending: failed
+INFO 2025-05-14 20:29:18,568 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:29:18,568 views Redirecting to newsletter list
+INFO 2025-05-14 20:29:18,568 basehttp - Broken pipe from ('127.0.0.1', 58665)
+ERROR 2025-05-14 20:29:49,961 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:29:49,962 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+WARNING 2025-05-14 20:29:49,962 views Could not create tracking record: NewsletterTracking() got unexpected keyword arguments: 'action', 'tracking_id'
+ERROR 2025-05-14 20:31:04,929 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:31:04,930 views Completed sending: 0 successful, 3 errors
+INFO 2025-05-14 20:31:04,934 views Newsletter 53 status updated to 'failed'
+INFO 2025-05-14 20:31:04,934 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:31:04,935 views Newsletter status after sending: failed
+INFO 2025-05-14 20:31:04,935 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:31:04,935 views Redirecting to newsletter list
+INFO 2025-05-14 20:31:04,936 basehttp "GET /newsletter/newsletters/test17/send/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:31:04,953 basehttp "GET /newsletter/ HTTP/1.1" 200 45424
+INFO 2025-05-14 20:32:57,256 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/newsletter/models.py changed, reloading.
+INFO 2025-05-14 20:32:57,550 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:33:00,605 basehttp "GET /dashboard/ HTTP/1.1" 200 11876
+INFO 2025-05-14 20:33:01,371 basehttp "GET /newsletter/ HTTP/1.1" 200 44685
+INFO 2025-05-14 20:33:37,890 autoreload Watching for file changes with StatReloader
+INFO 2025-05-14 20:33:39,891 basehttp "GET /dashboard/ HTTP/1.1" 200 11876
+INFO 2025-05-14 20:33:41,144 basehttp "GET /newsletter/ HTTP/1.1" 200 44685
+INFO 2025-05-14 20:33:41,966 basehttp "GET /newsletter/create/ HTTP/1.1" 200 83562
+INFO 2025-05-14 20:33:42,131 basehttp "GET /newsletter/api/recipients/count/? HTTP/1.1" 200 56
+INFO 2025-05-14 20:33:42,135 basehttp "GET /newsletter/api/subscriber-groups/ HTTP/1.1" 200 405
+INFO 2025-05-14 20:33:49,131 basehttp "GET /newsletter/api/subscriber-groups/6/subscribers/ HTTP/1.1" 200 374
+INFO 2025-05-14 20:33:49,132 basehttp "GET /newsletter/api/recipients/count/?group_ids=6 HTTP/1.1" 200 56
+INFO 2025-05-14 20:33:50,723 basehttp "POST /newsletter/api/analyze-spam/ HTTP/1.1" 200 47
+INFO 2025-05-14 20:33:54,593 basehttp "POST /newsletter/create/ HTTP/1.1" 302 0
+INFO 2025-05-14 20:33:54,596 views Starting _process_send_request for newsletter test18
+INFO 2025-05-14 20:33:54,597 views Found newsletter: 54 - Test18
+INFO 2025-05-14 20:33:54,597 views Setting newsletter 54 status to 'sending'
+INFO 2025-05-14 20:33:54,597 views About to call send_newsletter for 54
+INFO 2025-05-14 20:33:54,597 views Starting to send newsletter: Test18 (ID: 54)
+INFO 2025-05-14 20:33:54,597 views Direct subscribers: 0
+INFO 2025-05-14 20:33:54,598 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:33:54,598 views Found 3 recipients for newsletter 54
+INFO 2025-05-14 20:33:54,598 views Updated total_recipients to 3
+INFO 2025-05-14 20:33:54,598 views Sending to rrafal889@gmail.com (1/3)
+ERROR 2025-05-14 20:35:09,603 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:35:09,604 views Sending to roach7777@gmail.com (2/3)
+INFO 2025-05-14 20:35:19,025 views Starting _process_send_request for newsletter test18
+INFO 2025-05-14 20:35:19,026 views Found newsletter: 54 - Test18
+INFO 2025-05-14 20:35:19,026 views Setting newsletter 54 status to 'sending'
+INFO 2025-05-14 20:35:19,026 views About to call send_newsletter for 54
+INFO 2025-05-14 20:35:19,026 views Starting to send newsletter: Test18 (ID: 54)
+INFO 2025-05-14 20:35:19,027 views Direct subscribers: 0
+INFO 2025-05-14 20:35:19,028 views Added 3 subscribers from group 6
+INFO 2025-05-14 20:35:19,028 views Found 3 recipients for newsletter 54
+INFO 2025-05-14 20:35:19,029 views Updated total_recipients to 3
+INFO 2025-05-14 20:35:19,029 views Sending to rrafal889@gmail.com (1/3)
+ERROR 2025-05-14 20:40:56,395 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:40:56,395 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+ERROR 2025-05-14 20:41:05,823 views Error sending to rrafal889@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:41:05,824 views Sending to roach7777@gmail.com (2/3)
+WARNING 2025-05-14 20:41:31,230 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-14 20:41:31,234 log Not Found: /favicon.ico
+WARNING 2025-05-14 20:41:31,236 log Not Found: /apple-touch-icon.png
+INFO 2025-05-14 20:41:31,237 basehttp "GET /subscribers/ HTTP/1.1" 302 0
+WARNING 2025-05-14 20:41:31,237 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-14 20:41:31,237 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-14 20:41:31,237 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-14 20:41:31,241 basehttp "GET /login/?next=/subscribers/ HTTP/1.1" 200 2717
+ERROR 2025-05-14 20:42:11,400 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:42:11,401 views Completed sending: 0 successful, 3 errors
+INFO 2025-05-14 20:42:11,404 views Newsletter 54 status updated to 'failed'
+INFO 2025-05-14 20:42:11,405 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:42:11,405 views Newsletter status after sending: failed
+INFO 2025-05-14 20:42:11,406 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:42:11,406 views Redirecting to newsletter list
+INFO 2025-05-14 20:42:11,407 basehttp - Broken pipe from ('127.0.0.1', 60835)
+ERROR 2025-05-14 20:42:20,830 views Error sending to roach7777@gmail.com: [Errno 60] Operation timed out
+INFO 2025-05-14 20:42:20,830 views Sending to rafal.denisiuk@xbrands.pl (3/3)
+ERROR 2025-05-14 20:43:35,836 views Error sending to rafal.denisiuk@xbrands.pl: [Errno 60] Operation timed out
+INFO 2025-05-14 20:43:35,836 views Completed sending: 0 successful, 3 errors
+INFO 2025-05-14 20:43:35,838 views Newsletter 54 status updated to 'failed'
+INFO 2025-05-14 20:43:35,838 views send_newsletter returned with 0 recipients
+INFO 2025-05-14 20:43:35,839 views Newsletter status after sending: failed
+INFO 2025-05-14 20:43:35,839 views Not saving newsletter status as it's already set to failed
+INFO 2025-05-14 20:43:35,839 views Redirecting to newsletter list
+INFO 2025-05-14 20:43:35,840 basehttp - Broken pipe from ('127.0.0.1', 61251)
+INFO 2025-05-15 15:04:28,426 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 15:04:45,777 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 15:04:49,484 basehttp "GET / HTTP/1.1" 200 11870
+INFO 2025-05-15 15:04:49,524 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2025-05-15 15:04:49,526 basehttp "GET /static/js/main.js HTTP/1.1" 200 6316
+WARNING 2025-05-15 15:04:49,560 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:04:49,561 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:04:49,562 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:04:49,562 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:04:49,562 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:04:49,562 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+INFO 2025-05-15 15:04:52,368 basehttp "GET /partner/ HTTP/1.1" 200 168030
+INFO 2025-05-15 15:04:52,369 basehttp "GET /static/partner/js/partner_api.js HTTP/1.1" 304 0
+INFO 2025-05-15 15:04:52,370 basehttp "GET /static/partner/js/partner_edit.js HTTP/1.1" 304 0
+INFO 2025-05-15 15:04:52,370 basehttp "GET /static/partner/js/vat_verification_status.js HTTP/1.1" 304 0
+INFO 2025-05-15 15:04:52,370 basehttp "GET /static/partner/js/subscriber_select.js HTTP/1.1" 304 0
+INFO 2025-05-15 15:04:55,743 basehttp "GET /subscribers/ HTTP/1.1" 200 131437
+WARNING 2025-05-15 15:04:55,776 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:04:55,778 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:04:55,778 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:04:55,779 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:04:55,779 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:04:55,779 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-15 15:04:57,112 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-15 15:16:36,987 basehttp "GET /subscribers/ HTTP/1.1" 200 131437
+WARNING 2025-05-15 15:16:37,030 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:16:37,031 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:16:37,032 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:16:37,032 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:16:37,032 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:16:37,032 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+INFO 2025-05-15 15:16:37,889 basehttp "GET /subscribers/import/ HTTP/1.1" 200 20311
+INFO 2025-05-15 15:17:21,422 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-15 15:17:26,205 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 48577
+INFO 2025-05-15 15:17:27,495 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:27,501 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 49010
+INFO 2025-05-15 15:17:27,965 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:27,975 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 48997
+INFO 2025-05-15 15:17:28,380 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:28,391 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 48984
+INFO 2025-05-15 15:17:28,833 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:28,842 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 48971
+INFO 2025-05-15 15:17:29,248 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:29,258 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 47791
+INFO 2025-05-15 15:17:30,082 basehttp "POST /subscribers/groups/update/5/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:30,092 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 47786
+INFO 2025-05-15 15:17:31,038 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-15 15:17:40,582 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:17:40,612 basehttp "GET /subscribers/ HTTP/1.1" 200 131613
+WARNING 2025-05-15 15:17:40,659 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:17:40,660 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:17:40,661 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:17:40,662 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:17:40,662 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:17:40,662 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+INFO 2025-05-15 15:17:46,766 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 15:17:47,255 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-15 15:17:48,447 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 15:17:49,423 basehttp "GET /subscribers/ HTTP/1.1" 200 130752
+WARNING 2025-05-15 15:17:49,457 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:17:49,457 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:17:49,459 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:17:49,459 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:17:49,460 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:17:49,460 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-15 15:17:50,445 basehttp "GET /subscribers/import/ HTTP/1.1" 200 20311
+INFO 2025-05-15 15:18:08,578 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:18:08,606 basehttp "GET /subscribers/ HTTP/1.1" 200 131613
+WARNING 2025-05-15 15:18:08,639 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:18:08,641 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:18:08,642 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:18:08,642 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:18:08,642 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:18:08,642 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-15 15:19:24,445 basehttp "GET /subscribers/import/ HTTP/1.1" 200 20311
+INFO 2025-05-15 15:19:26,295 basehttp "GET /subscribers/ HTTP/1.1" 200 130752
+WARNING 2025-05-15 15:19:26,338 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:19:26,339 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:19:26,340 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:19:26,340 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:19:26,340 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:19:26,340 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-15 15:19:27,529 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17846
+INFO 2025-05-15 15:19:30,172 basehttp "GET /subscribers/ HTTP/1.1" 200 130752
+WARNING 2025-05-15 15:19:30,205 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:19:30,206 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:19:30,207 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:19:30,207 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:19:30,208 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:19:30,208 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+INFO 2025-05-15 15:19:30,919 basehttp "GET /subscribers/import/ HTTP/1.1" 200 20311
+INFO 2025-05-15 15:19:51,095 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:19:51,126 basehttp "GET /subscribers/ HTTP/1.1" 200 131613
+WARNING 2025-05-15 15:19:51,164 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:19:51,165 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:19:51,166 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:19:51,166 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:19:51,166 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:19:51,167 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+INFO 2025-05-15 15:21:30,211 basehttp "GET /subscribers/import/ HTTP/1.1" 200 20311
+INFO 2025-05-15 15:21:43,969 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:21:44,027 basehttp "GET /subscribers/ HTTP/1.1" 200 273459
+WARNING 2025-05-15 15:21:44,080 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:21:44,081 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:21:44,082 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:21:44,083 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:21:44,083 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:21:44,083 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+INFO 2025-05-15 15:21:52,936 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 15:21:54,496 basehttp "GET /subscribers/ HTTP/1.1" 200 272925
+WARNING 2025-05-15 15:21:54,547 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:21:54,548 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:21:54,550 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:21:54,550 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:21:54,550 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:21:54,550 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+INFO 2025-05-15 15:22:14,244 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 15:22:21,366 basehttp "GET /subscribers/ HTTP/1.1" 200 272925
+WARNING 2025-05-15 15:22:21,416 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:22:21,417 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:22:21,418 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+WARNING 2025-05-15 15:22:21,418 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:22:21,419 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:22:21,419 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+INFO 2025-05-15 15:22:37,520 basehttp "GET /subscribers/?search=&group=5&consent= HTTP/1.1" 200 263602
+INFO 2025-05-15 15:22:49,059 basehttp "GET /subscribers/?search=&group=5&consent=&page_size=500 HTTP/1.1" 200 1096148
+INFO 2025-05-15 15:23:36,308 basehttp "POST /subscribers/bulk-action/ HTTP/1.1" 302 0
+INFO 2025-05-15 15:23:36,366 basehttp "GET /subscribers/ HTTP/1.1" 200 273538
+WARNING 2025-05-15 15:23:36,428 log Not Found: /apple-touch-icon.png
+WARNING 2025-05-15 15:23:36,429 log Not Found: /favicon.ico
+WARNING 2025-05-15 15:23:36,430 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-05-15 15:23:36,431 basehttp "GET /apple-touch-icon.png HTTP/1.1" 404 4613
+WARNING 2025-05-15 15:23:36,431 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+WARNING 2025-05-15 15:23:36,431 basehttp "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 4649
+INFO 2025-05-15 15:23:46,189 basehttp "GET /subscribers/?page=2 HTTP/1.1" 200 263300
+INFO 2025-05-15 15:23:48,887 basehttp "GET /subscribers/?page=3 HTTP/1.1" 200 264597
+INFO 2025-05-15 15:24:17,807 basehttp "GET /subscribers/?page=4 HTTP/1.1" 200 263465
+INFO 2025-05-15 15:24:20,826 basehttp "GET /subscribers/?page=5 HTTP/1.1" 200 263414
+INFO 2025-05-15 15:24:28,994 basehttp "GET /subscribers/?page=6 HTTP/1.1" 200 263308
+INFO 2025-05-15 15:24:33,046 basehttp "GET /subscribers/?page=7 HTTP/1.1" 200 266119
+INFO 2025-05-15 15:24:40,685 basehttp "GET /subscribers/?page=1 HTTP/1.1" 200 273091
+INFO 2025-05-15 15:24:43,369 basehttp "GET /subscribers/?search=&consent=&page_size=500 HTTP/1.1" 200 1107655
+INFO 2025-05-15 15:24:49,968 basehttp "GET /subscribers/?search=&consent=1 HTTP/1.1" 200 274944
+INFO 2025-05-15 15:24:52,875 basehttp "GET /subscribers/?search=&consent=1&page_size=500 HTTP/1.1" 200 1046935
+INFO 2025-05-15 15:25:34,993 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 18:12:50,866 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/forms.py changed, reloading.
+INFO 2025-05-15 18:12:51,224 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 18:13:44,451 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/views.py changed, reloading.
+INFO 2025-05-15 18:13:44,727 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 18:15:44,685 basehttp "GET /subscribers HTTP/1.1" 301 0
+INFO 2025-05-15 18:15:44,760 basehttp "GET /subscribers/ HTTP/1.1" 200 273521
+INFO 2025-05-15 18:15:44,878 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2025-05-15 18:15:44,988 basehttp "GET /static/js/main.js HTTP/1.1" 304 0
+WARNING 2025-05-15 18:15:45,284 log Not Found: /favicon.ico
+WARNING 2025-05-15 18:15:45,284 basehttp "GET /favicon.ico HTTP/1.1" 404 4586
+INFO 2025-05-15 18:15:46,750 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 18:15:47,248 basehttp "GET /subscribers/ HTTP/1.1" 200 273091
+INFO 2025-05-15 18:15:50,909 basehttp "GET /subscribers/import/ HTTP/1.1" 200 21735
+INFO 2025-05-15 18:16:16,173 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 18:16:16,229 basehttp "GET /subscribers/ HTTP/1.1" 200 273625
+INFO 2025-05-15 18:16:28,328 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 18:16:31,897 basehttp "GET /subscribers/groups/view-subscribers/5/ HTTP/1.1" 200 799106
+INFO 2025-05-15 18:19:05,450 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/views.py changed, reloading.
+INFO 2025-05-15 18:19:05,787 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 18:19:08,246 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 18:19:10,414 basehttp "GET /subscribers/ HTTP/1.1" 200 273091
+INFO 2025-05-15 18:19:11,499 basehttp "GET /subscribers/import/ HTTP/1.1" 200 21735
+INFO 2025-05-15 18:19:25,242 basehttp "POST /subscribers/import/ HTTP/1.1" 302 0
+INFO 2025-05-15 18:19:25,298 basehttp "GET /subscribers/ HTTP/1.1" 200 273127
+INFO 2025-05-15 18:19:47,359 basehttp "GET /subscribers/ HTTP/1.1" 200 272593
+INFO 2025-05-15 19:18:49,879 basehttp "GET /subscribers/?search=&group=5&consent= HTTP/1.1" 200 263202
+INFO 2025-05-15 19:18:59,720 basehttp "GET /subscribers/?page=2&search=&group=5&consent= HTTP/1.1" 200 264132
+INFO 2025-05-15 19:19:13,223 basehttp "GET /subscribers/ HTTP/1.1" 200 272593
+INFO 2025-05-15 19:19:13,701 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:19:21,915 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1196657
+INFO 2025-05-15 19:19:31,209 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:19:33,256 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 21974
+INFO 2025-05-15 19:19:41,205 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:19:49,995 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1196657
+INFO 2025-05-15 19:20:05,801 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:20:08,747 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 21974
+INFO 2025-05-15 19:20:12,429 basehttp "GET /subscribers/update/49/ HTTP/1.1" 200 20705
+INFO 2025-05-15 19:20:16,508 basehttp "GET /subscribers/ HTTP/1.1" 200 272593
+INFO 2025-05-15 19:20:19,180 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:20:20,928 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1196657
+INFO 2025-05-15 19:23:29,690 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/views.py changed, reloading.
+INFO 2025-05-15 19:23:30,041 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 19:25:39,575 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/views.py changed, reloading.
+INFO 2025-05-15 19:25:39,879 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 19:27:36,889 basehttp "GET /subscribers/ HTTP/1.1" 200 272593
+INFO 2025-05-15 19:27:37,332 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:27:39,265 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608138
+INFO 2025-05-15 19:27:51,864 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:27:57,375 basehttp "GET /subscribers/groups/update/5/ HTTP/1.1" 200 1620147
+INFO 2025-05-15 19:28:14,561 basehttp "GET /subscribers/groups/update/5/?group_search=diverse HTTP/1.1" 200 62119
+INFO 2025-05-15 19:28:34,878 basehttp "GET /subscribers/groups/update/5/?group_search= HTTP/1.1" 200 1620147
+INFO 2025-05-15 19:28:43,787 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:28:46,984 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 22737
+INFO 2025-05-15 19:28:54,236 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:28:55,672 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608138
+INFO 2025-05-15 19:30:36,217 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:30:38,936 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 22737
+INFO 2025-05-15 19:30:49,354 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:30:52,221 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608138
+INFO 2025-05-15 19:30:56,616 basehttp "POST /subscribers/groups/update/1/ HTTP/1.1" 302 0
+INFO 2025-05-15 19:30:56,661 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608571
+INFO 2025-05-15 19:31:12,139 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
+INFO 2025-05-15 19:31:13,452 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 21880
+INFO 2025-05-15 19:32:46,640 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608125

@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from apps.subscriber.models import Subscriber, SubscriberGroup
+import json
 
 
 def get_subscribers(request):
@@ -79,3 +80,53 @@ def get_recipients_count(request):
         'group_count': len(group_subscribers - set(excluded_ids)),
         'total_unique': len(total_subscribers)
     })
+
+
+def analyze_spam(request):
+    """API endpoint to analyze newsletter content for spam indicators"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        subject = data.get('subject', '')
+        content = data.get('content', '')
+
+        # Inicjalizacja analizy
+        spam_score = 0
+        issues = []
+
+        # Sprawdzenie tematu (np. wielkie litery, słowa kluczowe)
+        if subject.isupper() or subject.endswith('!!!'):
+            spam_score += 15
+            issues.append({
+                'type': 'subject_caps',
+                'message': 'Temat zawiera zbyt wiele wielkich liter lub nadmiar wykrzykników'
+            })
+
+        # Sprawdzenie zawartości pod kątem słów kluczowych spamu
+        spam_words = ['darmowy', 'okazja', 'zarabiaj',
+                      'szybko', 'łatwo', 'gwarancja']
+        found_spam_words = [
+            word for word in spam_words if word.lower() in content.lower()]
+
+        if found_spam_words:
+            spam_score += len(found_spam_words) * 5
+            issues.append({
+                'type': 'spam_words',
+                'message': f'Treść zawiera potencjalnie spamowe słowa: {", ".join(found_spam_words)}'
+            })
+
+        # Inne analizy...
+
+        # Kategoryzacja wyniku
+        risk_level = 'low'
+        if spam_score > 30:
+            risk_level = 'medium'
+        if spam_score > 60:
+            risk_level = 'high'
+
+        return JsonResponse({
+            'score': spam_score,
+            'risk_level': risk_level,
+            'issues': issues
+        })
+
+    return JsonResponse({'error': 'POST request required'}, status=405)

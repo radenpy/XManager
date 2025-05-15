@@ -67,7 +67,7 @@ class NewsletterForm(forms.ModelForm):
         model = Newsletter
         fields = [
             'subject', 'content', 'template',
-            'subscribers', 'subscriber_groups',
+            'subscribers', 'subscriber_groups', 'use_uuid',
             'scheduled_date', 'status'
         ]
         widgets = {

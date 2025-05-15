@@ -594,6 +594,7 @@ class SubscriberGroupUpdateView(LoginRequiredMixin, UpdateView):
         if group_search_query:
             group_subscribers = group_subscribers.filter(
                 models.Q(email__icontains=group_search_query) |
+                models.Q(common_name__icontains=group_search_query) |
                 models.Q(first_name__icontains=group_search_query) |
                 models.Q(last_name__icontains=group_search_query)
             )
@@ -611,6 +612,7 @@ class SubscriberGroupUpdateView(LoginRequiredMixin, UpdateView):
         if search_query:
             available_subscribers = available_subscribers.filter(
                 models.Q(email__icontains=search_query) |
+                models.Q(common_name__icontains=search_query) |
                 models.Q(first_name__icontains=search_query) |
                 models.Q(last_name__icontains=search_query)
             )
@@ -1383,7 +1385,10 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         import_type = form.cleaned_data.get('import_type')
-        newsletter_consent = form.cleaned_data.get('newsletter_consent', False)
+        # Konwersja string 'True'/'False' na bool
+        newsletter_consent = form.cleaned_data.get(
+            'newsletter_consent') == 'True'
+        duplicate_action = form.cleaned_data.get('duplicate_action', 'skip')
 
         # Process groups
         groups = []
@@ -1415,14 +1420,16 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
                 form.cleaned_data.get('email_list', ''),
                 newsletter_consent,
                 groups,
-                partners
+                partners,
+                duplicate_action
             )
         else:  # file import
             result = self._import_from_file(
                 form.cleaned_data.get('file'),
                 newsletter_consent,
                 groups,
-                partners
+                partners,
+                duplicate_action
             )
 
         # Display results
@@ -1435,7 +1442,7 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
 
         return super().form_valid(form)
 
-    def _import_from_text(self, email_text, newsletter_consent, groups, partners):
+    def _import_from_text(self, email_text, newsletter_consent, groups, partners, duplicate_action):
         """Import subscribers from text input"""
         # Split by newlines and/or commas
         emails = []
@@ -1445,9 +1452,9 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
             line_emails = [e.strip() for e in line.split(',') if e.strip()]
             emails.extend(line_emails)
 
-        return self._process_emails(emails, newsletter_consent, groups, partners)
+        return self._process_emails(emails, newsletter_consent, groups, partners, duplicate_action)
 
-    def _import_from_file(self, file_obj, newsletter_consent, groups, partners):
+    def _import_from_file(self, file_obj, newsletter_consent, groups, partners, duplicate_action):
         """Import subscribers from Excel file"""
         try:
             # Read file based on extension
@@ -1458,19 +1465,38 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
             else:  # xlsx, xls, ods
                 df = pd.read_excel(file_obj)
 
-            # Check for required email column
-            if 'email' not in df.columns:
+            # Ujednolicenie nagłówków kolumn - wszystkie małymi literami
+            df.columns = [col.lower() for col in df.columns]
+
+            # Sprawdź, czy istnieje kolumna email (niezależnie od wielkości liter)
+            email_col = None
+            for col in df.columns:
+                if col.lower() == 'email':
+                    email_col = col
+                    break
+
+            if not email_col:
                 messages.error(
-                    self.request, "Plik musi zawierać kolumnę 'email'")
+                    self.request, "Plik musi zawierać kolumnę z adresami email (nazwa kolumny powinna zawierać 'email')")
                 return {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
 
             # Process each row
             result = {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
 
-            for _, row in df.iterrows():
-                email = str(row.get('email', '')).strip()
+            # Znajdź odpowiednie kolumny (jeśli istnieją)
+            name_col = next((col for col in df.columns if col.lower() in [
+                            'nazwa', 'common_name', 'name']), None)
+            first_name_col = next((col for col in df.columns if col.lower() in [
+                                  'imię', 'imie', 'first_name']), None)
+            last_name_col = next((col for col in df.columns if col.lower() in [
+                                 'nazwisko', 'last_name']), None)
+            consent_col = next((col for col in df.columns if col.lower() in [
+                               'zgoda', 'newsletter_consent', 'consent']), None)
 
-                if not email:
+            for _, row in df.iterrows():
+                email = str(row.get(email_col, '')).strip()
+
+                if not email or email.lower() == 'nan':
                     result['skipped'] += 1
                     continue
 
@@ -1481,40 +1507,108 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
                     continue
 
                 # Check if subscriber exists
-                subscriber, created = Subscriber.objects.get_or_create(
-                    email=email,
-                    defaults={
-                        'common_name': str(row.get('nazwa', '')).strip(),
-                        'first_name': str(row.get('imię', row.get('imie', ''))).strip(),
-                        'last_name': str(row.get('nazwisko', '')).strip(),
-                        'newsletter_consent': bool(row.get('zgoda', newsletter_consent)),
-                        'created_by': self.request.user if hasattr(self.request, 'user') else None
-                    }
-                )
+                subscriber_exists = Subscriber.objects.filter(
+                    email=email).exists()
 
-                if created:
-                    result['imported'] += 1
-                else:
-                    # Update existing subscriber
-                    if any(col in df.columns for col in ['nazwa', 'common_name']) and pd.notna(row.get('nazwa', row.get('common_name', None))):
-                        subscriber.common_name = str(
-                            row.get('nazwa', row.get('common_name', ''))).strip()
+                # Jeśli subskrybent już istnieje i wybrano opcję pomijania
+                if subscriber_exists and duplicate_action == 'skip':
+                    result['skipped'] += 1
+                    continue
 
-                    if any(col in df.columns for col in ['imię', 'imie']) and pd.notna(row.get('imię', row.get('imie', None))):
-                        subscriber.first_name = str(
-                            row.get('imię', row.get('imie', ''))).strip()
+                # Get or create subscriber
+                if subscriber_exists:
+                    subscriber = Subscriber.objects.get(email=email)
+                    if duplicate_action == 'update':
+                        # Aktualizuj tylko gdy wybrano opcję aktualizacji
+                        # Aktualizuj dane tylko jeśli odpowiednie kolumny istnieją i wartości nie są puste lub NaN
+                        if name_col:
+                            value = row.get(name_col, '')
+                            # Sprawdź czy wartość nie jest NaN i nie jest pusta
+                            if pd.notna(value) and str(value).strip() and str(value).lower() != 'nan':
+                                subscriber.common_name = str(value).strip()
+                            # Jeśli wartość jest NaN lub pusta, ustaw jako pusty ciąg znaków
+                            elif duplicate_action == 'update':
+                                subscriber.common_name = ''
 
-                    if 'nazwisko' in df.columns and pd.notna(row.get('nazwisko')):
-                        subscriber.last_name = str(row.get('nazwisko')).strip()
+                        if first_name_col:
+                            value = row.get(first_name_col, '')
+                            if pd.notna(value) and str(value).strip() and str(value).lower() != 'nan':
+                                subscriber.first_name = str(value).strip()
+                            elif duplicate_action == 'update':
+                                subscriber.first_name = ''
 
-                    if any(col in df.columns for col in ['zgoda', 'newsletter_consent']) and pd.notna(row.get('zgoda', row.get('newsletter_consent', None))):
-                        subscriber.newsletter_consent = bool(
-                            row.get('zgoda', row.get('newsletter_consent', newsletter_consent)))
+                        if last_name_col:
+                            value = row.get(last_name_col, '')
+                            if pd.notna(value) and str(value).strip() and str(value).lower() != 'nan':
+                                subscriber.last_name = str(value).strip()
+                            elif duplicate_action == 'update':
+                                subscriber.last_name = ''
+
+                        # Ustaw zgodę tylko jeśli kolumna istnieje i wartość nie jest pusta
+                        if consent_col and pd.notna(row.get(consent_col)):
+                            consent_value = row.get(consent_col)
+                            # Obsługuje różne formaty wartości zgody
+                            if isinstance(consent_value, bool):
+                                subscriber.newsletter_consent = consent_value
+                            elif isinstance(consent_value, str):
+                                consent_lower = consent_value.lower().strip()
+                                if consent_lower in ['tak', 'yes', 't', 'y', 'true', '1']:
+                                    subscriber.newsletter_consent = True
+                                elif consent_lower in ['nie', 'no', 'n', 'false', '0']:
+                                    subscriber.newsletter_consent = False
+                            elif isinstance(consent_value, (int, float)):
+                                subscriber.newsletter_consent = bool(
+                                    consent_value)
+
+                        subscriber.save()
+                        result['updated'] += 1
                     else:
-                        subscriber.newsletter_consent = newsletter_consent
+                        result['skipped'] += 1
+                else:
+                    # Utwórz nowego subskrybenta
+                    # Dla każdego pola sprawdź czy wartość nie jest NaN i nie jest równa ciągowi "nan"
+                    common_name = ''
+                    if name_col and pd.notna(row.get(name_col)) and str(row.get(name_col)).lower() != 'nan':
+                        common_name = str(row.get(name_col)).strip()
 
-                    subscriber.save()
-                    result['updated'] += 1
+                    first_name = ''
+                    if first_name_col and pd.notna(row.get(first_name_col)) and str(row.get(first_name_col)).lower() != 'nan':
+                        first_name = str(row.get(first_name_col)).strip()
+
+                    last_name = ''
+                    if last_name_col and pd.notna(row.get(last_name_col)) and str(row.get(last_name_col)).lower() != 'nan':
+                        last_name = str(row.get(last_name_col)).strip()
+
+                    # Domyślna wartość zgody
+                    consent = False
+
+                    # Sprawdź, czy kolumna zgody istnieje i ma wartość
+                    if consent_col and pd.notna(row.get(consent_col)):
+                        consent_value = row.get(consent_col)
+                        # Obsługuje różne formaty wartości zgody
+                        if isinstance(consent_value, bool):
+                            consent = consent_value
+                        elif isinstance(consent_value, str):
+                            consent_lower = consent_value.lower().strip()
+                            if consent_lower in ['tak', 'yes', 't', 'y', 'true', '1']:
+                                consent = True
+                            # Wszystkie inne wartości = False (domyślnie)
+                        elif isinstance(consent_value, (int, float)):
+                            consent = bool(consent_value)
+                    else:
+                        # Jeśli kolumna zgody nie istnieje lub jest pusta, użyj wartości domyślnej
+                        consent = newsletter_consent
+
+                    subscriber = Subscriber.objects.create(
+                        email=email,
+                        common_name=common_name,
+                        first_name=first_name,
+                        last_name=last_name,
+                        newsletter_consent=consent,
+                        created_by=self.request.user if hasattr(
+                            self.request, 'user') else None
+                    )
+                    result['imported'] += 1
 
                 # Add to groups
                 if groups:
@@ -1536,7 +1630,7 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
                 self.request, f"Błąd podczas importu pliku: {str(e)}")
             return {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
 
-    def _process_emails(self, emails, newsletter_consent, groups, partners):
+    def _process_emails(self, emails, newsletter_consent, groups, partners, duplicate_action):
         """Process a list of email addresses"""
         result = {'imported': 0, 'updated': 0, 'skipped': 0, 'invalid': 0}
 
@@ -1553,20 +1647,30 @@ class SubscriberImportView(LoginRequiredMixin, FormView):
                 continue
 
             # Check if subscriber exists
-            subscriber, created = Subscriber.objects.get_or_create(
-                email=email,
-                defaults={
-                    'newsletter_consent': newsletter_consent,
-                    'created_by': self.request.user if hasattr(self.request, 'user') else None
-                }
-            )
+            subscriber_exists = Subscriber.objects.filter(email=email).exists()
 
-            if created:
-                result['imported'] += 1
+            # Jeśli subskrybent już istnieje i wybrano opcję pomijania
+            if subscriber_exists and duplicate_action == 'skip':
+                result['skipped'] += 1
+                continue
+
+            # Get or create based on duplicate action
+            if subscriber_exists:
+                subscriber = Subscriber.objects.get(email=email)
+                if duplicate_action == 'update':
+                    subscriber.newsletter_consent = newsletter_consent
+                    subscriber.save()
+                    result['updated'] += 1
+                else:
+                    result['skipped'] += 1
             else:
-                subscriber.newsletter_consent = newsletter_consent
-                subscriber.save()
-                result['updated'] += 1
+                subscriber = Subscriber.objects.create(
+                    email=email,
+                    newsletter_consent=newsletter_consent,
+                    created_by=self.request.user if hasattr(
+                        self.request, 'user') else None
+                )
+                result['imported'] += 1
 
             # Add to groups
             if groups:

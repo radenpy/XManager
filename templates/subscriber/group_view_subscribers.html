@@ -14,6 +14,7 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Nazwa</th>
                         <th scope="col">Imię</th>
                         <th scope="col">Nazwisko</th>
                         <th scope="col">Akcje</th>
@@ -24,6 +25,7 @@
                     <tr>
                         <td>{{ subscriber.id }}</td>
                         <td>{{ subscriber.email }}</td>
+                        <td>{{ subscriber.common_name|default:"-" }}</td>
                         <td>{{ subscriber.first_name|default:"-" }}</td>
                         <td>{{ subscriber.last_name|default:"-" }}</td>
                         <td>

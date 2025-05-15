@@ -105,13 +105,14 @@ class SubscriberImportForm(forms.Form):
         widget=forms.FileInput(attrs={'class': 'form-control'}),
         required=False,
         label='Plik Excel (.xlsx, .xls, .ods)',
-        help_text='Kolumny pliku powinny mieć nazwy: email, nazwa, imię, nazwisko, zgoda'
+        help_text='Kolumny pliku powinny zawierać: email, nazwa, imię, nazwisko, zgoda'
     )
 
-    newsletter_consent = forms.BooleanField(
-        required=False,
-        initial=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    # Zmiana na pole wyboru tak/nie zamiast checkboxa
+    newsletter_consent = forms.ChoiceField(
+        choices=[('False', 'Nie'), ('True', 'Tak')],
+        initial='False',
+        widget=forms.Select(attrs={'class': 'form-control'}),
         label='Zgoda na newsletter'
     )
 
@@ -139,6 +140,17 @@ class SubscriberImportForm(forms.Form):
         label='Utwórz nową grupę'
     )
 
+    # Dodaj opcję do wyboru co robić z istniejącymi subskrybentami
+    duplicate_action = forms.ChoiceField(
+        choices=[
+            ('skip', 'Pomiń istniejących subskrybentów'),
+            ('update', 'Aktualizuj istniejących subskrybentów')
+        ],
+        initial='skip',
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input me-2'}),
+        label='Co robić z istniejącymi subskrybentami'
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -152,31 +164,3 @@ class SubscriberImportForm(forms.Form):
         partners = Partner.objects.all().order_by('name')
         self.fields['partner_ids'].choices = [
             (partner.id, partner.name) for partner in partners]
-
-    def clean(self):
-        cleaned_data = super().clean()
-        import_type = cleaned_data.get('import_type')
-        email_list = cleaned_data.get('email_list')
-        import_file = cleaned_data.get('file')
-
-        if import_type == 'text' and not email_list:
-            self.add_error(
-                'email_list', 'Podaj listę adresów email do importu')
-
-        if import_type == 'file' and not import_file:
-            self.add_error('file', 'Wybierz plik do importu')
-
-        if import_file and import_type == 'file':
-            ext = import_file.name.split('.')[-1].lower()
-            if ext not in ['xlsx', 'xls', 'ods']:
-                self.add_error(
-                    'file', 'Dozwolone formaty plików: .xlsx, .xls, .ods')
-
-        # Check if creating a new group
-        new_group = cleaned_data.get('new_group')
-        if new_group:
-            # Check if group name is unique
-            if SubscriberGroup.objects.filter(group_name=new_group).exists():
-                self.add_error('new_group', 'Grupa o tej nazwie już istnieje')
-
-        return cleaned_data

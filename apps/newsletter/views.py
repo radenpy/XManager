@@ -22,6 +22,8 @@ from .models import Newsletter, NewsletterTracking
 import logging
 import uuid
 import datetime
+import json
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +132,10 @@ class NewsletterCreateView(LoginRequiredMixin, CreateView):
 
         # Create the newsletter
         newsletter = form.save(commit=False)
+
+        # Pobierz wartość opcji use_uuid z formularza
+        use_uuid = form.cleaned_data.get('use_uuid', True)
+        newsletter.use_uuid = use_uuid
 
         # If draft, we don't need to validate recipients
         if is_draft:
@@ -639,6 +645,18 @@ class NewsletterSendView(LoginRequiredMixin, View):
                 )
             except Exception as e:
                 logger.warning(f"Could not create tracking record: {str(e)}")
+
+            # Dodaj unikalne identyfikatory, jeśli opcja jest włączona
+        if getattr(newsletter, 'use_uuid', True):
+            message_id = str(uuid.uuid4())
+
+            # Dodaj Message-ID do nagłówków wiadomości
+            email_headers = {
+                'Message-ID': f'<{message_id}@{settings.EMAIL_DOMAIN}>',
+                'X-Entity-Ref-ID': message_id
+            }
+        else:
+            email_headers = {}
 
         # Create the email
         email = EmailMultiAlternatives(

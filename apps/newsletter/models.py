@@ -85,6 +85,10 @@ class Newsletter(CoreModel):
     open_count = models.IntegerField(default=0, verbose_name="Open count")
     click_count = models.IntegerField(default=0, verbose_name="Click count")
 
+    # ID
+    use_uuid = models.BooleanField(
+        default=True, verbose_name='Dodaj unikalne identyfikatory')
+
     # Tracking
     tracking_id = models.UUIDField(
         default=uuid.uuid4, editable=False, verbose_name="Tracking ID")
@@ -131,38 +135,37 @@ class Newsletter(CoreModel):
         all_recipients = direct_subscribers.union(group_subscribers)
         return len(all_recipients)
 
+    def update_recipient_count(self):
+        """
+        Aktualizuje liczbę odbiorców na podstawie grup i indywidualnych subskrybentów
+        """
+        count = 0
 
-def update_recipient_count(self):
-    """
-    Aktualizuje liczbę odbiorców na podstawie grup i indywidualnych subskrybentów
-    """
-    count = 0
-
-    # Zlicz odbiorców z grup (jeśli model ma taką relację)
-    if hasattr(self, 'recipient_groups'):
-        for group in self.recipient_groups.all():
-            count += group.subscriber.count()
-
-    # Dodaj indywidualnych odbiorców (jeśli model ma taką relację)
-    if hasattr(self, 'subscribers'):
-        # Pobierz wszystkie identyfikatory subskrybentów z grup
-        group_subscriber_ids = []
+        # Zlicz odbiorców z grup (jeśli model ma taką relację)
         if hasattr(self, 'recipient_groups'):
             for group in self.recipient_groups.all():
-                group_subscriber_ids.extend(
-                    group.subscriber.values_list('id', flat=True)
-                )
+                count += group.subscriber.count()
 
-        # Policz indywidualnych subskrybentów, którzy nie są w grupach
-        individual_subscribers = self.subscribers.exclude(
-            id__in=group_subscriber_ids).count()
-        count += individual_subscribers
+        # Dodaj indywidualnych odbiorców (jeśli model ma taką relację)
+        if hasattr(self, 'subscribers'):
+            # Pobierz wszystkie identyfikatory subskrybentów z grup
+            group_subscriber_ids = []
+            if hasattr(self, 'recipient_groups'):
+                for group in self.recipient_groups.all():
+                    group_subscriber_ids.extend(
+                        group.subscriber.values_list('id', flat=True)
+                    )
 
-    # Aktualizuj pole
-    self.total_recipients = count
-    self.save(update_fields=['total_recipients'])
+            # Policz indywidualnych subskrybentów, którzy nie są w grupach
+            individual_subscribers = self.subscribers.exclude(
+                id__in=group_subscriber_ids).count()
+            count += individual_subscribers
 
-    return count
+        # Aktualizuj pole
+        self.total_recipients = count
+        self.save(update_fields=['total_recipients'])
+
+        return count
 
     class Meta:
         verbose_name = "Newsletter"
@@ -211,6 +214,14 @@ class NewsletterTracking(CoreModel):
         blank=True,
         verbose_name="Link URL"
     )
+
+    # Dodaj to pole
+    tracking_id = models.UUIDField(
+        null=True, blank=True, verbose_name="Tracking ID")
+
+    # Możesz też dodać pole action jako alias dla event_type lub jako oddzielne pole
+    action = models.CharField(max_length=50, null=True,
+                              blank=True, verbose_name="Action")
 
     def __str__(self):
         return f"{self.get_event_type_display()} by {self.subscriber.email} - {self.newsletter.subject}"

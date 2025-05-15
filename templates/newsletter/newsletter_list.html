@@ -1,28 +1,27 @@
-```html
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Newsletters | XManager{% endblock %}
+{% block title %}Newslettery | XManager{% endblock %}
 
-{% block page_title %}Newsletters{% endblock %}
+{% block page_title %}Newslettery{% endblock %}
 
 {% block page_actions %}
     <a href="{% url 'newsletter:newsletter_create' %}" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i> Create Newsletter
+        <i class="fas fa-plus me-1"></i> Utwórz Newsletter
     </a>
     <a href="{% url 'newsletter:template_list' %}" class="btn btn-outline-secondary ms-2">
-        <i class="fas fa-file-code me-1"></i> Manage Templates
+        <i class="fas fa-file-code me-1"></i> Zarządzaj Szablonami
     </a>
 {% endblock %}
 
 {% block content %}
-    <!-- Filter Card -->
+    <!-- Karta filtrowania -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="get" action="{% url 'newsletter:newsletter_list' %}" class="row g-3">
                 <div class="col-md-5">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="subject" placeholder="Search by subject..." 
+                        <input type="text" class="form-control" name="subject" placeholder="Szukaj po temacie..." 
                                value="{{ request.GET.subject|default:'' }}">
                         <button class="btn btn-outline-primary" type="submit">
                             <i class="fas fa-search"></i>
@@ -31,44 +30,44 @@
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
-                        <option value="">All statuses</option>
-                        <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>Draft</option>
-                        <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
-                        <option value="sending" {% if request.GET.status == 'sending' %}selected{% endif %}>Sending</option>
-                        <option value="sent" {% if request.GET.status == 'sent' %}selected{% endif %}>Sent</option>
-                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                        <option value="">Wszystkie statusy</option>
+                        <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>Szkic</option>
+                        <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Zaplanowany</option>
+                        <option value="sending" {% if request.GET.status == 'sending' %}selected{% endif %}>Wysyłanie</option>
+                        <option value="sent" {% if request.GET.status == 'sent' %}selected{% endif %}>Wysłany</option>
+                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Błąd</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" class="form-control" name="date_from" placeholder="From date" 
+                    <input type="date" class="form-control" name="date_from" placeholder="Od daty" 
                            value="{{ request.GET.date_from|default:'' }}">
                 </div>
                 <div class="col-md-2">
                     <div class="d-flex">
-                        <input type="date" class="form-control" name="date_to" placeholder="To date" 
+                        <input type="date" class="form-control" name="date_to" placeholder="Do daty" 
                                value="{{ request.GET.date_to|default:'' }}">
-                        <button type="submit" class="btn btn-primary ms-2">Filter</button>
+                        <button type="submit" class="btn btn-primary ms-2">Filtruj</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Status Cards -->
+    <!-- Karty statusów -->
     <div class="row mb-4">
         <div class="col">
             <div class="card bg-light">
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">Drafts</h6>
+                            <h6 class="mb-0">Szkice</h6>
                             <h3 class="mb-0">{{ status_counts.draft }}</h3>
                         </div>
                         <i class="fas fa-edit text-muted fa-2x"></i>
                     </div>
                 </div>
                 <div class="card-footer p-1">
-                    <a href="?status=draft" class="small text-decoration-none d-block text-center">View all</a>
+                    <a href="?status=draft" class="small text-decoration-none d-block text-center">Zobacz wszystkie</a>
                 </div>
             </div>
         </div>
@@ -77,14 +76,14 @@
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">Scheduled</h6>
+                            <h6 class="mb-0">Zaplanowane</h6>
                             <h3 class="mb-0">{{ status_counts.scheduled }}</h3>
                         </div>
                         <i class="fas fa-calendar-alt text-primary fa-2x"></i>
                     </div>
                 </div>
                 <div class="card-footer p-1">
-                    <a href="?status=scheduled" class="small text-decoration-none d-block text-center">View all</a>
+                    <a href="?status=scheduled" class="small text-decoration-none d-block text-center">Zobacz wszystkie</a>
                 </div>
             </div>
         </div>
@@ -93,14 +92,14 @@
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">Sending</h6>
+                            <h6 class="mb-0">Wysyłane</h6>
                             <h3 class="mb-0">{{ status_counts.sending }}</h3>
                         </div>
                         <i class="fas fa-paper-plane text-warning fa-2x"></i>
                     </div>
                 </div>
                 <div class="card-footer p-1">
-                    <a href="?status=sending" class="small text-decoration-none d-block text-center">View all</a>
+                    <a href="?status=sending" class="small text-decoration-none d-block text-center">Zobacz wszystkie</a>
                 </div>
             </div>
         </div>
@@ -109,14 +108,14 @@
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">Sent</h6>
+                            <h6 class="mb-0">Wysłane</h6>
                             <h3 class="mb-0">{{ status_counts.sent }}</h3>
                         </div>
                         <i class="fas fa-check-circle text-success fa-2x"></i>
                     </div>
                 </div>
                 <div class="card-footer p-1">
-                    <a href="?status=sent" class="small text-decoration-none d-block text-center">View all</a>
+                    <a href="?status=sent" class="small text-decoration-none d-block text-center">Zobacz wszystkie</a>
                 </div>
             </div>
         </div>
@@ -125,20 +124,20 @@
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">Failed</h6>
+                            <h6 class="mb-0">Błędy</h6>
                             <h3 class="mb-0">{{ status_counts.failed }}</h3>
                         </div>
                         <i class="fas fa-exclamation-circle text-danger fa-2x"></i>
                     </div>
                 </div>
                 <div class="card-footer p-1">
-                    <a href="?status=failed" class="small text-decoration-none d-block text-center">View all</a>
+                    <a href="?status=failed" class="small text-decoration-none d-block text-center">Zobacz wszystkie</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Newsletters List -->
+    <!-- Lista Newsletterów -->
     <div class="card">
         <div class="card-body">
             {% if newsletters %}
@@ -146,13 +145,13 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Subject</th>
+                                <th>Temat</th>
                                 <th>Status</th>
-                                <th>Recipients</th>
-                                <th>Created</th>
-                                <th>Scheduled/Sent</th>
-                                <th>Stats</th>
-                                <th>Actions</th>
+                                <th>Odbiorcy</th>
+                                <th>Utworzono</th>
+                                <th>Zaplanowano/Wysłano</th>
+                                <th>Statystyki</th>
+                                <th>Akcje</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -163,15 +162,15 @@
                                     </td>
                                     <td>
                                         {% if newsletter.status == 'draft' %}
-                                            <span class="badge bg-secondary">Draft</span>
+                                            <span class="badge bg-secondary">Szkic</span>
                                         {% elif newsletter.status == 'scheduled' %}
-                                            <span class="badge bg-primary">Scheduled</span>
+                                            <span class="badge bg-primary">Zaplanowany</span>
                                         {% elif newsletter.status == 'sending' %}
-                                            <span class="badge bg-warning">Sending</span>
+                                            <span class="badge bg-warning">Wysyłanie</span>
                                         {% elif newsletter.status == 'sent' %}
-                                            <span class="badge bg-success">Sent</span>
+                                            <span class="badge bg-success">Wysłany</span>
                                         {% elif newsletter.status == 'failed' %}
-                                            <span class="badge bg-danger">Failed</span>
+                                            <span class="badge bg-danger">Błąd</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ newsletter.total_recipients }}</td>
@@ -190,7 +189,7 @@
                                             <small>
                                                 <i class="fas fa-eye"></i> {{ newsletter.open_count }} 
                                                 <i class="fas fa-mouse-pointer ms-2"></i> {{ newsletter.click_count }}
-                                                <button class="btn btn-sm btn-link p-0 ms-1" data-bs-toggle="tooltip" title="View detailed stats in future version">
+                                                <button class="btn btn-sm btn-link p-0 ms-1" data-bs-toggle="tooltip" title="Zobacz szczegółowe statystyki w przyszłej wersji">
                                                     <i class="fas fa-chart-bar text-primary"></i>
                                                 </button>
                                             </small>
@@ -201,24 +200,23 @@
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="actionDropdown{{ newsletter.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Actions
+                                                Akcje
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown{{ newsletter.id }}">
-                                           <!-- Znajdź tę sekcję w newsletter_list.html i zastąp ją poniższym kodem -->
 
-<!-- Common actions for all statuses -->
+<!-- Wspólne akcje dla wszystkich statusów -->
 <li>
     <a class="dropdown-item" href="{% url 'newsletter:newsletter_clone' slug=newsletter.slug %}">
-        <i class="fas fa-copy fa-fw me-1"></i> Clone
+        <i class="fas fa-copy fa-fw me-1"></i> Klonuj
     </a>
 </li>
 
-<!-- Status-specific actions -->
+<!-- Akcje specyficzne dla statusu -->
 {% if newsletter.status == 'draft' or newsletter.status == 'scheduled' %}
     <li><hr class="dropdown-divider"></li>
     <li>
         <a class="dropdown-item" href="{% url 'newsletter:newsletter_create' %}?edit={{ newsletter.slug }}">
-            <i class="fas fa-edit fa-fw me-1"></i> Edit in Wizard
+            <i class="fas fa-edit fa-fw me-1"></i> Edytuj w Kreatorze
         </a>
     </li>
 {% endif %}
@@ -227,15 +225,15 @@
     <li>
         <a class="dropdown-item text-danger" href="#" 
            onclick="confirmDelete('{{ newsletter.subject }}', '{% url 'newsletter:newsletter_delete' slug=newsletter.slug %}')">
-            <i class="fas fa-trash fa-fw me-1"></i> Delete
+            <i class="fas fa-trash fa-fw me-1"></i> Usuń
         </a>
     </li>
 {% endif %}
 
 {% if newsletter.status == 'scheduled' %}
     <li>
-        <a class="dropdown-item text-warning" href="#" onclick="alert('Cancel feature coming soon!')">
-            <i class="fas fa-ban fa-fw me-1"></i> Cancel Sending (Coming Soon)
+        <a class="dropdown-item text-warning" href="#" onclick="alert('Funkcja anulowania wkrótce dostępna!')">
+            <i class="fas fa-ban fa-fw me-1"></i> Anuluj Wysyłanie (Wkrótce)
         </a>
     </li>
 {% endif %}
@@ -244,23 +242,23 @@
     <li><hr class="dropdown-divider"></li>
     <li>
         <a class="dropdown-item" href="{% url 'newsletter:newsletter_report' slug=newsletter.slug %}">
-            <i class="fas fa-chart-bar fa-fw me-1"></i> Detailed Report
+            <i class="fas fa-chart-bar fa-fw me-1"></i> Szczegółowy Raport
         </a>
     </li>
 {% endif %}
 
 {% if newsletter.status == 'sent' %}
     <li>
-        <a class="dropdown-item" href="#" onclick="alert('Export feature coming soon!')">
-            <i class="fas fa-download fa-fw me-1"></i> Export Data (Coming Soon)
+        <a class="dropdown-item" href="#" onclick="alert('Funkcja eksportu wkrótce dostępna!')">
+            <i class="fas fa-download fa-fw me-1"></i> Eksportuj Dane (Wkrótce)
         </a>
     </li>
 {% endif %}
 
 {% if newsletter.status == 'failed' %}
     <li>
-        <a class="dropdown-item text-info" href="#" onclick="alert('Retry feature coming soon!')">
-            <i class="fas fa-redo fa-fw me-1"></i> Retry Sending (Coming Soon)
+        <a class="dropdown-item text-info" href="#" onclick="alert('Funkcja ponowienia wysyłki wkrótce dostępna!')">
+            <i class="fas fa-redo fa-fw me-1"></i> Ponów Wysyłanie (Wkrótce)
         </a>
     </li>
 {% endif %}
@@ -274,14 +272,14 @@
                 </div>
 
                 {% if is_paginated %}
-                    <nav aria-label="Pagination" class="mt-4">
+                    <nav aria-label="Paginacja" class="mt-4">
                         <ul class="pagination justify-content-center">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=1{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">First</a>
+                                    <a class="page-link" href="?page=1{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Pierwsza</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Previous</a>
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Poprzednia</a>
                                 </li>
                             {% endif %}
 
@@ -299,10 +297,10 @@
 
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Next</a>
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Następna</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Last</a>
+                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Ostatnia</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -310,32 +308,32 @@
                 {% endif %}
             {% else %}
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> No newsletters found.
+                    <i class="fas fa-info-circle me-2"></i> Nie znaleziono newsletterów.
                     {% if request.GET %}
-                        <a href="{% url 'newsletter:newsletter_list' %}" class="alert-link">Clear filters</a> to see all newsletters.
+                        <a href="{% url 'newsletter:newsletter_list' %}" class="alert-link">Wyczyść filtry</a> aby zobaczyć wszystkie newslettery.
                     {% else %}
-                        <a href="{% url 'newsletter:newsletter_create' %}" class="alert-link">Create your first newsletter</a> to get started.
+                        <a href="{% url 'newsletter:newsletter_create' %}" class="alert-link">Utwórz swój pierwszy newsletter</a> aby rozpocząć.
                     {% endif %}
                 </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Modal potwierdzenia usunięcia -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Potwierdź usunięcie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the newsletter "<span id="newsletterTitle"></span>"?</p>
-                    <p class="text-danger">This action cannot be undone.</p>
+                    <p>Czy na pewno chcesz usunąć newsletter "<span id="newsletterTitle"></span>"?</p>
+                    <p class="text-danger">Tej akcji nie można cofnąć.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Usuń</a>
                 </div>
             </div>
         </div>
@@ -345,11 +343,11 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize any JS components here
+    // Inicjalizacja komponentów JS tutaj
     
-    // Delete confirmation modal handlers
+    // Obsługa modalu potwierdzenia usunięcia
     window.confirmDelete = function(title, deleteUrl) {
-        // Set the newsletter title
+        // Ustaw tytuł newslettera
         document.getElementById('newsletterTitle').textContent = title;
         
         // Przygotuj przycisk usuwania, aby wysyłał żądanie POST
@@ -389,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     csrfInput.value = csrfToken;
                     form.appendChild(csrfInput);
                 } else {
-                    console.warn('CSRF token not found. The request might fail.');
+                    console.warn('Nie znaleziono tokenu CSRF. Żądanie może się nie powieść.');
                 }
             }
             
@@ -398,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
             form.submit();
         });
         
-        // Show the modal
+        // Pokaż modal
         const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         modal.show();
     };
@@ -422,4 +420,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
-```

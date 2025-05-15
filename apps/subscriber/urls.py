@@ -36,8 +36,6 @@ urlpatterns = [
          views.SubscriberGroupUpdateView.as_view(), name='group_update'),
     path('groups/delete/<int:pk>/',
          views.SubscriberGroupDeleteView.as_view(), name='group_delete'),
-    path('groups/view-subscribers/<int:pk>/',
-         views.SubscriberGroupViewSubscribersView.as_view(), name='group_view_subscribers'),
     path('bulk-edit/', views.SubscriberBulkEditView.as_view(),
          name='subscriber_bulk_edit'),
     path('bulk-update/', views.SubscriberBulkUpdateView.as_view(),

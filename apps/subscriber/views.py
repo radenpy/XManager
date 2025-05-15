@@ -711,18 +711,6 @@ class SubscriberGroupDeleteView(LoginRequiredMixin, DeleteView):
         return reverse('subscribers:group_list')
 
 
-class SubscriberGroupViewSubscribersView(LoginRequiredMixin, DetailView):
-    """View subscribers in a group"""
-    model = SubscriberGroup
-    template_name = 'subscriber/group_view_subscribers.html'
-    context_object_name = 'group'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['subscribers'] = self.object.subscriber.all()
-        return context
-
-
 class SubscriberBulkGroupAssignView(LoginRequiredMixin, View):
     """View for bulk assignment of subscribers to groups"""
     template_name = 'subscriber/bulk_group_assign.html'

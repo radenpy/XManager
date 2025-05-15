@@ -92,9 +92,6 @@
                             <td>{{ group.created_at|date:"d.m.Y H:i" }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{% url 'subscribers:group_view_subscribers' group.id %}" class="btn btn-sm btn-outline-primary btn-action" title="Zobacz subskrybentów">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
                                     <a href="{% url 'subscribers:group_update' group.id %}" class="btn btn-sm btn-outline-secondary btn-action" title="Edytuj">
                                         <i class="fas fa-edit"></i>
                                     </a>

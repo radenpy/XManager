@@ -774,3 +774,41 @@ INFO 2025-05-15 19:30:56,661 basehttp "GET /subscribers/groups/update/1/ HTTP/1.
 INFO 2025-05-15 19:31:12,139 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 17848
 INFO 2025-05-15 19:31:13,452 basehttp "GET /subscribers/groups/view-subscribers/1/ HTTP/1.1" 200 21880
 INFO 2025-05-15 19:32:46,640 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608125
+INFO 2025-05-15 19:35:50,375 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608125
+INFO 2025-05-15 19:36:37,845 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/urls.py changed, reloading.
+INFO 2025-05-15 19:36:38,136 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 19:36:50,626 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/subscriber/views.py changed, reloading.
+INFO 2025-05-15 19:36:50,844 autoreload Watching for file changes with StatReloader
+INFO 2025-05-15 19:38:25,218 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:38:27,368 basehttp "GET /subscribers/groups/update/1/ HTTP/1.1" 200 1608125
+INFO 2025-05-15 19:38:29,269 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:38:35,306 basehttp "GET /subscribers/groups/delete/4/ HTTP/1.1" 200 7108
+INFO 2025-05-15 19:38:41,714 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:38:49,284 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:39:06,102 basehttp "GET /subscribers/update/21/ HTTP/1.1" 200 20705
+INFO 2025-05-15 19:39:10,781 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:39:23,320 basehttp "GET /subscribers/?page=2 HTTP/1.1" 200 262700
+INFO 2025-05-15 19:39:26,319 basehttp "GET /subscribers/?search=&consent=&page_size=200 HTTP/1.1" 200 480247
+INFO 2025-05-15 19:39:50,730 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:39:51,182 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 19:39:54,243 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:39:55,595 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 19:39:58,792 basehttp "GET /newsletter/templates/ HTTP/1.1" 200 13931
+INFO 2025-05-15 19:40:01,890 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 19:40:02,859 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:40:03,828 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:40:08,058 basehttp "GET /partner/ HTTP/1.1" 200 168030
+INFO 2025-05-15 19:40:17,259 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:40:20,971 basehttp "GET /partner/ HTTP/1.1" 200 168030
+INFO 2025-05-15 19:40:22,102 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:40:24,223 basehttp "GET / HTTP/1.1" 200 11871
+INFO 2025-05-15 19:40:27,842 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:40:31,374 basehttp "GET / HTTP/1.1" 200 11871
+INFO 2025-05-15 19:40:32,207 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:40:33,049 basehttp "GET / HTTP/1.1" 200 11871
+INFO 2025-05-15 19:40:33,550 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:40:35,651 basehttp "GET /partner/ HTTP/1.1" 200 168030
+INFO 2025-05-15 19:40:36,327 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:40:36,744 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:40:37,260 basehttp "GET /newsletter/ HTTP/1.1" 200 44456
+INFO 2025-05-15 19:40:37,735 basehttp "GET /newsletter/templates/ HTTP/1.1" 200 13931

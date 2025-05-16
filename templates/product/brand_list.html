@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista marek | XManager{% endblock %}
+
+{% block page_title %}Lista marek{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:brand_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Dodaj markę
+    </a>
+{% endblock %}
+
+{% block content %}
+    <!-- Lista marek -->
+    <div class="card">
+        <div class="card-body">
+            {% if brands %}
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 20px;">#</th>
+                            <th scope="col">Nazwa marki</th>
+                            <th scope="col">Ilość produktów</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand in brands %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td>{{ brand.name }}</td>
+                            <td>{{ brand.products.count }}</td>
+                            <td>
+                                {% if brand.is_active %}
+                                    <span class="badge bg-success">Aktywna</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Nieaktywna</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a href="{% url 'product:brand_update' brand.pk %}" class="btn btn-sm btn-outline-secondary" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'product:brand_delete' brand.pk %}" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak marek do wyświetlenia.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

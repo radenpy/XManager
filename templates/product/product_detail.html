@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | XManager{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-4">
+        <a href="{% url 'product:product_list' %}" class="btn btn-secondary">← Powrót do listy</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">SKU: {{ product.sku }}</p>
+            
+            <div class="card mb-4">
+                <div class="card-header">Szczegóły produktu</div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Altum ID:</div>
+                        <div class="col-md-8">{{ product.altum_id|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">EAN:</div>
+                        <div class="col-md-8">{{ product.ean }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Kategoria:</div>
+                        <div class="col-md-8">
+                            {% if product.category %}
+                            <span class="badge badge-group">{{ product.category.name }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Marka:</div>
+                        <div class="col-md-8">
+                            {% if product.brand %}
+                            <span class="badge badge-company">{{ product.brand.name }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Stawka VAT:</div>
+                        <div class="col-md-8">{{ product.get_vat_rate_display }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Jednostka:</div>
+                        <div class="col-md-8">{{ product.unit }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Wymiary:</div>
+                        <div class="col-md-8">
+                            {% if product.width and product.height and product.depth %}
+                            {{ product.width }} × {{ product.height }} × {{ product.depth }} cm
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Waga:</div>
+                        <div class="col-md-8">
+                            {% if product.weight %}
+                            {{ product.weight }} kg
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">Status:</div>
+                        <div class="col-md-8">
+                            {% if product.is_active %}
+                            <span class="badge badge-active">Aktywny</span>
+                            {% else %}
+                            <span class="badge badge-inactive">Nieaktywny</span>
+                            {% endif %}
+                            
+                            {% if product.is_featured %}
+                            <span class="badge bg-warning text-dark">Wyróżniony</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">Opis</div>
+                <div class="card-body">
+                    {% if product.description %}
+                    <div class="product-description">
+                        {{ product.description|linebreaks }}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Brak opisu.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Zdjęcia</span>
+                </div>
+                <div class="card-body">
+                    {% if images %}
+                    <div class="row">
+                        {% for image in images %}
+                        <div class="col-6 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="card-img-top">
+                                <div class="card-body p-2">
+                                    <small class="d-block">{% if image.is_primary %}<span class="badge bg-primary">Główne</span>{% endif %}</small>
+                                    <small class="d-block text-muted">Kolejność: {{ image.order }}</small>
+                                    {% if image.compression_ratio %}
+                                    <small class="d-block text-muted">Kompresja: {{ image.compression_ratio|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Brak zdjęć.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <a href="{% url 'product:product_update' product.pk %}" class="btn btn-warning">Edytuj produkt</a>
+                <a href="{% url 'product:product_delete' product.pk %}" class="btn btn-danger">Usuń produkt</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Edytuj produkt{% else %}Dodaj produkt{% endif %} | XManager
+{% endblock %}
+
+{% block page_title %}
+    {% if object %}Edytuj produkt: {{ object.name }}{% else %}Dodaj nowy produkt{% endif %}
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:product_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Powrót do listy
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row mb-3">
+                    <!-- SKU -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.sku.id_for_label }}" class="form-label">{{ form.sku.label }}*</label>
+                            {{ form.sku.errors }}
+                            <input type="text" name="{{ form.sku.name }}" value="{{ form.sku.value|default:'' }}" 
+                                   id="{{ form.sku.id_for_label }}" class="form-control" required>
+                            {% if form.sku.help_text %}
+                                <div class="form-text text-muted">{{ form.sku.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- EAN -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.ean.id_for_label }}" class="form-label">{{ form.ean.label }}*</label>
+                            {{ form.ean.errors }}
+                            <input type="text" name="{{ form.ean.name }}" value="{{ form.ean.value|default:'' }}" 
+                                   id="{{ form.ean.id_for_label }}" class="form-control" required>
+                            {% if form.ean.help_text %}
+                                <div class="form-text text-muted">{{ form.ean.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nazwa produktu -->
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}*</label>
+                    {{ form.name.errors }}
+                    <input type="text" name="{{ form.name.name }}" value="{{ form.name.value|default:'' }}" 
+                           id="{{ form.name.id_for_label }}" class="form-control" required>
+                    {% if form.name.help_text %}
+                        <div class="form-text text-muted">{{ form.name.help_text }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row mb-3">
+                    <!-- Typ rynku (dropdown) -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.type.id_for_label }}" class="form-label">{{ form.type.label }}</label>
+                            {{ form.type.errors }}
+                            <select name="{{ form.type.name }}" id="{{ form.type.id_for_label }}" class="form-select">
+                                {% for value, display_name in form.type.field.choices %}
+                                    <option value="{{ value }}" {% if form.type.value == value %}selected{% endif %}>
+                                        {{ display_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.type.help_text %}
+                                <div class="form-text text-muted">{{ form.type.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Jednostka -->
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.unit.id_for_label }}" class="form-label">{{ form.unit.label }}</label>
+                            {{ form.unit.errors }}
+                            <input type="text" name="{{ form.unit.name }}" value="{{ form.unit.value|default:'' }}" 
+                                   id="{{ form.unit.id_for_label }}" class="form-control">
+                            {% if form.unit.help_text %}
+                                <div class="form-text text-muted">{{ form.unit.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Stawka VAT -->
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.vat_rate.id_for_label }}" class="form-label">{{ form.vat_rate.label }}</label>
+                            {{ form.vat_rate.errors }}
+                            <select name="{{ form.vat_rate.name }}" id="{{ form.vat_rate.id_for_label }}" class="form-select">
+                                {% for value, display_name in form.vat_rate.field.choices %}
+                                    <option value="{{ value }}" {% if form.vat_rate.value == value %}selected{% endif %}>
+                                        {{ display_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.vat_rate.help_text %}
+                                <div class="form-text text-muted">{{ form.vat_rate.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <!-- Kategoria -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                            {{ form.category.errors }}
+                            <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" class="form-select">
+                                <option value="">- Wybierz kategorię -</option>
+                                {% for choice in hierarchical_categories %}
+                                    <option value="{{ choice.id }}" {% if form.category.value|stringformat:"s" == choice.id|stringformat:"s" %}selected{% endif %}>
+                                        {% for i in choice.level|default:"0"|add:"0"|ljust:"10" %}
+                                            {% if forloop.counter0 > 0 %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
+                                        {% endfor %}
+                                        {% if choice.level > 0 %}└ {% endif %}
+                                        {{ choice.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.category.help_text %}
+                                <div class="form-text text-muted">{{ form.category.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Marka -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.brand.id_for_label }}" class="form-label">{{ form.brand.label }}</label>
+                            {{ form.brand.errors }}
+                            <select name="{{ form.brand.name }}" id="{{ form.brand.id_for_label }}" class="form-select">
+                                <option value="">- Wybierz markę -</option>
+                                {% for choice in form.brand.field.queryset %}
+                                    <option value="{{ choice.id }}" {% if form.brand.value|stringformat:"s" == choice.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.brand.help_text %}
+                                <div class="form-text text-muted">{{ form.brand.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Kod CN -->
+                <div class="mb-3">
+                    <label for="{{ form.cn_code.id_for_label }}" class="form-label">{{ form.cn_code.label }}</label>
+                    {{ form.cn_code.errors }}
+                    <input type="text" name="{{ form.cn_code.name }}" value="{{ form.cn_code.value|default:'' }}" 
+                           id="{{ form.cn_code.id_for_label }}" class="form-control">
+                    {% if form.cn_code.help_text %}
+                        <div class="form-text text-muted">{{ form.cn_code.help_text }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Opis -->
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                    {{ form.description.errors }}
+                    <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" 
+                              class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.help_text %}
+                        <div class="form-text text-muted">{{ form.description.help_text }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Wymiary -->
+                <h5 class="mt-4 mb-3">Wymiary i waga</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.weight.id_for_label }}" class="form-label">{{ form.weight.label }}</label>
+                            {{ form.weight.errors }}
+                            <input type="number" step="0.001" name="{{ form.weight.name }}" value="{{ form.weight.value|default:'' }}" 
+                                   id="{{ form.weight.id_for_label }}" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.height.id_for_label }}" class="form-label">{{ form.height.label }}</label>
+                            {{ form.height.errors }}
+                            <input type="number" step="0.01" name="{{ form.height.name }}" value="{{ form.height.value|default:'' }}" 
+                                   id="{{ form.height.id_for_label }}" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.width.id_for_label }}" class="form-label">{{ form.width.label }}</label>
+                            {{ form.width.errors }}
+                            <input type="number" step="0.01" name="{{ form.width.name }}" value="{{ form.width.value|default:'' }}" 
+                                   id="{{ form.width.id_for_label }}" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="{{ form.depth.id_for_label }}" class="form-label">{{ form.depth.label }}</label>
+                            {{ form.depth.errors }}
+                            <input type="number" step="0.01" name="{{ form.depth.name }}" value="{{ form.depth.value|default:'' }}" 
+                                   id="{{ form.depth.id_for_label }}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statusy -->
+                <div class="mb-3">
+                    <div class="d-flex gap-4">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" name="{{ form.is_active.name }}" 
+                                   id="{{ form.is_active.id_for_label }}" class="form-check-input"
+                                   {% if form.is_active.value %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                {{ form.is_active.label }}
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input type="checkbox" name="{{ form.is_featured.name }}" 
+                                   id="{{ form.is_featured.id_for_label }}" class="form-check-input"
+                                   {% if form.is_featured.value %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                {{ form.is_featured.label }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'product:product_list' %}" class="btn btn-outline-secondary">Anuluj</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}Zapisz zmiany{% else %}Dodaj produkt{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Możesz dodać dodatkowy JavaScript tutaj
+});
+</script>
+{% endblock %}

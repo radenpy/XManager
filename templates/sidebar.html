@@ -9,6 +9,41 @@
                 </a>
             </li>
             
+            <!-- Produkty - z rozwijanym menu -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.app_name == 'product' %}active{% endif %} dropdown-toggle d-flex justify-content-between align-items-center" 
+                   href="#productSubmenu" 
+                   data-bs-toggle="collapse" 
+                   aria-expanded="{% if request.resolver_match.app_name == 'product' %}true{% else %}false{% endif %}">
+                    <div>
+                        <i class="fas fa-box me-1"></i><span class="sidebar-text">Produkty</span>
+                    </div>
+                    <i class="fas fa-chevron-{% if request.resolver_match.app_name == 'product' %}up{% else %}down{% endif %} small"></i>
+                </a>
+                <div class="collapse {% if request.resolver_match.app_name == 'product' %}show{% endif %}" id="productSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'product_list' %}active{% endif %}" 
+                               href="{% url 'product:product_list' %}">
+                                <i class="fas fa-list me-1"></i><span class="sidebar-text">Lista produktów</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'category_list' %}active{% endif %}" 
+                               href="{% url 'product:category_list' %}">
+                                <i class="fas fa-sitemap me-1"></i><span class="sidebar-text">Kategorie</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}" 
+                               href="{% url 'product:brand_list' %}">
+                                <i class="fas fa-tag me-1"></i><span class="sidebar-text">Marki</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
             <!-- Firmy -->
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.app_name == 'partner' %}active{% endif %}" 
@@ -17,40 +52,127 @@
                 </a>
             </li>
             
-            <!-- Subskrybenci -->
+            <!-- Subskrybenci - z rozwijanym menu -->
             <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' and request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
-                  href="{% url 'subscribers:subscriber_list' %}">
-                    <i class="fas fa-envelope me-1"></i><span class="sidebar-text">Subskrybenci</span>
+                <a class="nav-link {% if request.resolver_match.app_name == 'subscribers' %}active{% endif %} dropdown-toggle d-flex justify-content-between align-items-center" 
+                   href="#subscriberSubmenu" 
+                   data-bs-toggle="collapse" 
+                   aria-expanded="{% if request.resolver_match.app_name == 'subscribers' %}true{% else %}false{% endif %}">
+                    <div>
+                        <i class="fas fa-envelope me-1"></i><span class="sidebar-text">Subskrybenci</span>
+                    </div>
+                    <i class="fas fa-chevron-{% if request.resolver_match.app_name == 'subscribers' %}up{% else %}down{% endif %} small"></i>
                 </a>
+                <div class="collapse {% if request.resolver_match.app_name == 'subscribers' %}show{% endif %}" id="subscriberSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}" 
+                               href="{% url 'subscribers:subscriber_list' %}">
+                                <i class="fas fa-users me-1"></i><span class="sidebar-text">Lista subskrybentów</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'group_list' %}active{% endif %}" 
+                               href="{% url 'subscribers:group_list' %}">
+                                <i class="fas fa-layer-group me-1"></i><span class="sidebar-text">Grupy</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             
-            <!-- Grupy Subskrybentów -->
+            <!-- Newsletter - z rozwijanym menu -->
             <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'group_list' and request.resolver_match.app_name == 'subscribers' %}active{% endif %}" 
-                  href="{% url 'subscribers:group_list' %}">
-                    <i class="fas fa-users me-1"></i><span class="sidebar-text">Grupy Subskrybentów</span>
+                <a class="nav-link {% if request.resolver_match.app_name == 'newsletter' %}active{% endif %} dropdown-toggle d-flex justify-content-between align-items-center" 
+                   href="#newsletterSubmenu" 
+                   data-bs-toggle="collapse" 
+                   aria-expanded="{% if request.resolver_match.app_name == 'newsletter' %}true{% else %}false{% endif %}">
+                    <div>
+                        <i class="fas fa-paper-plane me-1"></i><span class="sidebar-text">Newsletter</span>
+                    </div>
+                    <i class="fas fa-chevron-{% if request.resolver_match.app_name == 'newsletter' %}up{% else %}down{% endif %} small"></i>
                 </a>
+                <div class="collapse {% if request.resolver_match.app_name == 'newsletter' %}show{% endif %}" id="newsletterSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'newsletter_list' %}active{% endif %}" 
+                               href="{% url 'newsletter:newsletter_list' %}">
+                                <i class="fas fa-newspaper me-1"></i><span class="sidebar-text">Lista newsletterów</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'template_list' %}active{% endif %}" 
+                               href="{% url 'newsletter:template_list' %}">
+                                <i class="fas fa-file-code me-1"></i><span class="sidebar-text">Szablony</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
-            
-            <!-- Newsletter -->
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.app_name == 'newsletter' and request.resolver_match.url_name == 'newsletter_list' %}active{% endif %}" 
-                   href="{% url 'newsletter:newsletter_list' %}">
-                    <i class="fas fa-paper-plane me-1"></i><span class="sidebar-text">Newslettery</span>
-                </a>
-            </li>
-            
-            <!-- Szablony Newsletterów -->
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.app_name == 'newsletter' and request.resolver_match.url_name == 'template_list' %}active{% endif %}" 
-                   href="{% url 'newsletter:template_list' %}">
-                    <i class="fas fa-file-code me-1"></i><span class="sidebar-text">Szablony Newsletterów</span>
-                </a>
-            </li>
-            
-            <!-- Miejsce na dodatkowe elementy sidebar -->
         </ul>
         {% endblock %}
     </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicjalizacja kolapsów Bootstrap
+    var collapseTriggers = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    
+    collapseTriggers.forEach(function(trigger) {
+        // Dodaj obsługę kliknięcia do zmiany strzałki
+        trigger.addEventListener('click', function() {
+            var icon = this.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (icon) {
+                if (icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                } else {
+                    icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            }
+        });
+        
+        // Gdy wczytana jest strona, upewnij się, że ikony są prawidłowe
+        var targetId = trigger.getAttribute('href');
+        if (targetId) {
+            var targetCollapse = document.querySelector(targetId);
+            if (targetCollapse && targetCollapse.classList.contains('show')) {
+                var icon = trigger.querySelector('.fa-chevron-down');
+                if (icon) {
+                    icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                }
+            }
+        }
+    });
+    
+    // Obserwator zmian dla elementów collapse (reaguje na rozwijanie/zwijanie)
+    var collapseElements = document.querySelectorAll('.collapse');
+    collapseElements.forEach(function(collapse) {
+        // Utworzenie obiektu collapse Bootstrap
+        var bsCollapse = new bootstrap.Collapse(collapse, {
+            toggle: false // Nie przełączaj przy inicjalizacji
+        });
+        
+        // Nasłuchuj zdarzeń pokazania i ukrycia collapse
+        collapse.addEventListener('show.bs.collapse', function() {
+            var trigger = document.querySelector('[href="#' + collapse.id + '"]');
+            if (trigger) {
+                var icon = trigger.querySelector('.fa-chevron-down');
+                if (icon) {
+                    icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                }
+            }
+        });
+        
+        collapse.addEventListener('hide.bs.collapse', function() {
+            var trigger = document.querySelector('[href="#' + collapse.id + '"]');
+            if (trigger) {
+                var icon = trigger.querySelector('.fa-chevron-up');
+                if (icon) {
+                    icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            }
+        });
+    });
+});
+</script>

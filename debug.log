@@ -867,3 +867,1227 @@ INFO 2025-05-15 19:53:13,236 basehttp "GET /newsletter/ HTTP/1.1" 200 43684
 INFO 2025-05-15 19:53:13,764 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
 INFO 2025-05-15 19:53:14,332 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
 INFO 2025-05-15 19:53:14,963 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:53:49,192 basehttp "GET /partner/ HTTP/1.1" 200 168037
+INFO 2025-05-15 19:53:50,031 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-15 19:53:50,677 basehttp "GET /partner/ HTTP/1.1" 200 168037
+INFO 2025-05-15 19:53:52,151 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:53:53,084 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:53:53,733 basehttp "GET /newsletter/ HTTP/1.1" 200 43684
+INFO 2025-05-15 19:53:57,713 basehttp "GET /newsletter/templates/ HTTP/1.1" 200 13931
+INFO 2025-05-15 19:53:59,969 basehttp "GET /newsletter/ HTTP/1.1" 200 43684
+INFO 2025-05-15 19:54:00,599 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16198
+INFO 2025-05-15 19:54:01,285 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-15 19:54:01,876 basehttp "GET /partner/ HTTP/1.1" 200 168037
+INFO 2025-05-15 19:54:11,508 basehttp "GET /newsletter/ HTTP/1.1" 200 43684
+INFO 2025-05-15 19:54:19,531 basehttp "GET /dashboard/ HTTP/1.1" 200 11877
+INFO 2025-05-16 15:05:32,616 basehttp "GET /partner/ HTTP/1.1" 200 168037
+INFO 2025-05-16 15:05:32,625 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2025-05-16 15:05:36,316 basehttp "GET /subscribers/ HTTP/1.1" 200 272454
+INFO 2025-05-16 15:06:11,985 basehttp "POST /subscribers/bulk-action/ HTTP/1.1" 302 0
+INFO 2025-05-16 15:06:12,034 basehttp "GET /subscribers/ HTTP/1.1" 200 262536
+INFO 2025-05-16 15:06:19,795 basehttp "GET /subscribers/?page=2 HTTP/1.1" 200 262711
+INFO 2025-05-16 15:07:06,558 basehttp "GET /subscribers/?page=3 HTTP/1.1" 200 263971
+INFO 2025-05-16 15:07:19,253 basehttp "GET /subscribers/?page=4 HTTP/1.1" 200 262845
+INFO 2025-05-16 15:07:20,967 basehttp "GET /subscribers/ HTTP/1.1" 200 262097
+INFO 2025-05-16 15:07:22,985 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16197
+INFO 2025-05-16 16:03:05,846 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/settings.py changed, reloading.
+INFO 2025-05-16 16:03:06,198 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:04:03,343 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/urls.py changed, reloading.
+INFO 2025-05-16 16:04:03,568 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:22:13,366 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 16:22:13,710 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:22:45,315 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:23:59,862 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 16:24:00,230 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:30:08,220 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/core/validators.py changed, reloading.
+INFO 2025-05-16 16:30:08,547 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:32:52,902 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 16:32:53,188 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:34:43,607 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 16:34:43,841 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:35:50,212 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/admin.py changed, reloading.
+INFO 2025-05-16 16:35:50,474 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:45:24,560 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 16:45:24,967 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:48:39,802 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:56:08,126 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 16:56:08,353 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:56:30,432 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 16:58:07,508 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:00:50,144 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:02:10,437 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 17:02:10,688 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:02:41,839 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:03:44,765 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:05:41,746 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:05:42,150 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:10:30,929 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/urls.py changed, reloading.
+INFO 2025-05-16 17:10:31,224 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:11:27,756 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16197
+INFO 2025-05-16 17:11:27,768 basehttp "GET /static/js/main.js HTTP/1.1" 304 0
+INFO 2025-05-16 17:11:57,180 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/settings.py changed, reloading.
+INFO 2025-05-16 17:11:57,497 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:12:15,051 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/urls.py changed, reloading.
+INFO 2025-05-16 17:12:15,299 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:12:25,695 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/XManager/urls.py changed, reloading.
+INFO 2025-05-16 17:12:25,955 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:14:04,587 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16483
+ERROR 2025-05-16 17:14:08,905 log Internal Server Error: /products/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: product_productcategory
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 1945, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: product_productcategory
+ERROR 2025-05-16 17:14:08,907 basehttp "GET /products/ HTTP/1.1" 500 205220
+INFO 2025-05-16 17:14:25,524 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:26:35,074 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:26:35,407 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:26:46,879 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:26:47,271 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:27:15,068 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 17:27:15,300 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:29:30,734 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16483
+INFO 2025-05-16 17:29:31,475 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16483
+ERROR 2025-05-16 17:29:32,362 log Internal Server Error: /products/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 891, in _resolve_lookup
+    current = current[bit]
+              ~~~~~~~^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/context.py", line 88, in __getitem__
+    raise KeyError(key)
+KeyError: 'default_page_size'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 897, in _resolve_lookup
+    if isinstance(current, BaseContext) and getattr(
+                                            ~~~~~~~^
+        type(current), bit
+        ^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+AttributeError: type object 'RequestContext' has no attribute 'default_page_size'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 907, in _resolve_lookup
+    current = current[int(bit)]
+                      ~~~^^^^^
+ValueError: invalid literal for int() with base 10: 'default_page_size'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 743, in resolve
+    arg_vals.append(arg.resolve(context))
+                    ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 914, in _resolve_lookup
+    raise VariableDoesNotExist(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )  # missing attribute
+    ^
+django.template.base.VariableDoesNotExist: Failed lookup for key [default_page_size] in [{'True': True, 'False': False, 'None': None}, {}, {}, {'paginator': <django.core.paginator.Paginator object at 0x106b1f610>, 'page_obj': <Page 1 of 1>, 'is_paginated': False, 'object_list': <QuerySet [<Product: cos - cos>]>, 'products': <QuerySet [<Product: cos - cos>]>, 'view': <apps.product.views.ProductListView object at 0x1066863c0>, 'categories': <QuerySet []>, 'brands': <QuerySet []>}]
+ERROR 2025-05-16 17:29:32,365 basehttp "GET /products/ HTTP/1.1" 500 197959
+INFO 2025-05-16 17:31:03,994 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:31:04,352 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:32:35,279 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:32:35,665 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:32:47,372 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16483
+ERROR 2025-05-16 17:32:48,462 log Internal Server Error: /products/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'product_detail' not found. 'product_detail' is not a valid view function or pattern name.
+ERROR 2025-05-16 17:32:48,464 basehttp "GET /products/ HTTP/1.1" 500 202314
+INFO 2025-05-16 17:33:36,148 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 17:33:36,560 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:33:45,982 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 17:33:46,276 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:34:10,976 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 17:34:11,226 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:34:41,947 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 17:34:42,192 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:37:14,338 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 17:37:14,602 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 17:37:20,169 basehttp "GET /subscribers/groups/ HTTP/1.1" 200 16483
+INFO 2025-05-16 17:37:21,132 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 17:37:28,533 basehttp "POST /products/bulk-edit/ HTTP/1.1" 302 0
+INFO 2025-05-16 17:37:28,543 basehttp "GET /products/ HTTP/1.1" 200 41681
+ERROR 2025-05-16 17:37:38,663 log Internal Server Error: /products/1/update/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'add_class'
+ERROR 2025-05-16 17:37:38,665 basehttp "GET /products/1/update/ HTTP/1.1" 500 268084
+INFO 2025-05-16 17:38:28,967 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 17:39:48,538 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 17:39:50,057 basehttp "GET /products/create/ HTTP/1.1" 200 12884
+INFO 2025-05-16 17:40:07,009 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 17:40:08,951 basehttp "GET /products/create/ HTTP/1.1" 200 12884
+INFO 2025-05-16 17:40:11,747 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 18:50:56,277 basehttp "GET /products/1/update/ HTTP/1.1" 200 12906
+INFO 2025-05-16 18:55:41,832 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 18:55:42,207 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 18:57:32,741 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 18:57:32,973 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:00:58,181 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/models.py changed, reloading.
+INFO 2025-05-16 19:00:58,412 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:01:34,646 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 19:01:36,116 basehttp "GET /products/ HTTP/1.1" 200 41223
+INFO 2025-05-16 19:01:38,075 basehttp "GET /products/create/ HTTP/1.1" 200 12885
+ERROR 2025-05-16 19:14:58,705 log Internal Server Error: /products/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 210, in render
+    return template.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'category_list' not found. 'category_list' is not a valid view function or pattern name.
+ERROR 2025-05-16 19:14:58,707 basehttp "GET /products/ HTTP/1.1" 500 221281
+ERROR 2025-05-16 19:17:35,566 log Internal Server Error: /products/1/update/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 210, in render
+    return template.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'category_list' not found. 'category_list' is not a valid view function or pattern name.
+ERROR 2025-05-16 19:17:35,567 basehttp "GET /products/1/update/ HTTP/1.1" 500 212863
+ERROR 2025-05-16 19:17:38,900 log Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/rafal/VisualStudio/PythonProjects/XManager/apps/core/views.py", line 218, in dashboard_view
+    return render(request, 'dashboard.html', context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 210, in render
+    return template.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'category_list' not found. 'category_list' is not a valid view function or pattern name.
+ERROR 2025-05-16 19:17:38,901 basehttp "GET /dashboard/ HTTP/1.1" 500 226531
+INFO 2025-05-16 19:18:20,511 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 19:18:20,867 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:18:35,359 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/urls.py changed, reloading.
+INFO 2025-05-16 19:18:35,669 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:20:47,339 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:20:47,768 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:21:43,241 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:21:43,478 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:21:47,041 basehttp "GET /dashboard/ HTTP/1.1" 200 16258
+INFO 2025-05-16 19:21:55,966 basehttp "GET /products/ HTTP/1.1" 200 45327
+INFO 2025-05-16 19:21:57,953 basehttp "GET /products/categories/ HTTP/1.1" 200 11027
+ERROR 2025-05-16 19:22:00,314 log Internal Server Error: /products/categories/create/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'add_class'
+ERROR 2025-05-16 19:22:00,316 basehttp "GET /products/categories/create/ HTTP/1.1" 500 268015
+INFO 2025-05-16 19:22:07,089 basehttp "GET /products/brands/ HTTP/1.1" 200 11003
+ERROR 2025-05-16 19:22:09,403 log Internal Server Error: /products/brands/create/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'add_class'
+ERROR 2025-05-16 19:22:09,404 basehttp "GET /products/brands/create/ HTTP/1.1" 500 260463
+INFO 2025-05-16 19:22:40,075 basehttp "GET /partner/ HTTP/1.1" 200 172417
+INFO 2025-05-16 19:24:39,806 basehttp "GET /subscribers/ HTTP/1.1" 200 266487
+INFO 2025-05-16 19:24:46,954 basehttp "GET /products/ HTTP/1.1" 200 45327
+INFO 2025-05-16 19:24:58,505 basehttp "GET /products/?search=&status=&featured=&page_size=100 HTTP/1.1" 200 45371
+INFO 2025-05-16 19:25:55,036 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:25:56,183 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:25:56,640 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:25:56,810 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:25:56,958 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:26:00,538 basehttp "GET /products/ HTTP/1.1" 200 46801
+INFO 2025-05-16 19:26:03,521 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+INFO 2025-05-16 19:26:04,921 basehttp "GET /products/brands/ HTTP/1.1" 200 12477
+INFO 2025-05-16 19:26:05,862 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+ERROR 2025-05-16 19:26:09,634 log Internal Server Error: /products/categories/create/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'add_class'
+ERROR 2025-05-16 19:26:09,635 basehttp "GET /products/categories/create/ HTTP/1.1" 500 268015
+INFO 2025-05-16 19:26:24,704 basehttp "GET /products/brands/ HTTP/1.1" 200 12477
+ERROR 2025-05-16 19:26:25,671 log Internal Server Error: /products/brands/create/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'add_class'
+ERROR 2025-05-16 19:26:25,673 basehttp "GET /products/brands/create/ HTTP/1.1" 500 260463
+INFO 2025-05-16 19:27:18,590 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+INFO 2025-05-16 19:27:19,278 basehttp "GET /products/brands/ HTTP/1.1" 200 12477
+INFO 2025-05-16 19:27:19,821 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+INFO 2025-05-16 19:27:20,794 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17146
+INFO 2025-05-16 19:28:00,029 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17146
+INFO 2025-05-16 19:28:13,125 basehttp "GET /products/brands/ HTTP/1.1" 200 12477
+INFO 2025-05-16 19:28:15,900 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+INFO 2025-05-16 19:28:18,860 basehttp "GET /products/brands/ HTTP/1.1" 200 12477
+INFO 2025-05-16 19:28:26,509 basehttp "GET /products/brands/create/ HTTP/1.1" 200 16036
+INFO 2025-05-16 19:28:32,794 basehttp "POST /products/brands/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:28:32,801 basehttp "GET /products/brands/ HTTP/1.1" 200 14561
+INFO 2025-05-16 19:28:35,266 basehttp "GET /products/brands/create/ HTTP/1.1" 200 16036
+INFO 2025-05-16 19:28:40,084 basehttp "POST /products/brands/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:28:40,091 basehttp "GET /products/brands/ HTTP/1.1" 200 15662
+INFO 2025-05-16 19:28:45,908 basehttp "GET /products/categories/ HTTP/1.1" 200 12501
+INFO 2025-05-16 19:29:15,623 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17146
+INFO 2025-05-16 19:29:36,422 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:29:36,428 basehttp "GET /products/categories/ HTTP/1.1" 200 14767
+INFO 2025-05-16 19:29:37,887 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17416
+INFO 2025-05-16 19:29:47,487 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:29:47,493 basehttp "GET /products/categories/ HTTP/1.1" 200 16013
+INFO 2025-05-16 19:29:52,071 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:29:52,767 basehttp "GET /products/categories/ HTTP/1.1" 200 15563
+INFO 2025-05-16 19:31:00,530 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:31:02,668 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:31:06,355 basehttp "GET /products/1/update/ HTTP/1.1" 200 18634
+INFO 2025-05-16 19:31:36,104 basehttp "POST /products/1/update/ HTTP/1.1" 200 19009
+INFO 2025-05-16 19:32:35,751 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:32:38,210 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:41,787 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:42,223 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:42,397 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:42,592 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:42,772 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:42,939 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:45,886 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:32:47,165 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:32:50,533 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17687
+INFO 2025-05-16 19:32:51,782 basehttp "GET /products/categories/ HTTP/1.1" 200 13115
+INFO 2025-05-16 19:33:00,491 basehttp "GET /products/categories/ HTTP/1.1" 200 15563
+INFO 2025-05-16 19:35:06,088 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:35:06,353 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:36:34,591 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:36:36,311 basehttp "GET /products/ HTTP/1.1" 200 51201
+ERROR 2025-05-16 19:36:38,529 log Internal Server Error: /products/categories/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 1035, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'product_tags'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 1097, in load
+    lib = find_library(parser, name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 1037, in find_library
+    raise TemplateSyntaxError(
+    ...<5 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: 'product_tags' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+cache
+countries
+i18n
+l10n
+log
+static
+tz
+ERROR 2025-05-16 19:36:38,531 basehttp "GET /products/categories/ HTTP/1.1" 500 177872
+INFO 2025-05-16 19:37:54,775 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:37:59,748 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:38:00,013 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:38:00,190 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:38:02,064 basehttp "GET /products/ HTTP/1.1" 200 51201
+ERROR 2025-05-16 19:38:02,638 log Internal Server Error: /products/categories/
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/loader_tags.py", line 199, in render
+    template = context.template.engine.select_template(template_name)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/engine.py", line 214, in select_template
+    raise TemplateDoesNotExist(", ".join(not_found))
+django.template.exceptions.TemplateDoesNotExist: product/includes/category_item.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 109, in render
+    reraise(exc, self.backend)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/rafal/.local/share/virtualenvs/XManager-w8HXMJeE/lib/python3.13/site-packages/django/template/backends/django.py", line 130, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: product/includes/category_item.html
+ERROR 2025-05-16 19:38:02,640 basehttp "GET /products/categories/ HTTP/1.1" 500 184746
+INFO 2025-05-16 19:39:30,965 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:39:31,265 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:39:34,925 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:39:35,204 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:39:35,354 basehttp "GET /products/ HTTP/1.1" 200 51201
+INFO 2025-05-16 19:39:36,003 basehttp "GET /products/categories/ HTTP/1.1" 200 16898
+INFO 2025-05-16 19:39:49,786 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17687
+INFO 2025-05-16 19:39:55,869 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:39:55,879 basehttp "GET /products/categories/ HTTP/1.1" 200 19108
+INFO 2025-05-16 19:40:06,836 basehttp "GET /products/categories/create/ HTTP/1.1" 200 17960
+INFO 2025-05-16 19:40:12,377 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:40:12,387 basehttp "GET /products/categories/ HTTP/1.1" 200 20872
+INFO 2025-05-16 19:40:16,107 basehttp "GET /products/categories/create/ HTTP/1.1" 200 18236
+INFO 2025-05-16 19:40:27,949 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:40:27,964 basehttp "GET /products/categories/ HTTP/1.1" 200 22649
+INFO 2025-05-16 19:40:41,379 basehttp "GET /products/categories/create/ HTTP/1.1" 200 18520
+INFO 2025-05-16 19:40:56,215 basehttp "POST /products/categories/create/ HTTP/1.1" 302 0
+INFO 2025-05-16 19:40:56,227 basehttp "GET /products/categories/ HTTP/1.1" 200 24664
+INFO 2025-05-16 19:41:10,928 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:41:12,311 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:41:30,387 basehttp "GET /products/categories/4/update/ HTTP/1.1" 200 18575
+INFO 2025-05-16 19:41:32,146 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:41:37,137 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:41:40,759 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:41:56,400 basehttp "POST /products/1/update/ HTTP/1.1" 200 19099
+INFO 2025-05-16 19:43:36,961 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:43:39,635 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:43:40,822 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:43:42,796 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:44:24,881 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:44:26,746 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:44:29,076 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:44:31,532 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:45:09,493 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:45:09,788 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:45:48,534 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:45:49,933 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:45:51,538 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:45:52,151 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:45:52,621 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:45:54,045 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:46:09,312 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:46:10,420 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:46:11,420 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:46:14,006 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:46:15,632 basehttp "GET /products/1/update/ HTTP/1.1" 200 18814
+INFO 2025-05-16 19:47:39,016 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:47:39,330 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:48:23,341 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:48:23,675 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:49:42,329 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 19:49:42,693 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:50:12,410 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:50:12,721 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:53:42,642 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 19:53:42,883 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 19:53:47,807 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 19:53:49,732 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:53:50,754 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:53:51,556 basehttp "GET /products/brands/ HTTP/1.1" 200 15216
+INFO 2025-05-16 19:53:52,758 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 19:53:55,536 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 19:53:57,665 basehttp "GET /products/1/update/ HTTP/1.1" 200 18896
+INFO 2025-05-16 20:00:13,377 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 20:00:13,600 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:00:17,037 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 20:00:18,201 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 20:00:19,715 basehttp "GET /products/categories/ HTTP/1.1" 200 24214
+INFO 2025-05-16 20:00:24,215 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 20:00:25,886 basehttp "GET /products/1/update/ HTTP/1.1" 200 18896
+INFO 2025-05-16 20:01:20,177 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 20:01:20,530 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:02:01,620 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/forms.py changed, reloading.
+INFO 2025-05-16 20:02:01,844 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:04:16,681 autoreload /Users/rafal/VisualStudio/PythonProjects/XManager/apps/product/views.py changed, reloading.
+INFO 2025-05-16 20:04:16,922 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:04:31,162 basehttp "GET /dashboard/ HTTP/1.1" 200 17734
+INFO 2025-05-16 20:04:32,513 basehttp "GET /products/ HTTP/1.1" 200 55741
+INFO 2025-05-16 20:04:34,471 basehttp "GET /products/1/update/ HTTP/1.1" 200 18896
+INFO 2025-05-16 20:06:47,666 basehttp "GET /products/1/update/ HTTP/1.1" 200 19564
+INFO 2025-05-16 20:07:39,338 basehttp "POST /products/1/update/ HTTP/1.1" 302 0
+INFO 2025-05-16 20:07:39,347 basehttp "GET /products/1/ HTTP/1.1" 200 16523
+INFO 2025-05-16 20:09:56,863 basehttp "GET /products/ HTTP/1.1" 200 55785
+INFO 2025-05-16 20:10:14,877 basehttp "GET /products/1/update/ HTTP/1.1" 200 19663
+INFO 2025-05-16 20:10:17,570 basehttp "POST /products/1/update/ HTTP/1.1" 302 0
+INFO 2025-05-16 20:10:17,580 basehttp "GET /products/1/ HTTP/1.1" 200 16570
+INFO 2025-05-16 20:10:21,352 basehttp "GET /products/ HTTP/1.1" 200 55800

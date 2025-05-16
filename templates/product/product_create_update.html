@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-4">
+        <a href="{% url 'product:product_list' %}" class="btn btn-secondary">← Powrót do listy</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Błędy formularza:</strong>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_sku" class="form-label">SKU</label>
+                            <input type="text" name="sku" id="id_sku" class="form-control" value="{{ form.sku.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_ean" class="form-label">EAN</label>
+                            <input type="text" name="ean" id="id_ean" class="form-control" value="{{ form.ean.value|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">Nazwa produktu</label>
+                    <input type="text" name="name" id="id_name" class="form-control" value="{{ form.name.value|default:'' }}">
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_type" class="form-label">Typ rynku</label>
+                            {{ form.type }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_vat_rate" class="form-label">Stawka VAT</label>
+                            {{ form.vat_rate }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">Opis</label>
+                    <textarea name="description" id="id_description" class="form-control" rows="5">{{ form.description.value|default:'' }}</textarea>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_category" class="form-label">Kategoria</label>
+                            {{ form.category }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_brand" class="form-label">Marka</label>
+                            {{ form.brand }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_unit" class="form-label">Jednostka</label>
+                            <input type="text" name="unit" id="id_unit" class="form-control" value="{{ form.unit.value|default:'szt' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_cn_code" class="form-label">Kod CN</label>
+                            <input type="text" name="cn_code" id="id_cn_code" class="form-control" value="{{ form.cn_code.value|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="id_weight" class="form-label">Waga (kg)</label>
+                            <input type="number" name="weight" id="id_weight" class="form-control" step="0.001" value="{{ form.weight.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="id_height" class="form-label">Wysokość (cm)</label>
+                            <input type="number" name="height" id="id_height" class="form-control" step="0.01" value="{{ form.height.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="id_width" class="form-label">Szerokość (cm)</label>
+                            <input type="number" name="width" id="id_width" class="form-control" step="0.01" value="{{ form.width.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="id_depth" class="form-label">Głębokość (cm)</label>
+                            <input type="number" name="depth" id="id_depth" class="form-control" step="0.01" value="{{ form.depth.value|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input type="checkbox" name="is_active" id="id_is_active" class="form-check-input" {% if form.is_active.value %}checked{% endif %}>
+                            <label for="id_is_active" class="form-check-label">Aktywny</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input type="checkbox" name="is_featured" id="id_is_featured" class="form-check-input" {% if form.is_featured.value %}checked{% endif %}>
+                            <label for="id_is_featured" class="form-check-label">Wyróżniony</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'product:product_list' %}" class="btn btn-secondary">Anuluj</a>
+                    <button type="submit" class="btn btn-primary">{{ action }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

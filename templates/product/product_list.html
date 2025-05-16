@@ -1,0 +1,899 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista produktów | XManager{% endblock %}
+
+{% block page_title %}Lista produktów{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:product_create' %}" class="btn btn-primary ms-2">
+        <i class="fas fa-plus me-1"></i> Dodaj produkt
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    
+    <!-- Search and Filters - Compact Wide Bar -->
+    <div class="card mb-2">
+        <div class="card-body py-2">
+            <form method="get" action="{% url 'product:product_list' %}" id="filterForm" class="row align-items-center">
+                <!-- Left section - Search -->
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control form-control-sm" name="search" 
+                               placeholder="Szukaj po nazwie, SKU, EAN..." 
+                               value="{{ search_query|default:'' }}">
+                        <button class="btn btn-outline-primary btn-sm" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Middle section - Filter buttons -->
+                <div class="col-md-6">
+                    <div class="d-flex flex-wrap gap-2">
+                        <!-- Filtr: Kategoria -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="categoryFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-tags"></i>
+                                <span class="ms-1">Kategorie</span>
+                                <span class="filter-badge badge bg-primary ms-1 d-none" id="categoryFilterBadge">0</span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="categoryFilterDropdown">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj kategorii..." id="categorySearchInput">
+                                </div>
+                                <div style="max-height: 200px; overflow-y: auto;" id="categoryFilterList">
+                                    {% for category in categories %}
+                                    <div class="form-check small category-filter-item">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="category" value="{{ category.slug }}" id="filter_category_{{ category.id }}" 
+                                            {% if category.slug in selected_categories %}checked{% endif %}
+                                        >
+                                        <label class="form-check-label" for="filter_category_{{ category.id }}" data-search-text="{{ category.name|lower }}">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="category">Zaznacz wszystkie</button>
+                                    <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                                        <i class="fas fa-filter me-1"></i> Filtruj
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtr: Marka -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="brandFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-building"></i>
+                                <span class="ms-1">Marki</span>
+                                <span class="filter-badge badge bg-primary ms-1 d-none" id="brandFilterBadge">0</span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="width: 300px; font-size: 0.8rem;" aria-labelledby="brandFilterDropdown">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm search-filter" placeholder="Szukaj marki..." id="brandSearchInput">
+                                </div>
+                                <div style="max-height: 200px; overflow-y: auto;" id="brandFilterList">
+                                    {% for brand in brands %}
+                                    <div class="form-check small brand-filter-item">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="brand" value="{{ brand.slug }}" id="filter_brand_{{ brand.id }}"
+                                            {% if brand.slug in selected_brands %}checked{% endif %}
+                                        >
+                                        <label class="form-check-label" for="filter_brand_{{ brand.id }}" data-search-text="{{ brand.name|lower }}">
+                                            {{ brand.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary filter-select-all" data-target="brand">Zaznacz wszystkie</button>
+                                    <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                                        <i class="fas fa-filter me-1"></i> Filtruj
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtr: Status aktywności -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="ms-1">Status</span>
+                                <span class="filter-badge badge bg-primary ms-1 {% if not selected_status %}d-none{% endif %}" id="statusFilterBadge">
+                                    {% if selected_status %}1{% endif %}
+                                </span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="min-width: 200px; font-size: 0.8rem;" aria-labelledby="statusFilterDropdown">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_all" value="" {% if not selected_status %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_all">Wszystkie</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_active" value="1" {% if selected_status == '1' %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_active">Aktywne</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="status_inactive" value="0" {% if selected_status == '0' %}checked{% endif %}>
+                                    <label class="form-check-label" for="status_inactive">Nieaktywne</label>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                                        <i class="fas fa-filter me-1"></i> Filtruj
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtr: Wyróżnione -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="featuredFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-star"></i>
+                                <span class="ms-1">Wyróżnione</span>
+                                <span class="filter-badge badge bg-primary ms-1 {% if not selected_featured %}d-none{% endif %}" id="featuredFilterBadge">
+                                    {% if selected_featured %}1{% endif %}
+                                </span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="min-width: 200px; font-size: 0.8rem;" aria-labelledby="featuredFilterDropdown">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="featured" id="featured_all" value="" {% if not selected_featured %}checked{% endif %}>
+                                    <label class="form-check-label" for="featured_all">Wszystkie</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="featured" id="featured_yes" value="1" {% if selected_featured == '1' %}checked{% endif %}>
+                                    <label class="form-check-label" for="featured_yes">Tak</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="featured" id="featured_no" value="0" {% if selected_featured == '0' %}checked{% endif %}>
+                                    <label class="form-check-label" for="featured_no">Nie</label>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-sm btn-primary filter-submit-btn">
+                                        <i class="fas fa-filter me-1"></i> Filtruj
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtr: Ilość rekordów na stronę -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light filter-btn" type="button" id="pageSizeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-list"></i>
+                                <span class="ms-1" id="pageSizeText">{{ selected_page_size|default:default_page_size }} rekordów</span>
+                            </button>
+                            <div class="dropdown-menu p-2 shadow-sm" style="font-size: 0.8rem;" aria-labelledby="pageSizeFilterDropdown">
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '50' %}active{% endif %}" data-page-size="50">
+                                    50 rekordów
+                                    {% if selected_page_size == '50' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '100' %}active{% endif %}" data-page-size="100">
+                                    100 rekordów
+                                    {% if selected_page_size == '100' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '200' %}active{% endif %}" data-page-size="200">
+                                    200 rekordów
+                                    {% if selected_page_size == '200' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                                <a href="#" class="dropdown-item page-size-item d-flex align-items-center {% if selected_page_size == '500' %}active{% endif %}" data-page-size="500">
+                                    500 rekordów
+                                    {% if selected_page_size == '500' %}<i class="fas fa-check ms-auto"></i>{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right section - Action buttons -->
+                <div class="col-md-2 text-end">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-filter me-1"></i> Filtruj
+                    </button>
+                    
+                    <a href="{% url 'product:product_list' %}" class="btn btn-sm btn-outline-secondary ms-1">
+                        <i class="fas fa-undo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+   <!-- Active Filters Display -->
+{% if search_query or selected_categories or selected_brands or selected_status or selected_featured %}
+<div class="card mb-2">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="text-muted small me-2">Aktywne filtry:</span>
+            
+            {% if search_query %}
+            <div class="active-filter">
+                <span class="small">Wyszukiwanie: "{{ search_query }}"</span>
+                <a href="{% url 'product:product_list' %}?{% for k, v in request.GET.items %}{% if k != 'search' and k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                    <i class="fas fa-times-circle"></i>
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if selected_categories %}
+            {% for category_slug in selected_categories %}
+            <div class="active-filter">
+                <span class="badge badge-group">Kategoria: 
+                {% for category in categories %}
+                    {% if category.slug == category_slug %}
+                        {{ category.name }}
+                    {% endif %}
+                {% endfor %}
+                </span>
+                <a href="{% url 'product:product_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_featured %}featured={{ selected_featured }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for cat in selected_categories %}{% if cat != category_slug %}category={{ cat }}&{% endif %}{% endfor %}{% for b in selected_brands %}brand={{ b }}&{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                    <i class="fas fa-times-circle"></i>
+                </a>
+            </div>
+            {% endfor %}
+            {% endif %}
+            
+            {% if selected_brands %}
+            {% for brand_slug in selected_brands %}
+            <div class="active-filter">
+                <span class="badge badge-company">Marka: 
+                {% for brand in brands %}
+                    {% if brand.slug == brand_slug %}
+                        {{ brand.name }}
+                    {% endif %}
+                {% endfor %}
+                </span>
+                <a href="{% url 'product:product_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_featured %}featured={{ selected_featured }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for cat in selected_categories %}category={{ cat }}&{% endfor %}{% for b in selected_brands %}{% if b != brand_slug %}brand={{ b }}&{% endif %}{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                    <i class="fas fa-times-circle"></i>
+                </a>
+            </div>
+            {% endfor %}
+            {% endif %}
+            
+            {% if selected_status %}
+            <div class="active-filter">
+                <span class="small">
+                    Status: 
+                    {% if selected_status == '1' %}
+                        <span class="badge badge-active">Aktywny</span>
+                    {% else %}
+                        <span class="badge badge-inactive">Nieaktywny</span>
+                    {% endif %}
+                </span>
+                <a href="{% url 'product:product_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_featured %}featured={{ selected_featured }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for cat in selected_categories %}category={{ cat }}&{% endfor %}{% for b in selected_brands %}brand={{ b }}&{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                    <i class="fas fa-times-circle"></i>
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if selected_featured %}
+            <div class="active-filter">
+                <span class="small">
+                    Wyróżnione: 
+                    {% if selected_featured == '1' %}
+                        <span class="badge badge-active">Tak</span>
+                    {% else %}
+                        <span class="badge badge-inactive">Nie</span>
+                    {% endif %}
+                </span>
+                <a href="{% url 'product:product_list' %}?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_page_size %}page_size={{ selected_page_size }}&{% endif %}{% for cat in selected_categories %}category={{ cat }}&{% endfor %}{% for b in selected_brands %}brand={{ b }}&{% endfor %}" class="ms-1 filter-remove" title="Usuń filtr">
+                    <i class="fas fa-times-circle"></i>
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="ms-auto">
+                <a href="{% url 'product:product_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i> Wyczyść wszystkie
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+    
+    <!-- Bulk Actions - Compact Row -->
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form method="post" action="{% url 'product:product_bulk_action' %}" id="bulkActionForm" class="row align-items-center">
+                {% csrf_token %}
+                <div id="product-checkboxes"></div>
+                
+                <!-- Left section - Bulk action buttons -->
+                <div class="col-md-9">
+                    <div class="d-flex flex-wrap gap-2">
+                        <!-- Edit Selected Button -->
+                        <button type="button" class="btn btn-sm btn-primary" onclick="confirmBulkAction('edit')">
+                            <i class="fas fa-edit me-1"></i> Arkusz Edycji
+                        </button>
+                        
+                        <!-- Status Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-check-circle me-1"></i> Status
+                            </button>
+                            <ul class="dropdown-menu" style="font-size: 0.8rem;" aria-labelledby="statusDropdown">
+                                <li>
+                                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('status_active')">
+                                        <i class="fas fa-check text-success me-1"></i> Ustaw "Aktywny"
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('status_inactive')">
+                                        <i class="fas fa-times text-danger me-1"></i> Ustaw "Nieaktywny"
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Featured Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="featuredDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-star me-1"></i> Wyróżnione
+                            </button>
+                            <ul class="dropdown-menu" style="font-size: 0.8rem;" aria-labelledby="featuredDropdown">
+                                <li>
+                                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('featured_yes')">
+                                        <i class="fas fa-check text-success me-1"></i> Ustaw "Tak"
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item" onclick="confirmBulkAction('featured_no')">
+                                        <i class="fas fa-times text-danger me-1"></i> Ustaw "Nie"
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Categories Assignment Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="categoriesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-tags me-1"></i> Kategorie
+                            </button>
+                            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="categoriesDropdown">
+                                <div style="max-height: 180px; overflow-y: auto;">
+                                    {% for category in categories %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="category_ids" value="{{ category.id }}" id="category_{{ category.id }}">
+                                        <label class="form-check-label" for="category_{{ category.id }}">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="confirmBulkAction('set_category')">
+                                        <i class="fas fa-plus-circle me-1"></i> Ustaw
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Brands Assignment Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="brandsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-building me-1"></i> Marki
+                            </button>
+                            <div class="dropdown-menu p-2" style="font-size: 0.8rem;" aria-labelledby="brandsDropdown">
+                                <div style="max-height: 180px; overflow-y: auto;">
+                                    {% for brand in brands %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="brand_ids" value="{{ brand.id }}" id="brand_{{ brand.id }}">
+                                        <label class="form-check-label" for="brand_{{ brand.id }}">
+                                            {{ brand.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="confirmBulkAction('set_brand')">
+                                        <i class="fas fa-plus-circle me-1"></i> Ustaw
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delete Button -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="confirmBulkAction('delete')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Right section - Selection count -->
+                <div class="col-md-3 text-end">
+                    <div class="d-inline-block">
+                        <span class="text-muted small">Zaznaczono </span>
+                        <span class="fw-bold text-secondary" id="selectedCount">0</span>
+                        <span class="text-muted small"> z </span>
+                        <span class="fw-bold text-secondary" id="totalCount">{{ products|length }}</span>
+                        <span class="text-muted small"> produktów</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Ukryty formularz do przekazania zaznaczonych ID -->
+    <form id="bulkEditForm" action="{% url 'product:product_bulk_edit' %}" method="post" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="selected_ids" id="selected_ids_input">
+    </form>
+
+    <!-- Lista produktów -->
+    <div class="card">
+        <div class="card-body">
+            {% if products %}
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllProducts" onclick="toggleCheckAll(this)">
+                                </div>
+                            </th>
+                            <th scope="col" class="text-center" style="width: 20px;">#</th>
+                            <th scope="col">SKU</th>
+                            <th scope="col">EAN</th>
+                            <th scope="col">Nazwa</th>
+                            <th scope="col">Kategoria</th>
+                            <th scope="col">Marka</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input product-checkbox" type="checkbox" name="product_ids" value="{{ product.id }}" onclick="updateBulkActions()">
+                                </div>
+                            </td>
+                            <td class="text-center">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                            <td>{{ product.sku }}</td>
+                            <td>{{ product.ean }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                {% if product.category %}
+                                    <span class="badge badge-group">{{ product.category.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.brand %}
+                                    <span class="badge badge-company">{{ product.brand.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.is_active %}
+                                    <span class="badge badge-active">Aktywny</span>
+                                {% else %}
+                                    <span class="badge badge-inactive">Nieaktywny</span>
+                                {% endif %}
+                                {% if product.is_featured %}
+                                    <span class="badge bg-warning text-dark">Wyróżniony</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'product:product_detail' product.pk %}" class="btn btn-sm btn-outline-primary btn-action" title="Szczegóły">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'product:product_update' product.pk %}" class="btn btn-sm btn-outline-secondary btn-action" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'product:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger btn-action" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginacja -->
+            {% if is_paginated %}
+            <nav aria-label="Nawigacja stronicowania">
+                <ul class="pagination pagination-sm justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Pierwsza">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Poprzednia">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Następna">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Ostatnia">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak produktów do wyświetlenia.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Modal potwierdzenia akcji masowej -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Potwierdź operację</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage"></p>
+                    <p id="confirmDetails" class="text-muted small"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" id="confirmActionBtn">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funkcja aktualizująca tylko licznik zaznaczonych produktów
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('input.product-checkbox:checked');
+    const countElement = document.getElementById('selectedCount');
+    countElement.textContent = checkboxes.length;
+}
+
+// Funkcja przełączająca wszystkie checkboxy
+function toggleCheckAll(source) {
+    const checkboxes = document.querySelectorAll('input.product-checkbox');
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+    updateBulkActions();
+}
+
+// Funkcja do przesyłania formularza edycji zbiorczej
+function submitBulkEditForm() {
+    // Zbierz zaznaczone ID
+    const checkboxes = document.querySelectorAll('input.product-checkbox:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Zaktualizuj ukryte pole
+    document.getElementById('selected_ids_input').value = ids.join(',');
+    
+    // Wyślij formularz
+    document.getElementById('bulkEditForm').submit();
+}
+
+// Funkcja do przygotowania formularza akcji masowych
+function prepareBulkActionForm(action) {
+    // Pobierz wszystkie zaznaczone checkboxy
+    const checkboxes = document.querySelectorAll('input.product-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        alert('Proszę zaznaczyć co najmniej jeden produkt.');
+        return false;
+    }
+    
+    // Pobierz kontener na checkboxy w formularzu akcji masowych
+    const checkboxContainer = document.getElementById('product-checkboxes');
+    
+    // Wyczyść kontener
+    checkboxContainer.innerHTML = '';
+    
+    // Dodaj ukryte inputy dla każdego zaznaczonego ID
+    checkboxes.forEach(checkbox => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'product_ids';
+        input.value = checkbox.value;
+        checkboxContainer.appendChild(input);
+    });
+    
+    // Dodaj akcję
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'bulk_action';
+    actionInput.value = action;
+    checkboxContainer.appendChild(actionInput);
+    
+    // Specjalne pole dla usuwania
+    if (action === 'delete') {
+        const confirmInput = document.createElement('input');
+        confirmInput.type = 'hidden';
+        confirmInput.name = 'confirm_delete';
+        confirmInput.value = 'yes';
+        checkboxContainer.appendChild(confirmInput);
+    }
+    
+    return true;
+}
+
+// Funkcja do potwierdzania akcji masowych
+function confirmBulkAction(action) {
+    // Pobierz wszystkie zaznaczone checkboxy
+    const checkboxes = document.querySelectorAll('input.product-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        alert('Proszę zaznaczyć co najmniej jeden produkt.');
+        return;
+    }
+    
+    const count = checkboxes.length;
+    let message = '';
+    let details = '';
+    
+    // Przygotuj komunikat potwierdzenia
+    if (action === 'edit') {
+        message = `Czy na pewno chcesz otworzyć arkusz edycji dla ${count} produktów?`;
+    } 
+    else if (action === 'delete') {
+        message = `Czy na pewno chcesz TRWALE USUNĄĆ ${count} zaznaczonych produktów?`;
+        details = `UWAGA: Ta operacja jest nieodwracalna i spowoduje usunięcie wszystkich danych tych produktów.`;
+    }
+    else if (action === 'status_active') {
+        message = `Czy na pewno chcesz ustawić status "AKTYWNY" dla ${count} produktów?`;
+    } 
+    else if (action === 'status_inactive') {
+        message = `Czy na pewno chcesz ustawić status "NIEAKTYWNY" dla ${count} produktów?`;
+    } 
+    else if (action === 'featured_yes') {
+        message = `Czy na pewno chcesz ustawić flag "WYRÓŻNIONY" dla ${count} produktów?`;
+    } 
+    else if (action === 'featured_no') {
+        message = `Czy na pewno chcesz usunąć flagę "WYRÓŻNIONY" dla ${count} produktów?`;
+    } 
+    else if (action === 'set_category') {
+        // Sprawdź, czy wybrano jakieś kategorie
+        const selectedCategories = [];
+        document.querySelectorAll('input[name="category_ids"]:checked').forEach(checkbox => {
+            selectedCategories.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedCategories.length === 0) {
+            alert('Proszę wybrać co najmniej jedną kategorię.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz ustawić kategorię dla ${count} produktów?`;
+        details = `Wybrana kategoria: ${selectedCategories.join(', ')}`;
+    } 
+    else if (action === 'set_brand') {
+        // Sprawdź, czy wybrano jakieś marki
+        const selectedBrands = [];
+        document.querySelectorAll('input[name="brand_ids"]:checked').forEach(checkbox => {
+            selectedBrands.push(checkbox.nextElementSibling.textContent.trim());
+        });
+        
+        if (selectedBrands.length === 0) {
+            alert('Proszę wybrać co najmniej jedną markę.');
+            return;
+        }
+        
+        message = `Czy na pewno chcesz ustawić markę dla ${count} produktów?`;
+        details = `Wybrana marka: ${selectedBrands.join(', ')}`;
+    }
+    
+    // Ustaw treść modalu
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmDetails').textContent = details;
+    
+    // Ustaw przycisk potwierdzenia
+    const confirmButton = document.getElementById('confirmActionBtn');
+    
+    // Usuń istniejące event listenery
+    const newConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+    
+    // Dodaj nowy event listener
+    newConfirmButton.addEventListener('click', function() {
+        // Zamknij modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+        modal.hide();
+        
+        // Wykonaj akcję
+        if (action === 'edit') {
+            submitBulkEditForm();
+        } else {
+            if (prepareBulkActionForm(action)) {
+                // Wyślij formularz
+                document.getElementById('bulkActionForm').submit();
+            }
+        }
+    });
+    
+    // Pokaż modal
+    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+
+// Funkcja aktualizująca liczniki filtrów
+function updateFilterCounters() {
+    const categoryCount = $('input[name="category"]:checked').length;
+    const brandCount = $('input[name="brand"]:checked').length;
+    const statusSelected = $('input[name="status"]:checked').val() !== '';
+    const featuredSelected = $('input[name="featured"]:checked').val() !== '';
+    
+    // Update category filter badge
+    if (categoryCount > 0) {
+        $('#categoryFilterBadge').text(categoryCount).removeClass('d-none');
+    } else {
+        $('#categoryFilterBadge').addClass('d-none');
+    }
+    
+    // Update brand filter badge
+    if (brandCount > 0) {
+        $('#brandFilterBadge').text(brandCount).removeClass('d-none');
+    } else {
+        $('#brandFilterBadge').addClass('d-none');
+    }
+    
+    // Update status filter badge
+    if (statusSelected) {
+        $('#statusFilterBadge').removeClass('d-none');
+    } else {
+        $('#statusFilterBadge').addClass('d-none');
+    }
+    
+    // Update featured filter badge
+    if (featuredSelected) {
+        $('#featuredFilterBadge').removeClass('d-none');
+    } else {
+        $('#featuredFilterBadge').addClass('d-none');
+    }
+    
+    // Update page size text
+    const defaultPageSize = "{{ default_page_size }}";
+    const currentPageSize = $('#pageSizeText').text().split(' ')[0];
+    $('#pageSizeText').text(currentPageSize + ' rekordów');
+}
+
+// Filter search functionality
+$('.search-filter').on('input', function() {
+    const searchText = $(this).val().toLowerCase();
+    const filterType = $(this).attr('id').includes('category') ? 'category' : 'brand';
+    const items = filterType === 'category' ? $('.category-filter-item') : $('.brand-filter-item');
+    
+    if (searchText.length === 0) {
+        // Show all items if search is empty
+        items.show();
+    } else {
+        // Filter items based on search text
+        items.each(function() {
+            const itemText = $(this).find('label').data('search-text');
+            if (itemText.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+});
+
+// "Select All" button functionality
+$('.filter-select-all').on('click', function() {
+    const target = $(this).data('target');
+    const checkboxes = target === 'category' 
+        ? $('.category-filter-item:visible input[type="checkbox"]') 
+        : $('.brand-filter-item:visible input[type="checkbox"]');
+    
+    // Check if all visible checkboxes are checked
+    const allChecked = checkboxes.length === checkboxes.filter(':checked').length;
+    
+    // Toggle checkboxes
+    checkboxes.prop('checked', !allChecked);
+    
+    // Update filter counters
+    updateFilterCounters();
+});
+
+// Clear search fields when dropdown is closed
+$('.dropdown').on('hidden.bs.dropdown', function() {
+    const searchInput = $(this).find('.search-filter');
+    if (searchInput.length) {
+        searchInput.val('');
+        // Reset visibility of all items
+        if (searchInput.attr('id').includes('category')) {
+            $('.category-filter-item').show();
+        } else {
+            $('.brand-filter-item').show();
+        }
+    }
+});
+
+// Inicjalizacja stanu po załadowaniu strony
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicjalizacja licznika zaznaczonych produktów
+    updateBulkActions();
+    
+    // Radio button change handler (for status and featured)
+    $('input[type=radio][name=status], input[type=radio][name=featured]').on('change', function() {
+        updateFilterCounters();
+    });
+    
+    // Obsługa bezpośredniego wyboru rozmiaru strony
+    $('.page-size-item').on('click', function(e) {
+        e.preventDefault();
+        
+        // Pobierz wybrany rozmiar strony
+        const pageSize = $(this).data('page-size');
+        
+        // Aktualizuj tekst w przycisku dropdown
+        $('#pageSizeText').text(pageSize + ' rekordów');
+        
+        // Dodaj ukryte pole z rozmiarem strony do formularza
+        let pageSizeInput = $('#filterForm input[name="page_size"]');
+        if (pageSizeInput.length === 0) {
+            pageSizeInput = $('<input>').attr({
+                type: 'hidden',
+                name: 'page_size',
+                id: 'page_size_input'
+            }).appendTo('#filterForm');
+        }
+        pageSizeInput.val(pageSize);
+        
+        // Wyślij formularz
+        $('#filterForm').submit();
+    });
+    
+    // Prevent dropdown from closing when clicking inside (except for page-size-item)
+    $('.dropdown-menu').on('click', function(e) {
+        if (!$(e.target).hasClass('page-size-item') && 
+            !$(e.target).parent().hasClass('page-size-item')) {
+            e.stopPropagation();
+        }
+    });
+    
+    // Submit form when filter button clicked
+    $('.filter-submit-btn').on('click', function() {
+        updateFilterCounters();
+        // Close the dropdown
+        $(this).closest('.dropdown-menu').prev('.dropdown-toggle').dropdown('toggle');
+        // Submit the form
+        $('#filterForm').submit();
+    });
+    
+    // Update filter checkbox handling
+    $('.filter-checkbox').on('change', function() {
+        updateFilterCounters();
+    });
+    
+    // Initialize filter counters
+    updateFilterCounters();
+});
+</script>
+{% endblock %}

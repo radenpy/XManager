@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Potwierdź usunięcie | XManager{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Potwierdź usunięcie</h5>
+                </div>
+                <div class="card-body">
+                    <p>Czy na pewno chcesz usunąć produkt <strong>{{ product.name }}</strong>?</p>
+                    <p class="text-danger"><strong>Uwaga:</strong> Ta operacja jest nieodwracalna i spowoduje usunięcie wszystkich powiązanych danych.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'product:product_detail' product.pk %}" class="btn btn-secondary">Anuluj</a>
+                            <button type="submit" class="btn btn-danger">Usuń produkt</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

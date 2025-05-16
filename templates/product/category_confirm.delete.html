@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Usuń kategorię | XManager{% endblock %}
+
+{% block page_title %}Usuń kategorię: {{ object.name }}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:category_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Powrót do listy
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i> Czy na pewno chcesz usunąć kategorię <strong>{{ object.name }}</strong>?
+                
+                {% if object.products.exists %}
+                <div class="mt-3">
+                    <p><strong>Uwaga!</strong> Ta kategoria ma przypisane produkty. Usunięcie jej spowoduje, że produkty nie będą miały przypisanej kategorii.</p>
+                    <p class="mb-0"><strong>Liczba powiązanych produktów:</strong> {{ object.products.count }}</p>
+                </div>
+                {% endif %}
+                
+                {% if object.children.exists %}
+                <div class="mt-3">
+                    <p><strong>Uwaga!</strong> Ta kategoria ma podkategorie. Usunięcie jej może spowodować problemy z hierarchią kategorii.</p>
+                    <p class="mb-0"><strong>Liczba podkategorii:</strong> {{ object.children.count }}</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'product:category_list' %}" class="btn btn-outline-secondary">Anuluj</a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i> Tak, usuń kategorię
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

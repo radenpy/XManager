@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Edytuj markę{% else %}Dodaj markę{% endif %} | XManager
+{% endblock %}
+
+{% block page_title %}
+    {% if object %}Edytuj markę: {{ object.name }}{% else %}Dodaj nową markę{% endif %}
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:brand_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Powrót do listy
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row mb-3">
+                    <!-- Nazwa marki -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}*</label>
+                            {{ form.name.errors }}
+                            <input type="text" name="{{ form.name.name }}" value="{{ form.name.value|default:'' }}" 
+                                   id="{{ form.name.id_for_label }}" class="form-control" required>
+                            {% if form.name.help_text %}
+                                <div class="form-text text-muted">{{ form.name.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Slug -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.slug.id_for_label }}" class="form-label">{{ form.slug.label }}*</label>
+                            {{ form.slug.errors }}
+                            <input type="text" name="{{ form.slug.name }}" value="{{ form.slug.value|default:'' }}" 
+                                   id="{{ form.slug.id_for_label }}" class="form-control" required>
+                            {% if form.slug.help_text %}
+                                <div class="form-text text-muted">{{ form.slug.help_text }}</div>
+                            {% else %}
+                                <div class="form-text text-muted">Unikalny identyfikator URL dla marki. Generowany automatycznie z nazwy.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status aktywności -->
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="{{ form.is_active.name }}" 
+                               id="{{ form.is_active.id_for_label }}" class="form-check-input"
+                               {% if form.is_active.value %}checked{% endif %}>
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                    </div>
+                    {{ form.is_active.errors }}
+                </div>
+                
+                <!-- Opis -->
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                    {{ form.description.errors }}
+                    <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" 
+                              class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.help_text %}
+                        <div class="form-text text-muted">{{ form.description.help_text }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'product:brand_list' %}" class="btn btn-outline-secondary">Anuluj</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}Zapisz zmiany{% else %}Dodaj markę{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Automatyczne generowanie sluga z nazwy
+    const nameInput = document.getElementById('{{ form.name.id_for_label }}');
+    const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
+    
+    function slugify(text) {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
+    }
+    
+    // Only autofill slug if it's empty and not editing existing object
+    {% if not object %}
+    nameInput.addEventListener('input', function() {
+        if (!slugInput.value || slugInput.value === slugify(nameInput.value.substring(0, nameInput.value.length - 1))) {
+            slugInput.value = slugify(nameInput.value);
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista kategorii | XManager{% endblock %}
+
+{% block page_title %}Lista kategorii{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'product:category_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Dodaj kategorię
+    </a>
+{% endblock %}
+
+{% block content %}
+    <!-- Lista kategorii w strukturze drzewiastej -->
+    <div class="card">
+        <div class="card-body">
+            {% if categories %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 40%">Nazwa kategorii</th>
+                                <th scope="col">Produkty</th>
+                                <th scope="col">Podkategorie</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                                <tr>
+                                    <td>
+                                        {% if category.parent %}
+                                            {% if category.parent.parent %}
+                                                {% if category.parent.parent.parent %}
+                                                    <span class="ms-5"></span>
+                                                {% endif %}
+                                                <span class="ms-4"></span>
+                                            {% endif %}
+                                            <span class="ms-3"></span>
+                                            <i class="fas fa-level-down-alt fa-rotate-90 text-muted me-2"></i>
+                                        {% endif %}
+                                        
+                                        <span class="{% if not category.parent %}fw-bold{% elif not category.parent.parent %}fw-semibold{% endif %}">
+                                            {{ category.name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ category.products.count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ category.children.count }}</span>
+                                    </td>
+                                    <td>
+                                        {% if category.is_active %}
+                                            <span class="badge bg-success">Aktywna</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Nieaktywna</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <a href="{% url 'product:category_update' category.pk %}" class="btn btn-sm btn-outline-secondary" title="Edytuj">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'product:category_delete' category.pk %}" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Brak kategorii do wyświetlenia.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -22,8 +22,8 @@ class PartnerEmail(CoreModel):
         'subscriber.Subscriber', on_delete=models.CASCADE, related_name='partners')
 
     class Meta:
-        verbose_name = ('Partner Email')
-        verbose_name_plural = ('Partner Emails')
+        verbose_name = ('Email kontrahenta')
+        verbose_name_plural = ('Emaile kontrahenta')
         unique_together = ('partner', 'subscriber')
 
     def __str__(self):
@@ -180,13 +180,9 @@ class Partner(CoreModel):
         """Walidacja modelu"""
         super().clean()
 
-        if hasattr(self, 'id') and self.id and self.emails.count() > 10:
-            raise ValidationError(
-                {'subscriber': ('Partner moze mieć maksymalnie 10 powiązanych adresów email')})
-
     class Meta:
-        verbose_name = ('Partner')
-        verbose_name_plural = ('Partners')
+        verbose_name = ('Kontrahent')
+        verbose_name_plural = ('Kontrahenci')
         # Unikalny numer VAT dla danego kraju
         unique_together = [('country', 'vat_number')]
 

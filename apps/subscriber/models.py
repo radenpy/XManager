@@ -27,8 +27,8 @@ class Subscriber(CoreModel):
 
     class Meta:
         ordering = ['email']
-        verbose_name = ('Subscriber')
-        verbose_name_plural = ('Subscribers')
+        verbose_name = ('Subskrybent')
+        verbose_name_plural = ('Subskrybenci')
 
 
 class SubscriberGroup(CoreModel):
@@ -38,5 +38,5 @@ class SubscriberGroup(CoreModel):
         return self.group_name
 
     class Meta:
-        verbose_name = ('Subscriber Group')
-        verbose_name_plural = ('Subscriber Groups')
+        verbose_name = ('Grupa subskrybenta')
+        verbose_name_plural = ('Grupy subskrybentów')

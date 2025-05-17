@@ -19,8 +19,8 @@ class NewsletterTemplate(CoreModel):
         return self.name
 
     class Meta:
-        verbose_name = "Newsletter template"
-        verbose_name_plural = "Newsletter templates"
+        verbose_name = "Szablon newslettera"
+        verbose_name_plural = "Szablony newsletterów"
         ordering = ['-created_at']
 
 
@@ -137,40 +137,30 @@ class Newsletter(CoreModel):
 
     def update_recipient_count(self):
         """
-        Aktualizuje liczbę odbiorców na podstawie grup i indywidualnych subskrybentów
+        Updates the total number of recipients based on groups and individual subscribers
         """
         count = 0
 
-        # Zlicz odbiorców z grup (jeśli model ma taką relację)
-        if hasattr(self, 'recipient_groups'):
-            for group in self.recipient_groups.all():
-                count += group.subscriber.count()
+        # Count recipients from groups
+        for group in self.subscriber_groups.all():
+            count += group.subscriber.count()
 
-        # Dodaj indywidualnych odbiorców (jeśli model ma taką relację)
-        if hasattr(self, 'subscribers'):
-            # Pobierz wszystkie identyfikatory subskrybentów z grup
-            group_subscriber_ids = []
-            if hasattr(self, 'recipient_groups'):
-                for group in self.recipient_groups.all():
-                    group_subscriber_ids.extend(
-                        group.subscriber.values_list('id', flat=True)
-                    )
+        # Add individual recipients who aren't already in groups
+        group_subscriber_ids = []
+        for group in self.subscriber_groups.all():
+            group_subscriber_ids.extend(
+                group.subscriber.values_list('id', flat=True)
+            )
 
-            # Policz indywidualnych subskrybentów, którzy nie są w grupach
-            individual_subscribers = self.subscribers.exclude(
-                id__in=group_subscriber_ids).count()
-            count += individual_subscribers
+        individual_subscribers = self.subscribers.exclude(
+            id__in=group_subscriber_ids).count()
+        count += individual_subscribers
 
-        # Aktualizuj pole
+        # Update field
         self.total_recipients = count
         self.save(update_fields=['total_recipients'])
 
         return count
-
-    class Meta:
-        verbose_name = "Newsletter"
-        verbose_name_plural = "Newsletters"
-        ordering = ['-created_at']
 
 
 class NewsletterTracking(CoreModel):
@@ -227,6 +217,6 @@ class NewsletterTracking(CoreModel):
         return f"{self.get_event_type_display()} by {self.subscriber.email} - {self.newsletter.subject}"
 
     class Meta:
-        verbose_name = "Newsletter tracking"
-        verbose_name_plural = "Newsletter tracking"
+        verbose_name = "Tracking newslettera"
+        verbose_name_plural = "Tracking newsletterów"
         ordering = ['-created_at']

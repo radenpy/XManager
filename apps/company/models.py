@@ -1,11 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
+from apps.core.models import CoreModel
 from apps.core.validators import validate_nip, validate_regon, krs_validator, validate_postal_code
 
 
-from django.contrib.auth.models import User
-
-
-class Company(models.Model):
+class Company(CoreModel):
     name = models.CharField(max_length=255)
     tax_id = models.CharField(
         validators=[validate_nip],
@@ -18,8 +17,8 @@ class Company(models.Model):
         validators=[krs_validator],
         unique=True)
     street_name = models.CharField(max_length=50)
-    street_building_number = models.CharField(max_length=10)
-    house_number = models.CharField(max_length=10)
+    building_number = models.CharField(max_length=10)
+    appartment_number = models.CharField(max_length=10)
     city = models.CharField(max_length=50)
     post_code = models.CharField(
         validators=[validate_postal_code]
@@ -30,12 +29,12 @@ class Company(models.Model):
         return f"{self.name} ({self.tax_id_prefix}{self.tax_id} {self.is_active})"
 
     class Meta:
-        verbose_name = ('Company')
-        verbose_name_plural = ('Companies')
+        verbose_name = ('Kontrahent')
+        verbose_name_plural = ('Kontrahenci')
         ordering = ['name']
 
 
-class UserProfile(models.Model):
+class UserProfile(CoreModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company = models.ManyToManyField(Company, related_name="users")
     active_company = models.ForeignKey(
@@ -57,6 +56,6 @@ class UserProfile(models.Model):
         return f"{self.user} {self.company} {self.active_company} {self.default_company}"
 
     class Meta:
-        verbose_name = ('User profile')
-        verbose_name_plural = ('User profiles')
+        verbose_name = ('Profil uzytkownika')
+        verbose_name_plural = ('Profil uzytkowników')
         ordering = ['user']

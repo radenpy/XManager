@@ -1,4 +1,3 @@
-# XManager/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -28,7 +27,9 @@ urlpatterns = [
     path('dashboard/', dashboard_view, name="dashboard"),
     path('profile/', dashboard_view, name="profile"),
     path('settings/', dashboard_view, name="settings"),
-    path('choose-company/', choose_company, name="choose_company"),
+
+    # Zmiana z 'choose-company/' na 'choose_company/' (bez myślnika)
+    path('choose_company/', choose_company, name="choose_company"),
 
     # Legacy product views (można usunąć po pełnej migracji do nowych widoków)
     path('products-list/', products_list_view, name="products_list_view"),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('partner/', include('apps.partner.urls')),
     path('subscribers/', include('apps.subscriber.urls')),
     path('newsletter/', include('apps.newsletter.urls', namespace='newsletter')),
+    path('company/', include('apps.company.urls', namespace='company')),
 
     # Nowa ścieżka dla produktów (używa nowego systemu widoków)
     path('products/', include('apps.product.urls', namespace='product')),
@@ -45,6 +47,9 @@ urlpatterns = [
     path('newsletters-list/', newsletters_list_view, name="newsletter_list_view"),
     path('sales-offers-list/', sales_offers_list_view,
          name="sales_offers_list_view"),
+
+    # docnum
+    path('docnum/', include('apps.docnum.urls')),
 ]
 
 # Dodaj obsługę plików media w trybie deweloperskim

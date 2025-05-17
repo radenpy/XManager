@@ -44,11 +44,40 @@
                 </div>
             </li>
             
-            <!-- Firmy -->
+            <!-- Firmy - z rozwijanym menu -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.app_name == 'company' %}active{% endif %} dropdown-toggle d-flex justify-content-between align-items-center" 
+                   href="#companySubmenu" 
+                   data-bs-toggle="collapse" 
+                   aria-expanded="{% if request.resolver_match.app_name == 'company' %}true{% else %}false{% endif %}">
+                    <div>
+                        <i class="fas fa-building me-1"></i><span class="sidebar-text">Firmy</span>
+                    </div>
+                    <i class="fas fa-chevron-{% if request.resolver_match.app_name == 'company' %}up{% else %}down{% endif %} small"></i>
+                </a>
+                <div class="collapse {% if request.resolver_match.app_name == 'company' %}show{% endif %}" id="companySubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'company_list' %}active{% endif %}" 
+                               href="{% url 'company:company_list' %}">
+                                <i class="fas fa-list me-1"></i><span class="sidebar-text">Lista firm</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ps-4 {% if request.resolver_match.url_name == 'company_create' %}active{% endif %}" 
+                               href="{% url 'company:company_create' %}">
+                                <i class="fas fa-plus me-1"></i><span class="sidebar-text">Dodaj firmę</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Partners / Kontrahenci -->
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.app_name == 'partner' %}active{% endif %}" 
                   href="{% url 'partner:partner_list' %}">
-                    <i class="fas fa-building me-1"></i><span class="sidebar-text">Firmy</span>
+                    <i class="fas fa-handshake me-1"></i><span class="sidebar-text">Kontrahenci</span>
                 </a>
             </li>
             

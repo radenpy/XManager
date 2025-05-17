@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wybierz firmę{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h2 class="mb-0">Wybierz firmę</h2>
+                </div>
+                <div class="card-body">
+                    {% if companies %}
+                        <div class="alert alert-info">
+                            Wybierz firmę, z którą chcesz teraz pracować.
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="list-group mb-3">
+                                {% for company in companies %}
+                                    <button type="submit" name="company_id" value="{{ company.id }}" 
+                                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ company.name }}</strong>
+                                            <small class="text-muted d-block">NIP: {{ company.tax_id_prefix }}{{ company.tax_id }}</small>
+                                        </div>
+                                        {% if request.user.userprofile.active_company == company %}
+                                            <span class="badge bg-success">Aktywna</span>
+                                        {% endif %}
+                                    </button>
+                                {% endfor %}
+                            
+                                {% if show_master_option %}
+                                    <button type="submit" name="company_id" value="master" 
+                                            class="list-group-item list-group-item-action list-group-item-warning">
+                                        <strong>Tryb administratora</strong> (dostęp do wszystkich firm)
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <p><strong>Brak firm!</strong> Nie masz jeszcze żadnej przypisanej firmy.</p>
+                            <p>Przejdź do sekcji <a href="{% url 'company:company_create' %}" class="alert-link">Dodaj firmę</a>, aby utworzyć swoją pierwszą firmę.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót do panelu
+                        </a>
+                        <a href="{% url 'company:company_create' %}" class="btn btn-outline-primary ms-2">
+                            <i class="fas fa-plus"></i> Dodaj nową firmę
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

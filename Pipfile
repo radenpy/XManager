@@ -15,6 +15,7 @@ zeep = "*"
 requests = "*"
 django = "*"
 pillow = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

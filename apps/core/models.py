@@ -25,6 +25,7 @@ class CoreModel(models.Model):
         related_name="%(app_label)s_%(class)s_updated",
         verbose_name="Zaktualizowany przez"
     )
+    is_active = models.BooleanField(default=True, verbose_name="Aktywny")
 
     class Meta:
         abstract = True
